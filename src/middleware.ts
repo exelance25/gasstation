@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 
 const publicPaths = new Set(["/splash", "/welcome", "/login", "/register", "/onboarding"]);
 
-/** PumpStation — oturum gerektirmez; herkes YAKIT AL */
-const pumpStationPaths = new Set(["/", "/yakit-al", "/gas-havuzu"]);
+/** GasStation — oturum gerektirmez; herkes YAKIT AL */
+const gasStationPaths = new Set(["/", "/yakit-al", "/gas-havuzu"]);
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/yakit-al", request.url));
   }
 
-  if (pumpStationPaths.has(pathname)) {
+  if (gasStationPaths.has(pathname)) {
     return NextResponse.next();
   }
 

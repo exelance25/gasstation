@@ -4,7 +4,7 @@ import { getVaultDisplayLabel } from "@/lib/vault-display";
 
 /**
  * 4 ağlı gas tankı — Phantom/Solana + EVM kasa (ETH, Base, Monad).
- * USDC depozit → PUMPSTATION kasası; gas teslimat → operatör cüzdanları (.env private key).
+ * USDC depozit → GASSTATION kasası; gas teslimat → operatör cüzdanları (.env private key).
  * Ham cüzdan adresleri kullanıcıya gösterilmez.
  */
 export function getTreasuryVault(): TreasuryVaultNetworks | null {

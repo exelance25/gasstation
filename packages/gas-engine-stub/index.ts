@@ -1,8 +1,8 @@
 /**
- * @pumpstation/gas-engine — gas sponsorship canlı API + route stub
+ * @gasstation/gas-engine — gas sponsorship canlı API + route stub
  */
 
-export type PumpStationConfig = {
+export type GasStationConfig = {
   apiUrl?: string;
   settlementUrl?: string;
   quoteUrl?: string;
@@ -76,7 +76,7 @@ export type GasSettlementResult = {
   deliveryTxHash?: string | null;
 };
 
-export class PumpStationError extends Error {
+export class GasStationError extends Error {
   constructor(
     message: string,
     public readonly code:
@@ -87,11 +87,11 @@ export class PumpStationError extends Error {
       | "UNKNOWN"
   ) {
     super(message);
-    this.name = "PumpStationError";
+    this.name = "GasStationError";
   }
 }
 
-function settlementBase(config: PumpStationConfig): string {
+function settlementBase(config: GasStationConfig): string {
   return (
     config.settlementUrl ??
     config.apiUrl?.replace(/\/api$/, "")?.replace(":3000", ":4200") ??
@@ -99,7 +99,7 @@ function settlementBase(config: PumpStationConfig): string {
   );
 }
 
-function authHeaders(config: PumpStationConfig): Record<string, string> {
+function authHeaders(config: GasStationConfig): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json" };
   if (config.apiKey) {
     h.Authorization = `Bearer ${config.apiKey}`;
@@ -108,8 +108,8 @@ function authHeaders(config: PumpStationConfig): Record<string, string> {
   return h;
 }
 
-export class PumpStationClient {
-  constructor(private readonly config: PumpStationConfig = {}) {}
+export class GasStationClient {
+  constructor(private readonly config: GasStationConfig = {}) {}
 
   async getAggregatedBalance(addresses: string[]): Promise<AggregatedBalanceResult> {
     if (!addresses.length) {
@@ -135,10 +135,10 @@ export class PumpStationClient {
     currency: TransferCurrency,
   ): Promise<OptimalRoute> {
     if (!fromAddresses.length) {
-      throw new PumpStationError("Bağlı cüzdan bulunamadı", "INSUFFICIENT_BALANCE");
+      throw new GasStationError("Bağlı cüzdan bulunamadı", "INSUFFICIENT_BALANCE");
     }
     if (amount <= 0) {
-      throw new PumpStationError("Geçersiz tutar", "INSUFFICIENT_BALANCE");
+      throw new GasStationError("Geçersiz tutar", "INSUFFICIENT_BALANCE");
     }
     const targetChain =
       /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(toAddress) ? "Solana" : "Ethereum";
@@ -156,7 +156,7 @@ export class PumpStationClient {
 
   async executeRoute(route: OptimalRoute): Promise<ExecuteRouteResult> {
     if (Number(route.amount) > 10_000) {
-      throw new PumpStationError("İşlem reddedildi", "REJECTED");
+      throw new GasStationError("İşlem reddedildi", "REJECTED");
     }
     return { transactionId: `tx_${route.routeId}`, status: "completed" };
   }
@@ -196,19 +196,19 @@ export class PumpStationClient {
       });
       const body = (await res.json()) as GasSponsorshipResult & { error?: string };
       if (!res.ok) {
-        throw new PumpStationError(body.error ?? "Sponsor başarısız", "GAS_SPONSOR_FAILED");
+        throw new GasStationError(body.error ?? "Sponsor başarısız", "GAS_SPONSOR_FAILED");
       }
       return {
         sponsorshipId: body.sponsorshipId,
         status: body.status ?? "quote_ready",
-        relayerAddress: "PUMPSTATION",
+        relayerAddress: "GASSTATION",
         message: body.message,
         quote: body.quote,
         treasuryAddress: body.treasuryAddress,
       };
     } catch (err) {
-      if (err instanceof PumpStationError) throw err;
-      throw new PumpStationError("Settlement API erişilemedi", "NETWORK");
+      if (err instanceof GasStationError) throw err;
+      throw new GasStationError("Settlement API erişilemedi", "NETWORK");
     }
   }
 
@@ -264,7 +264,7 @@ export class PumpStationClient {
       error?: string;
     };
     if (!res.ok) {
-      throw new PumpStationError(body.error ?? "Settlement başarısız", "GAS_SPONSOR_FAILED");
+      throw new GasStationError(body.error ?? "Settlement başarısız", "GAS_SPONSOR_FAILED");
     }
     return {
       settlementId: body.settlementId!,

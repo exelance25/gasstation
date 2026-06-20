@@ -4,10 +4,10 @@ import { useCallback, useEffect } from "react";
 import { useTekBakiyeStore } from "@/lib/store";
 
 /**
- * Subscribes to connectedWallets and refreshes PUMPSTATION balance.
+ * Subscribes to connectedWallets and refreshes GASSTATION balance.
  * First load: visible skeleton. Later: silent background refresh.
  */
-export function usePumpStationBalanceSync() {
+export function useGasStationBalanceSync() {
   const fetchTotalBalance = useTekBakiyeStore((s) => s.fetchTotalBalance);
 
   const fetchInitial = useCallback(() => {

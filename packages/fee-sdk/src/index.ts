@@ -1,8 +1,8 @@
-export { PumpStationFee } from "./client";
+export { GasStationFee } from "./client";
 export type {
   FeeQuote,
   GetFeeQuoteParams,
-  PumpStationFeeConfig,
+  GasStationFeeConfig,
   SettleFeeParams,
   SettleFeeResult,
   SupportedChain,

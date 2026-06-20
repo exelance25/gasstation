@@ -55,7 +55,7 @@ export const AUTO_FEE_EXPLAINER = {
     },
     {
       vertical: "Gasless checkout (ERC-4337)",
-      detail: "@pumpstation/sdk + relayer — USDC ile öde, paymaster postOp ile tahsil.",
+      detail: "@gasstation/sdk + relayer — USDC ile öde, paymaster postOp ile tahsil.",
     },
   ],
 } as const;
@@ -74,10 +74,10 @@ export type SdkPackageMeta = {
 export const SDK_PACKAGES: SdkPackageMeta[] = [
   {
     id: "sdk",
-    npmName: "@pumpstation/sdk",
+    npmName: "@gasstation/sdk",
     tagline: "On-chain + ERC-4337 paymaster entegrasyonu",
     audience: "Smart account / AA ekibi, gasless checkout",
-    install: "npm install @pumpstation/sdk viem",
+    install: "npm install @gasstation/sdk viem",
     githubPath: "sdk",
     features: [
       "calculatePackageQuoteSync — ana uygulama ile senkron fiyatlandırma",
@@ -85,14 +85,14 @@ export const SDK_PACKAGES: SdkPackageMeta[] = [
       "PumpClient — relayer UserOp hazırlık/gönderim",
       "GasStationRestClient — REST oracle / intent / dispense",
     ],
-    exampleSnippet: `import { PumpClient, calculatePackageQuoteSync } from "@pumpstation/sdk";
+    exampleSnippet: `import { PumpClient, calculatePackageQuoteSync } from "@gasstation/sdk";
 
 const quote = calculatePackageQuoteSync(10, "MON");
 console.log("Teslim:", quote.conservativeDeliveryAmount, "MON");`,
   },
   {
     id: "fee-sdk",
-    npmName: "@pumpstation/fee-sdk",
+    npmName: "@gasstation/fee-sdk",
     tagline: "3 adımlı B2B gas settlement",
     audience: "Cüzdan, DEX, custodial uygulama backend’i",
     install: "npm install file:./packages/fee-sdk",
@@ -103,15 +103,15 @@ console.log("Teslim:", quote.conservativeDeliveryAmount, "MON");`,
       "prepareSponsorship — gas engine uyumlu sponsor",
       "verifyQuote — replay koruması",
     ],
-    exampleSnippet: `import { PumpStationFee } from "@pumpstation/fee-sdk";
+    exampleSnippet: `import { GasStationFee } from "@gasstation/fee-sdk";
 
-const fee = new PumpStationFee({ apiUrl: "http://localhost:4100" });
+const fee = new GasStationFee({ apiUrl: "http://localhost:4100" });
 const quote = await fee.getQuote({ chain: "monad", paymentToken: "MON", gasEstimateWei: "2100000000000000" });
 // Kullanıcı treasury'ye öder → settleFee(...)`,
   },
   {
     id: "gas-engine",
-    npmName: "@pumpstation/gas-engine",
+    npmName: "@gasstation/gas-engine",
     tagline: "Gas sponsorship + otomatik fee orchestration",
     audience: "dApp, oyun, NFT — ilk işlemde gas yok senaryosu",
     install: "npm install file:./packages/gas-engine-stub",
@@ -122,9 +122,9 @@ const quote = await fee.getQuote({ chain: "monad", paymentToken: "MON", gasEstim
       "settleAutoFee — ödeme + teslim tek akış",
       "getOptimalRoute — çoklu cüzdan route stub",
     ],
-    exampleSnippet: `import { PumpStationClient } from "@pumpstation/gas-engine";
+    exampleSnippet: `import { GasStationClient } from "@gasstation/gas-engine";
 
-const client = new PumpStationClient({ settlementUrl: "http://localhost:4200" });
+const client = new GasStationClient({ settlementUrl: "http://localhost:4200" });
 const sponsor = await client.requestGasSponsorship({
   userAddress: "0x…",
   chainId: 10143,
@@ -136,7 +136,7 @@ const sponsor = await client.requestGasSponsorship({
     npmName: "GasStationRestClient",
     tagline: "Ham REST — en hızlı POC",
     audience: "Hackathon, script, bot platformu, internal ops",
-    install: "npm install @pumpstation/sdk  # rest-client export",
+    install: "npm install @gasstation/sdk  # rest-client export",
     githubPath: "integrators",
     features: [
       "GET /api/oracle/quote",
@@ -144,7 +144,7 @@ const sponsor = await client.requestGasSponsorship({
       "Rate limit — production partner key (yakında)",
       "1–2 haftada canlı POC",
     ],
-    exampleSnippet: `import { GasStationRestClient } from "@pumpstation/sdk";
+    exampleSnippet: `import { GasStationRestClient } from "@gasstation/sdk";
 
 const api = new GasStationRestClient({ baseUrl: "https://your-gasstation.app" });
 const quote = await api.getOracleQuote({ deliveryAmount: 1, asset: "MON" });`,

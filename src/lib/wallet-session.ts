@@ -15,7 +15,7 @@ const PERSISTENCE_EXACT_KEYS = new Set([
   "injected.connected",
   "rk-recent",
   "rk-version",
-  "pumpstation_sol_wallet",
+  "gasstation_sol_wallet",
 ]);
 
 /** wagmi shimDisconnect bayrakları — asla silme (ör. phantom.disconnected) */

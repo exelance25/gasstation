@@ -1,7 +1,7 @@
 import type {
   FeeQuote,
   GetFeeQuoteParams,
-  PumpStationFeeConfig,
+  GasStationFeeConfig,
   SettleFeeParams,
   SettleFeeResult,
   SupportedChain,
@@ -10,12 +10,12 @@ import type {
 
 const DEFAULT_GAS_WEI = 21_000n * 50_000_000_000n;
 
-export class PumpStationFee {
+export class GasStationFee {
   private readonly apiUrl: string;
   private readonly settlementUrl: string;
   private readonly apiKey?: string;
 
-  constructor(config: PumpStationFeeConfig) {
+  constructor(config: GasStationFeeConfig) {
     this.apiUrl = config.apiUrl.replace(/\/$/, "");
     this.settlementUrl =
       config.settlementUrl?.replace(/\/$/, "") ?? "http://localhost:4200";
@@ -154,7 +154,7 @@ export class PumpStationFee {
 export type {
   FeeQuote,
   GetFeeQuoteParams,
-  PumpStationFeeConfig,
+  GasStationFeeConfig,
   SettleFeeParams,
   SettleFeeResult,
   SupportedChain,

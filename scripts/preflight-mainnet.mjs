@@ -36,7 +36,7 @@ function fail(name, detail) {
   console.log(`✗ ${name} — ${detail}`);
 }
 
-console.log("=== PUMPSTATION PREFLIGHT ===\n");
+console.log("=== GASSTATION PREFLIGHT ===\n");
 console.log("APP_ENV:", process.env.NEXT_PUBLIC_APP_ENV ?? "(unset)");
 
 const wc = process.env.NEXT_PUBLIC_WC_PROJECT_ID ?? "";

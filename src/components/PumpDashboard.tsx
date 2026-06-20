@@ -69,7 +69,7 @@ export function PumpDashboard() {
     <div className="font-mono flex min-h-[680px] w-full max-w-xl flex-col rounded-xl border border-neutral-800 bg-black p-6 text-emerald-400 shadow-2xl md:p-8">
       <header className="flex items-center justify-between border-b border-emerald-900 pb-4">
         <h1 className="text-xl font-bold tracking-widest text-white md:text-2xl">
-          ⛽ PUMP_STATION
+          ⛽ GASSTATION
         </h1>
         <button
           type="button"
@@ -291,7 +291,7 @@ export function PumpDashboard() {
       </main>
 
       <footer className="text-center text-xs text-neutral-600">
-        PumpStation v1.0.0 // Admin havuz · %10 paket marjı
+        GasStation v1.0.0 // Admin havuz · %10 paket marjı
       </footer>
 
       <WalletConnectPicker

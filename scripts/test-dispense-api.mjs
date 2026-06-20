@@ -64,7 +64,7 @@ if (
     const r = await fetch(`${BASE}/yakit-al`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const html = await r.text();
-    if (!html.includes("PUMPSTATION")) throw new Error("page content missing");
+    if (!html.includes("GASSTATION")) throw new Error("page content missing");
   })
 )
   passed++;

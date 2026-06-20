@@ -2,7 +2,7 @@
  * GASSTATION + PumpPaymaster — otomatik modda ERC-20 approve + postOp tahsil.
  */
 
-import { getPumpStationClient, PumpStationError } from "@/lib/pumpstation-client";
+import { getGasStationClient, GasStationError } from "@/lib/gasstation-client";
 import { SUPPORTED_SOURCE_CHAIN_ID } from "@/lib/chains";
 import { MIN_BASE_GAS_WEI } from "@/lib/gas-requirements";
 import {
@@ -17,7 +17,7 @@ import type {
   GasEligibilityResult,
   GasSettlementResult,
   GasSponsorshipResult,
-} from "@pumpstation/gas-engine";
+} from "@gasstation/gas-engine";
 import type { Address } from "viem";
 
 export type { GasEligibilityResult, GasSponsorshipResult, GasSettlementResult };
@@ -43,7 +43,7 @@ const MIN_FEE_ALLOWANCE_WEI = 1_000_000n; // 0.001 USDC (6 dec) stub floor
 export async function resolveGasForTransaction(
   ctx: GasSponsorContext,
 ): Promise<GasSponsorFlowResult> {
-  const client = getPumpStationClient();
+  const client = getGasStationClient();
   const protocolPoolWei = isPaymasterDeployed() ? await readPoolNativeBalance() : 0n;
 
   let allowance = 0n;
@@ -99,11 +99,11 @@ export async function resolveGasForTransaction(
 export async function settleGasAfterTransaction(
   sponsorshipId: string,
 ): Promise<GasSettlementResult> {
-  return getPumpStationClient().settleGasSponsorship(sponsorshipId);
+  return getGasStationClient().settleGasSponsorship(sponsorshipId);
 }
 
 export function mapGasSponsorError(error: unknown): string {
-  if (error instanceof PumpStationError) {
+  if (error instanceof GasStationError) {
     if (error.code === "GAS_SPONSOR_FAILED") {
       return "GASSTATION gas sponsor başarısız.";
     }

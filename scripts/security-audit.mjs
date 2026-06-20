@@ -114,7 +114,7 @@ function checkPublicEnv() {
   }
 }
 
-console.log("=== PUMPSTATION GÜVENLİK TARAMASI ===\n");
+console.log("=== GASSTATION GÜVENLİK TARAMASI ===\n");
 
 checkEnvGitignore();
 checkLocalEnvFiles();

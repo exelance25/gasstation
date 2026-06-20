@@ -6,7 +6,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import type { Hash, PublicClient } from "viem";
-import { PumpStationFee, type FeeQuote, type SettleFeeResult } from "@pumpstation/fee-sdk";
+import { GasStationFee, type FeeQuote, type SettleFeeResult } from "@gasstation/fee-sdk";
 import type { DepotAssetId } from "@/config/depot-assets";
 import { clientEnv, isAutoFeeEnabled } from "@/config/client-env";
 import { getSolanaRpcUrl } from "@/config/solana-usdc";
@@ -20,8 +20,8 @@ import { getNativeTreasuryAddress } from "./treasury-native";
 
 const API_BASE = clientEnv.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "");
 
-function createFeeClient(): PumpStationFee {
-  return new PumpStationFee({
+function createFeeClient(): GasStationFee {
+  return new GasStationFee({
     apiUrl: API_BASE,
     settlementUrl: API_BASE,
   });

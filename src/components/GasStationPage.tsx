@@ -4,12 +4,12 @@ import type { ReactNode } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PumpPageBackground } from "@/components/PumpPageBackground";
 
-type PumpStationPageProps = {
+type GasStationPageProps = {
   children: ReactNode;
   variant?: "fuel" | "pool";
 };
 
-export function PumpStationPage({ children, variant = "fuel" }: PumpStationPageProps) {
+export function GasStationPage({ children, variant = "fuel" }: GasStationPageProps) {
   if (variant === "pool") {
     return (
       <main className="relative flex min-h-screen flex-col items-center justify-center bg-[#171d2a] px-3 py-4 sm:px-4">

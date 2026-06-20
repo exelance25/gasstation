@@ -1,6 +1,6 @@
 "use client";
 
-import { PumpStationLogo } from "@/components/PumpStationLogo";
+import { GasStationLogo } from "@/components/GasStationLogo";
 
 /**
  * A + B: istasyon hissi — daha aydınlık taban, belirgin neon wash, silik logo.
@@ -57,7 +57,7 @@ export function PumpPageBackground() {
           filter: "drop-shadow(0 0 48px rgba(16,185,129,0.25)) drop-shadow(0 0 80px rgba(138,43,226,0.15))",
         }}
       >
-        <PumpStationLogo className="h-[min(62vw,480px)] w-[min(62vw,480px)]" />
+        <GasStationLogo className="h-[min(62vw,480px)] w-[min(62vw,480px)]" />
       </div>
 
       {/* Kenar vignette — hafif; ortayı aydınlık tutar */}

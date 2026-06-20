@@ -1,8 +1,8 @@
-# PUMPSTATION Gas Yol Haritası
+# GASSTATION Gas Yol Haritası
 
 ## Özet
 
-Kullanıcıların **Base ağında ETH gas tutması zorunluluğunu kaldırırız**. MetaMask ile bağlanan kullanıcı, Base üzerinde işlem yaparken gas yoksa **PUMPSTATION otomatik gas verir**; işlem bitince ücret **otomatik tahsil edilir**.
+Kullanıcıların **Base ağında ETH gas tutması zorunluluğunu kaldırırız**. MetaMask ile bağlanan kullanıcı, Base üzerinde işlem yaparken gas yoksa **GASSTATION otomatik gas verir**; işlem bitince ücret **otomatik tahsil edilir**.
 
 ---
 
@@ -16,12 +16,12 @@ flowchart TD
 
     D --> E{Base'de native ETH var mı?}
     E -->|Evet| F[Normal tx — opsiyonel sponsor]
-    E -->|Hayır| G[PUMPSTATION Gas Sponsor devreye girer]
+    E -->|Hayır| G[GASSTATION Gas Sponsor devreye girer]
 
     G --> H[Relayer gas öder]
     H --> I[MetaMask imza — ödeme / bridge]
     I --> J[İşlem Base'de tamamlanır]
-    J --> K[PUMPSTATION settlement — gas ücreti tahsil]
+    J --> K[GASSTATION settlement — gas ücreti tahsil]
 
     C --> L{Yeterli Base ETH?}
     L -->|Hayır| M[Hata: gas gerekli]
@@ -43,7 +43,7 @@ flowchart TD
 | **Orchestration** | `useGasPump.ts` | Pump akışı, toast, mod dallanması |
 | **Gas Sponsor** | `lib/gas-sponsor.ts` | Eligibility, sponsor isteği, settlement |
 | **On-chain** | `contracts/PumpPaymaster.sol`, `lib/paymaster-pool.ts` | ERC-4337 havuz + `addLiquidity` |
-| **PUMPSTATION SDK** | `lib/pumpstation-client.ts`, `@pumpstation/gas-engine` stub | API / SDK sınırı |
+| **GASSTATION SDK** | `lib/gasstation-client.ts`, `@gasstation/gas-engine` stub | API / SDK sınırı |
 | **Chain** | `lib/chains.ts`, `lib/wagmi.ts` | Base (8453) / Base Sepolia (84532) |
 | **Risk** | `useWalletRisk.ts` | Bakiye + havuz; otomatik modda gas engeli yok |
 
@@ -54,10 +54,10 @@ flowchart TD
 ### Manuel Mod
 1. Kullanıcı MetaMask'ta **Base** ağına geçer.
 2. Ödeme + **gas** için yeterli Base ETH gerekir.
-3. Tx doğrudan cüzdandan gönderilir; PUMPSTATION gas vermez.
+3. Tx doğrudan cüzdandan gönderilir; GASSTATION gas vermez.
 
-### Otomatik Mod (PUMPSTATION)
-1. Kullanıcı MetaMask ile imzalar (ETH başka ağda olabilir — PUMPSTATION route).
+### Otomatik Mod (GASSTATION)
+1. Kullanıcı MetaMask ile imzalar (ETH başka ağda olabilir — GASSTATION route).
 2. Uygulama Base native bakiyesini kontrol eder.
 3. **Gas yoksa** → `requestGasSponsorship()` → relayer gas öder.
 4. İşlem tamamlanınca → `settleGasSponsorship()` → ücret paket ödemesinden / settlement'tan kesilir.
@@ -72,9 +72,9 @@ src/
 ├── providers/GasModeProvider.tsx
 ├── lib/
 │   ├── gas-sponsor.ts
-│   └── pumpstation-client.ts
+│   └── gasstation-client.ts
 ├── hooks/useGasPump.ts
-packages/gas-engine-stub/            # @pumpstation/gas-engine
+packages/gas-engine-stub/            # @gasstation/gas-engine
 ```
 
 ---
@@ -91,6 +91,6 @@ packages/gas-engine-stub/            # @pumpstation/gas-engine
 
 - [x] `PumpPaymaster.sol` kaynak kodu
 - [ ] Contract deploy + adres env'e
-- [ ] `@pumpstation/gas-engine` gerçek paketi
+- [ ] `@gasstation/gas-engine` gerçek paketi
 - [ ] Base mainnet (8453) RPC + paymaster contract
 - [ ] Settlement: işlem receipt sonrası otomatik tahsil

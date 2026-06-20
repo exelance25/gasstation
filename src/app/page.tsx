@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PumpStationLandingPage } from "@/components/landing/PumpStationLandingPage";
+import { GasStationLandingPage } from "@/components/landing/GasStationLandingPage";
 
 export const metadata: Metadata = {
   title: "GASSTATION — Instant USDC to Native Gas",
@@ -21,5 +21,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <PumpStationLandingPage />;
+  return <GasStationLandingPage />;
 }

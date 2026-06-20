@@ -19,7 +19,7 @@ function run(label, args, env = process.env) {
   return r.status ?? 1;
 }
 
-console.log("=== PUMPSTATION QUICK TESTNET ===");
+console.log("=== GASSTATION QUICK TESTNET ===");
 console.log("Sepolia atlanır · kasa korumalı $5 paket · Circle USDC (Solana devnet)\n");
 
 const workflow = run("1/3 API smoke", ["scripts/test-workflow-report.mjs"]);

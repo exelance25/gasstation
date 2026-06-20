@@ -7,7 +7,7 @@ import {
 
 const paymaster = "0x0000000000000000000000000000000000000001" as const;
 
-console.log("PUMPSTATION SDK smoke test\n");
+console.log("GASSTATION SDK smoke test\n");
 
 const testnet = getTestnetDefaults(paymaster);
 console.log("Source chain:", testnet.sourceChain.name);

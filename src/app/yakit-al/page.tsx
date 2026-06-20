@@ -1,13 +1,13 @@
 "use client";
 
-import { PumpStationPage } from "@/components/PumpStationPage";
+import { GasStationPage } from "@/components/GasStationPage";
 import { YakitAl } from "@/components/YakitAl";
 
 /** YAKIT AL — tam client sayfa (manifest / RSC uyumu) */
 export default function YakitAlPage() {
   return (
-    <PumpStationPage variant="fuel">
+    <GasStationPage variant="fuel">
       <YakitAl />
-    </PumpStationPage>
+    </GasStationPage>
   );
 }

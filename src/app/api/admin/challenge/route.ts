@@ -10,7 +10,7 @@ export async function GET() {
 
   const nonce = crypto.randomUUID();
   const issued = new Date().toISOString();
-  const message = `PumpStation Admin\nNonce: ${nonce}\nIssued: ${issued}`;
+  const message = `GasStation Admin\nNonce: ${nonce}\nIssued: ${issued}`;
 
   const response = NextResponse.json({ message });
   const cookieStore = await cookies();

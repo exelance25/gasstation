@@ -4,10 +4,10 @@ import {
   encodeBuyGasManuel,
   getTestnetDefaults,
   BASE_SEPOLIA_USDC,
-} from "@pumpstation/sdk";
+} from "@gasstation/sdk";
 
 async function runFrontEndSimulation() {
-  console.log("PUMP_STATION FRONT-END INTEGRATION TEST STARTING...\n");
+  console.log("GASSTATION FRONT-END INTEGRATION TEST STARTING...\n");
 
   for (const pkg of [5, 10, 20] as const) {
     const result = await calculatePackageQuote(pkg, "MON");
@@ -18,7 +18,7 @@ async function runFrontEndSimulation() {
     console.log(`  Kontrat Wei: ${result.contractGasWei.toString()}\n`);
   }
 
-  console.log("--- @pumpstation/sdk ---\n");
+  console.log("--- @gasstation/sdk ---\n");
   const testnet = getTestnetDefaults("0x0000000000000000000000000000000000000001");
   console.log(`Kaynak: ${testnet.sourceChain.name} → Hedef: ${testnet.targetChain.name}`);
   console.log(`USDC: ${testnet.usdcAddress}`);

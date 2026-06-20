@@ -17,9 +17,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["./config/*"],
-      "@pumpstation/sdk": ["./sdk/src/index.ts"],
-      "@pumpstation/gas-engine": ["./packages/gas-engine-stub/index.ts"],
-      "@pumpstation/fee-sdk": ["./packages/fee-sdk/src/index.ts"]
+      "@gasstation/sdk": ["./sdk/src/index.ts"],
+      "@gasstation/gas-engine": ["./packages/gas-engine-stub/index.ts"],
+      "@gasstation/fee-sdk": ["./packages/fee-sdk/src/index.ts"]
     }
   },
   "include": [

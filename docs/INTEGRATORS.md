@@ -6,11 +6,11 @@ Cross-chain native gas teslim protokolü. Bu belge B2B entegrasyon için tek ref
 
 | Dikey | Senaryo | Önerilen paket |
 |-------|---------|----------------|
-| Cüzdan / DEX | Gömülü "Gas al" butonu | `@pumpstation/fee-sdk` |
-| dApp / Oyun | İlk işlemde gas yok | `@pumpstation/gas-engine` |
+| Cüzdan / DEX | Gömülü "Gas al" butonu | `@gasstation/fee-sdk` |
+| dApp / Oyun | İlk işlemde gas yok | `@gasstation/gas-engine` |
 | NFT launchpad | Mint öncesi MON/ETH top-up | REST veya fee-sdk |
 | Trading bot | Worker cüzdan funding | `GasStationRestClient` |
-| On-chain protokol | Gasless USDC checkout | `@pumpstation/sdk` + paymaster |
+| On-chain protokol | Gasless USDC checkout | `@gasstation/sdk` + paymaster |
 
 ## Akış (REST)
 
@@ -25,7 +25,7 @@ Cross-chain native gas teslim protokolü. Bu belge B2B entegrasyon için tek ref
 
 ## Paketler
 
-### `@pumpstation/sdk` (MIT)
+### `@gasstation/sdk` (MIT)
 
 - `calculatePackageQuoteSync` — ana uygulama `src/lib/pricing.ts` ile senkron
 - `computeConservativeDeliveryAmount` — dispense tahmini
@@ -38,19 +38,19 @@ cd sdk && npm install && npm run build
 npm run test:sdk   # monorepo kökünden
 ```
 
-### `@pumpstation/fee-sdk`
+### `@gasstation/fee-sdk`
 
 3 adım: quote → kullanıcı treasury'ye öder → settleFee
 
 ```typescript
-const fee = new PumpStationFee({
+const fee = new GasStationFee({
   apiUrl: "http://localhost:4100",
   settlementUrl: "http://localhost:4200",
   apiKey: process.env.SETTLEMENT_API_KEY,
 });
 ```
 
-### `@pumpstation/gas-engine`
+### `@gasstation/gas-engine`
 
 Sponsorship + eligibility check — dApp backend.
 

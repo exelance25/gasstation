@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMarketplaceOrder } from "@/hooks/useMarketplaceOrder";
 import type { DeliveryChain, PaymentChain } from "@/lib/marketplace/client";
-import { PumpStationPage } from "@/components/PumpStationPage";
+import { GasStationPage } from "@/components/GasStationPage";
 import { formatPackageUsd } from "@/lib/pricing";
 
 const PAYMENT_CHAINS: { id: PaymentChain; label: string }[] = [
@@ -43,7 +43,7 @@ export function OrderWizard() {
   }
 
   return (
-    <PumpStationPage variant="fuel">
+    <GasStationPage variant="fuel">
       <div className="mx-auto w-full max-w-lg space-y-6 p-4">
         <header className="space-y-1 text-center">
           <h1 className="text-2xl font-bold text-white">Cross-Chain Gas</h1>
@@ -177,6 +177,6 @@ export function OrderWizard() {
           </section>
         )}
       </div>
-    </PumpStationPage>
+    </GasStationPage>
   );
 }

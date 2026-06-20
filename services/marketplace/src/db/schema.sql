@@ -1,4 +1,4 @@
--- PUMPSTATION Cross-Chain Gas Marketplace schema
+-- GASSTATION Cross-Chain Gas Marketplace schema
 
 CREATE TABLE IF NOT EXISTS orders (
   id              BIGSERIAL PRIMARY KEY,

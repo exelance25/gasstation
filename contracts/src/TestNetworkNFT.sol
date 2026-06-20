@@ -6,10 +6,10 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title TestNetworkNFT
-/// @author PumpStation
-/// @notice ERC-721 test collection — mint payment goes to PUMPSTATION vault.
+/// @author GasStation
+/// @notice ERC-721 test collection — mint payment goes to GASSTATION vault.
 contract TestNetworkNFT is ERC721, Ownable, ReentrancyGuard {
-    string public constant VAULT_LABEL = "PUMPSTATION";
+    string public constant VAULT_LABEL = "GASSTATION";
 
     uint256 public immutable maxSupply;
     uint256 public immutable mintPrice;

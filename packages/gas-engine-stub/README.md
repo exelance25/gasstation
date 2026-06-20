@@ -1,4 +1,4 @@
-# @pumpstation/gas-engine
+# @gasstation/gas-engine
 
 Gas sponsorship orchestration — dApp, oyun, NFT (ilk işlemde native gas yok).
 
@@ -11,9 +11,9 @@ npm install file:./packages/gas-engine-stub
 ## Örnek
 
 ```typescript
-import { PumpStationClient } from "@pumpstation/gas-engine";
+import { GasStationClient } from "@gasstation/gas-engine";
 
-const client = new PumpStationClient({
+const client = new GasStationClient({
   settlementUrl: "http://localhost:4200",
   apiKey: process.env.SETTLEMENT_API_KEY,
 });

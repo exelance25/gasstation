@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getOrder, getOrderStatus, type MarketplaceOrder } from "@/lib/marketplace/client";
-import { PumpStationPage } from "@/components/PumpStationPage";
+import { GasStationPage } from "@/components/GasStationPage";
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING_PAYMENT: "Ödeme bekleniyor",
@@ -43,9 +43,9 @@ export function OrderTracker({ orderId }: { orderId: string }) {
 
   if (!order) {
     return (
-      <PumpStationPage variant="fuel">
+      <GasStationPage variant="fuel">
         <div className="p-8 text-center text-zinc-400">Sipariş yükleniyor...</div>
-      </PumpStationPage>
+      </GasStationPage>
     );
   }
 
@@ -53,7 +53,7 @@ export function OrderTracker({ orderId }: { orderId: string }) {
   const expired = status === "EXPIRED" || status === "FAILED";
 
   return (
-    <PumpStationPage variant="fuel">
+    <GasStationPage variant="fuel">
       <div className="mx-auto w-full max-w-lg space-y-6 p-4">
         <header className="text-center">
           <h1 className="text-xl font-bold text-white">Sipariş Takibi</h1>
@@ -96,6 +96,6 @@ export function OrderTracker({ orderId }: { orderId: string }) {
           Yeni sipariş
         </Link>
       </div>
-    </PumpStationPage>
+    </GasStationPage>
   );
 }

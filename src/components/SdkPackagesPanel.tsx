@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { GITHUB_LINKS, SDK_PACKAGES } from "@/config/gasstation-content";
-import { PumpStationLogo } from "@/components/PumpStationLogo";
+import { GasStationLogo } from "@/components/GasStationLogo";
 
 type SdkPackagesPanelProps = {
   open: boolean;
@@ -33,7 +33,7 @@ export function SdkPackagesPanel({ open, onClose }: SdkPackagesPanelProps) {
     >
       <div className="flex max-h-[94dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-emerald-500/20 bg-[#0f1218] shadow-[0_0_48px_rgba(16,185,129,0.12)] sm:max-h-[90vh] sm:rounded-3xl">
         <div className="flex items-start gap-3 border-b border-white/[0.06] px-5 py-4">
-          <PumpStationLogo className="mt-0.5 h-10 w-10 shrink-0" />
+          <GasStationLogo className="mt-0.5 h-10 w-10 shrink-0" />
           <div className="min-w-0 flex-1">
             <h2 id="sdk-packages-title" className="text-lg font-bold text-white">
               Otomatik Gas · SDK Paketleri

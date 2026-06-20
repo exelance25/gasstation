@@ -27,13 +27,13 @@ function deriveSimulatedAddress(
 export function deriveSimulatedMonadAddress(
   sourceAddress: `0x${string}`,
 ): `0x${string}` {
-  return deriveSimulatedAddress(sourceAddress, "pumpstation:monad:v1");
+  return deriveSimulatedAddress(sourceAddress, "gasstation:monad:v1");
 }
 
 export function deriveSimulatedSvmAddress(
   seed: string,
 ): `0x${string}` {
-  return deriveSimulatedAddress(seed, "pumpstation:svm:v1");
+  return deriveSimulatedAddress(seed, "gasstation:svm:v1");
 }
 
 export function toSafeErrorMessage(error: unknown): string {

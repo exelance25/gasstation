@@ -3,10 +3,10 @@ import IORedis from "ioredis";
 import { getEnv } from "../config/env.js";
 
 export const QUEUE_NAMES = {
-  PAYMENT: "pumpstation-payment",
-  FULFILLMENT: "pumpstation-fulfillment",
-  TREASURY: "pumpstation-treasury",
-  EXPIRY: "pumpstation-expiry",
+  PAYMENT: "gasstation-payment",
+  FULFILLMENT: "gasstation-fulfillment",
+  TREASURY: "gasstation-treasury",
+  EXPIRY: "gasstation-expiry",
 } as const;
 
 let redis: IORedis | null = null;

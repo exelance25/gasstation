@@ -20,7 +20,7 @@ import { DEPOSIT_USDC_HINT } from "@/lib/deposit-networks";
 import { PumpWelcomeBanner } from "@/components/PumpWelcomeBanner";
 import { PumpUserCounter } from "@/components/PumpUserCounter";
 import { PumpAppTopTabs } from "@/components/PumpAppTopTabs";
-import { PumpStationLogo } from "@/components/PumpStationLogo";
+import { GasStationLogo } from "@/components/GasStationLogo";
 
 export function YakitAl() {
   const [sdkPanelOpen, setSdkPanelOpen] = useState(false);
@@ -86,7 +86,7 @@ export function YakitAl() {
         <header className="flex flex-col items-stretch gap-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2">
-              <PumpStationLogo className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+              <GasStationLogo className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
               <h1 className="truncate bg-gradient-to-r from-emerald-400 via-white to-purple-400 bg-clip-text text-base font-bold tracking-[0.08em] text-transparent drop-shadow-[0_0_24px_rgba(16,185,129,0.25)] sm:text-xl lg:text-2xl">
                 GASSTATION
               </h1>

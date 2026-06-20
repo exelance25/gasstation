@@ -12,7 +12,7 @@ import {
 import { isAutoFeeEnabled } from "@/config/client-env";
 import { DEFAULT_GAS_MODE, type GasMode } from "@/types/gas-mode";
 
-const STORAGE_KEY = "pumpstation-gas-mode";
+const STORAGE_KEY = "gasstation-gas-mode";
 
 type GasModeContextValue = {
   mode: GasMode;

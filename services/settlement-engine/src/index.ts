@@ -5,5 +5,5 @@ const env = getEnv();
 const app = createApp();
 
 app.listen(env.SETTLEMENT_PORT, () => {
-  console.log(`[PUMPSTATION] Settlement Engine :${env.SETTLEMENT_PORT}`);
+  console.log(`[GASSTATION] Settlement Engine :${env.SETTLEMENT_PORT}`);
 });

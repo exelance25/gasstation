@@ -1,7 +1,7 @@
 import type { DepotAssetId } from "@/config/depot-assets";
 import { clientEnv } from "@/config/client-env";
 import type { DepositNetworkRow } from "@/hooks/useDepositUsdcBalance";
-import type { PaymentToken, SupportedChain } from "@pumpstation/fee-sdk";
+import type { PaymentToken, SupportedChain } from "@gasstation/fee-sdk";
 
 const EVM_CHAIN_MAP: Record<number, SupportedChain> = {
   1: "ethereum",

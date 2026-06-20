@@ -33,9 +33,9 @@ const entryPointNonceAbi = [
 ] as const;
 
 /**
- * PumpStation SDK — manuel oluşturulan ERC-4337 UserOperation helper'ı.
+ * GasStation SDK — manuel oluşturulan ERC-4337 UserOperation helper'ı.
  */
-export class PumpStationSDK {
+export class GasStationSDK {
   private readonly client: PublicClient;
   private readonly config: PumpConfig;
 

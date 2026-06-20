@@ -1,4 +1,4 @@
-# @pumpstation/fee-sdk
+# @gasstation/fee-sdk
 
 B2B gas settlement — cüzdan, DEX, custodial uygulama backend'leri.
 
@@ -19,9 +19,9 @@ npm install file:./packages/fee-sdk
 ## Örnek
 
 ```typescript
-import { PumpStationFee } from "@pumpstation/fee-sdk";
+import { GasStationFee } from "@gasstation/fee-sdk";
 
-const fee = new PumpStationFee({
+const fee = new GasStationFee({
   apiUrl: "http://localhost:4100",
   settlementUrl: "http://localhost:4200",
   apiKey: process.env.SETTLEMENT_API_KEY,

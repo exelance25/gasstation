@@ -6,7 +6,7 @@ import type { WalletAdapter } from "@solana/wallet-adapter-base";
 import type { AppEnv } from "@/types";
 import { clientEnv } from "@/config/client-env";
 
-export const SOLANA_WALLET_STORAGE_KEY = "pumpstation_sol_wallet";
+export const SOLANA_WALLET_STORAGE_KEY = "gasstation_sol_wallet";
 
 export function getSolanaConnection(env: AppEnv): string {
   const isProd = env === "mainnet";

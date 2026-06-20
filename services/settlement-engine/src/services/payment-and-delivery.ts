@@ -73,7 +73,7 @@ export async function verifyNativePayment(params: {
 
   const to = tx.to?.toLowerCase();
   if (to !== treasury.toLowerCase()) {
-    return { valid: false, reason: "Ödeme PUMPSTATION kasasına gitmedi" };
+    return { valid: false, reason: "Ödeme GASSTATION kasasına gitmedi" };
   }
 
   if ((tx.value ?? 0n) < params.expectedAmountWei) {

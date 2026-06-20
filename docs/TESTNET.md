@@ -1,4 +1,4 @@
-# PUMPSTATION — Testnet Hazırlık
+# GASSTATION — Testnet Hazırlık
 
 ## Ağlar
 
@@ -73,14 +73,14 @@ Kasa koruması: $5 pakette ~$4.48 gas, ~$0.52 kasada kalır.
 
 ```powershell
 git add sdk/ docs/TESTNET.md scripts/deploy-testnet.ps1 .env.testnet.example
-git commit -m "feat: @pumpstation/sdk testnet package"
+git commit -m "feat: @gasstation/sdk testnet package"
 git push origin main
 ```
 
 ## SDK kullanımı
 
 ```typescript
-import { PumpClient, calculatePackageQuoteSync } from "@pumpstation/sdk";
+import { PumpClient, calculatePackageQuoteSync } from "@gasstation/sdk";
 
 const client = PumpClient.fromTestnet("0xPaymaster...");
 const quote = calculatePackageQuoteSync(10, "MON");

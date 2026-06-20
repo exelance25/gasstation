@@ -7,7 +7,7 @@ import {
   GASSTATION_VISION,
   HOW_GASSTATION_WORKS,
 } from "@/config/gasstation-content";
-import { PumpStationLogo } from "@/components/PumpStationLogo";
+import { GasStationLogo } from "@/components/GasStationLogo";
 
 type AboutGasstationPanelProps = {
   open: boolean;
@@ -38,7 +38,7 @@ export function AboutGasstationPanel({ open, onClose }: AboutGasstationPanelProp
     >
       <div className="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-[#12151a] shadow-[0_24px_80px_rgba(0,0,0,0.55)] sm:max-h-[88vh] sm:rounded-3xl">
         <div className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4">
-          <PumpStationLogo className="h-9 w-9 shrink-0" />
+          <GasStationLogo className="h-9 w-9 shrink-0" />
           <div className="min-w-0 flex-1">
             <h2 id="about-gasstation-title" className="text-base font-bold text-white">
               Hakkımızda

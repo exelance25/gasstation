@@ -1,7 +1,7 @@
 /**
  * Arka plan benzin istasyonu silüeti — soluk, saf SVG (MIT).
  */
-export function PumpStationSilhouette() {
+export function GasStationSilhouette() {
   return (
     <div
       className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden"

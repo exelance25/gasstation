@@ -1,4 +1,4 @@
-/** Gas ödeme modu — manuel: kullanıcı Base ETH; otomatik: PUMPSTATION sponsor */
+/** Gas ödeme modu — manuel: kullanıcı Base ETH; otomatik: GASSTATION sponsor */
 export type GasMode = "manual" | "automatic";
 
 export const GAS_MODE_LABELS: Record<GasMode, { tr: string; en: string }> = {

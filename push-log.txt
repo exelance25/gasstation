@@ -1,0 +1,44 @@
+===== git durum ===== 
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ORTAK_DEPLOY.cmd
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	FIX_PUSH.cmd
+	GITHUB_YUKLE.cmd
+	GO.cmd
+	OPEN_DEPLOY.cmd
+	PUSH_NOW.cmd
+	PUSH_SADECE.cmd
+	RUN_ALL_TESTS.cmd
+	SON_DUZELTME.cmd
+	START.cmd
+	START_FULL_STACK.cmd
+	START_MARKETPLACE.cmd
+	START_QUOTE_LITE.cmd
+	START_STACK.cmd
+	TAMAM.cmd
+	agent-tools/
+	contracts/.gitmodules
+	contracts/NFT-README.md
+	contracts/foundry.lock
+	contracts/remappings.txt
+	deploy-log.txt
+	install.cmd
+	push-log.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+8b7ffe4 fix: Vercel build ÔÇö web3 types, tsconfig scope, instrumentation skip, auto-fee imports
+92016a0 feat: GASSTATION yeni proje
+ 
+===== push ===== 
+To https://github.com/exelance25/gasstation.git
+   92016a0..8b7ffe4  main -> main
+branch 'main' set up to track 'origin/main'.
+EXIT: 0 

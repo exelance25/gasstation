@@ -1,7 +1,7 @@
 import type { ConnectedWallet } from "@/lib/store";
 import type { WalletRowIcon } from "@/components/brand/chain-icons";
 
-/** Giriş sonrası cüzdan bağlanmadan önizleme — PUMPSTATION demo bakiye */
+/** Giriş sonrası cüzdan bağlanmadan önizleme — GASSTATION demo bakiye */
 export const DEMO_WALLETS: ConnectedWallet[] = [
   {
     address: "0xdemo-ethereum-wallet",

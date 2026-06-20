@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createPaymentIntent } from "@/payments/payment-intents";
-import { pumpStationService } from "@/pumpstation/pumpstation-service";
+import { gasStationService } from "@/gasstation/gasstation-service";
 
 export function CrossChainPaymentForm() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export function CrossChainPaymentForm() {
       sourceChain: "ethereum",
       targetChain: "solana"
     });
-    await pumpStationService.submitSpendingIntent({
+    await gasStationService.submitSpendingIntent({
       intentId: intent.id,
       amount: intent.fiatAmount,
       proofRequired: true

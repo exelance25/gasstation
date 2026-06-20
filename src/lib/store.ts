@@ -1,9 +1,9 @@
 "use client";
 
-/** TekBakiye global state — cüzdanlar, PUMPSTATION toplam bakiye, persist ile takma adlar. */
+/** TekBakiye global state — cüzdanlar, GASSTATION toplam bakiye, persist ile takma adlar. */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { fetchAndApplyAggregatedBalance } from "@/lib/pumpstation-client";
+import { fetchAndApplyAggregatedBalance } from "@/lib/gasstation-client";
 import { DEMO_WALLETS } from "@/lib/demo-portfolio";
 import { hashAddressSync } from "@/lib/wallet-hash";
 import type { AppEnv, AppLocale } from "@/types";
@@ -34,7 +34,7 @@ export interface AppState {
   totalBalanceUSD: number | null;
   isLoading: boolean;
   hasInitialBalanceLoad: boolean;
-  /** True when showing PUMPSTATION demo data (no real wallet connected) */
+  /** True when showing GASSTATION demo data (no real wallet connected) */
   isPreviewMode: boolean;
 }
 

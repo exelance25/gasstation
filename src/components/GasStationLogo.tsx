@@ -1,7 +1,7 @@
 /**
  * GASSTATION markası — saf SVG (MIT).
  */
-export function PumpStationLogo({ className = "" }: { className?: string }) {
+export function GasStationLogo({ className = "" }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 48 48"

@@ -1,4 +1,4 @@
-export type PumpStationSpendingIntent = {
+export type GasStationSpendingIntent = {
   id: string;
   amount: string;
   asset: "USD";
@@ -6,19 +6,19 @@ export type PumpStationSpendingIntent = {
   createdAt: string;
 };
 
-export type PumpStationProofRequest = {
+export type GasStationProofRequest = {
   intentId: string;
   challenge: string;
   userAddress: string;
 };
 
-export type PumpStationSettlementStatus = "pending" | "processing" | "settled" | "failed";
+export type GasStationSettlementStatus = "pending" | "processing" | "settled" | "failed";
 
-export type PumpStationGasSponsorshipRecord = {
+export type GasStationGasSponsorshipRecord = {
   sponsorshipId: string;
   intentId: string;
   userAddress: string;
   chainId: number;
-  status: PumpStationSettlementStatus;
+  status: GasStationSettlementStatus;
   reclaimedFeeUsd: number;
 };

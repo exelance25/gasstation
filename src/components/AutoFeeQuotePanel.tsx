@@ -1,7 +1,7 @@
 "use client";
 
 import { formatPackageUsd } from "@/lib/pricing";
-import type { FeeQuote } from "@pumpstation/fee-sdk";
+import type { FeeQuote } from "@gasstation/fee-sdk";
 import { formatNativePaymentDisplay } from "@/lib/auto-fee/execute-automatic-fee";
 import { autoFeePathLabel, type AutoFeePath } from "@/lib/auto-fee/path-resolver";
 import type { AmountOption } from "@/lib/pricing";

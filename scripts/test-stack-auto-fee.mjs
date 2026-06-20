@@ -1,5 +1,5 @@
 /**
- * PUMPSTATION — Quote + Settlement stack smoke test
+ * GASSTATION — Quote + Settlement stack smoke test
  * Kullanım: npm run test:stack-auto-fee
  * Gereksinim: quote-engine (:4100), settlement (:4200), web (:3000) ayakta
  */
@@ -23,7 +23,7 @@ async function step(name, fn) {
   }
 }
 
-console.log("=== PUMPSTATION AUTO-FEE STACK TEST ===\n");
+console.log("=== GASSTATION AUTO-FEE STACK TEST ===\n");
 
 await step("Quote Engine health", async () => {
   const r = await fetch(`${QUOTE}/health`);

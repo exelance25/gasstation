@@ -1,5 +1,5 @@
 /**
- * PUMPSTATION — Sepolia + Solana devnet tam test
+ * GASSTATION — Sepolia + Solana devnet tam test
  * .env.local + .env.test.local yükler (anahtarlar commit edilmez)
  *
  * Kullanım: node scripts/testnet-full-run.mjs
@@ -129,7 +129,7 @@ async function initSolanaConnection() {
   return false;
 }
 
-console.log("=== PUMPSTATION TESTNET TAM KOŞU ===\n");
+console.log("=== GASSTATION TESTNET TAM KOŞU ===\n");
 console.log("API:", API_BASE);
 console.log("Paket: $" + PACKAGE_USD);
 console.log("Sepolia:", SKIP_SEPOLIA ? "ATLANDI (SKIP_SEPOLIA=1)" : "açık");

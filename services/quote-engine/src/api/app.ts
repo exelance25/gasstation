@@ -29,7 +29,7 @@ export function createApp() {
   app.use(express.json());
 
   app.get("/health", (_req, res) => {
-    res.json({ ok: true, service: "pumpstation-quote-engine", version: "0.2.0" });
+    res.json({ ok: true, service: "gasstation-quote-engine", version: "0.2.0" });
   });
 
   const limiter = rateLimit({ windowMs: 60_000, max: 120 });

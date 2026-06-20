@@ -19,7 +19,7 @@ contract PumpPaymaster {
 
     uint256 public constant feeMultiplier = 10050;
     uint256 public constant bpsDivider = 10000;
-    string public constant VAULT_LABEL = "PUMPSTATION";
+    string public constant VAULT_LABEL = "GASSTATION";
 
     function vaultLabel() external pure returns (string memory) {
         return VAULT_LABEL;
@@ -64,17 +64,17 @@ contract PumpPaymaster {
     event OwnerUpdated(address indexed newOwner);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "PumpStation: Sadece Admin erisebilir");
+        require(msg.sender == owner, "GasStation: Sadece Admin erisebilir");
         _;
     }
 
     modifier onlyEntryPoint() {
-        require(msg.sender == entryPoint, "PumpStation: Sadece EntryPoint cagirabilir");
+        require(msg.sender == entryPoint, "GasStation: Sadece EntryPoint cagirabilir");
         _;
     }
 
     constructor(address _entryPoint, address _priceSigner) {
-        require(_entryPoint != address(0), "PumpStation: zero entryPoint");
+        require(_entryPoint != address(0), "GasStation: zero entryPoint");
         owner = msg.sender;
         entryPoint = _entryPoint;
         priceSigner = _priceSigner;
@@ -86,33 +86,33 @@ contract PumpPaymaster {
     }
 
     function transferOwnership(address newOwner) external onlyOwner {
-        require(newOwner != address(0), "PumpStation: zero owner");
+        require(newOwner != address(0), "GasStation: zero owner");
         owner = newOwner;
         emit OwnerUpdated(newOwner);
     }
 
     function adminAddNativeLiquidity() external payable onlyOwner {
-        require(msg.value > 0, "PumpStation: zero amount");
+        require(msg.value > 0, "GasStation: zero amount");
         emit LiquidityAdded(address(0), msg.value);
     }
 
     function adminAddTokenLiquidity(address token, uint256 amount) external onlyOwner {
-        require(token != address(0), "PumpStation: native icin adminAddNativeLiquidity");
-        require(amount > 0, "PumpStation: zero amount");
+        require(token != address(0), "GasStation: native icin adminAddNativeLiquidity");
+        require(amount > 0, "GasStation: zero amount");
         bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
         require(success, "Transfer basarisiz");
         emit LiquidityAdded(token, amount);
     }
 
     function adminWithdraw(address token, uint256 amount) external onlyOwner {
-        require(amount > 0, "PumpStation: zero amount");
+        require(amount > 0, "GasStation: zero amount");
         if (token == address(0)) {
-            require(address(this).balance >= amount, "PumpStation: yetersiz ETH");
+            require(address(this).balance >= amount, "GasStation: yetersiz ETH");
             (bool sent, ) = payable(owner).call{value: amount}("");
-            require(sent, "PumpStation: ETH cekilemedi");
+            require(sent, "GasStation: ETH cekilemedi");
         } else {
             bool success = IERC20(token).transfer(owner, amount);
-            require(success, "PumpStation: token cekilemedi");
+            require(success, "GasStation: token cekilemedi");
         }
     }
 
@@ -126,9 +126,9 @@ contract PumpPaymaster {
         uint256 expectedGas,
         address recipient
     ) external {
-        require(tokenPaid != address(0), "PumpStation: native odeme yok");
-        require(recipient != address(0), "PumpStation: zero recipient");
-        require(amountPaid > 0 && expectedGas > 0, "PumpStation: zero amount");
+        require(tokenPaid != address(0), "GasStation: native odeme yok");
+        require(recipient != address(0), "GasStation: zero recipient");
+        require(amountPaid > 0 && expectedGas > 0, "GasStation: zero amount");
 
         bool success = IERC20(tokenPaid).transferFrom(msg.sender, address(this), amountPaid);
         require(success, "Odeme alinamadi");

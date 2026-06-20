@@ -68,7 +68,7 @@ export async function aggregateTokenUsd(
   // Oracle API yedek
   tasks.push(
     fetchOracleApi(token).then((px) => {
-      if (px) sources.push({ source: "pumpstation-oracle", usd: px, fetchedAt: now });
+      if (px) sources.push({ source: "gasstation-oracle", usd: px, fetchedAt: now });
     }),
   );
 

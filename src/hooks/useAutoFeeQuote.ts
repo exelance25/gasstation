@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { FeeQuote, PaymentToken, SupportedChain } from "@pumpstation/fee-sdk";
+import type { FeeQuote, PaymentToken, SupportedChain } from "@gasstation/fee-sdk";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_FEE_SDK_API_URL ??

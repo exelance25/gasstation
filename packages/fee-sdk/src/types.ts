@@ -51,7 +51,7 @@ export type SettleFeeResult = {
   message: string;
 };
 
-export type PumpStationFeeConfig = {
+export type GasStationFeeConfig = {
   /** Quote Engine veya Next.js proxy */
   apiUrl: string;
   /** Settlement Engine (opsiyonel — varsayılan :4200) */

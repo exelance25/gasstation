@@ -9,7 +9,7 @@ export async function GET() {
     appEnv: clientEnv.NEXT_PUBLIC_APP_ENV,
     apiBaseUrl: clientEnv.NEXT_PUBLIC_API_BASE_URL,
     features: {
-      pumpstation: clientEnv.NEXT_PUBLIC_APP_ENV !== "mainnet",
+      gasstation: clientEnv.NEXT_PUBLIC_APP_ENV !== "mainnet",
       crossChainPayments: true,
       biometricAuth: false,
       passkeys: false,

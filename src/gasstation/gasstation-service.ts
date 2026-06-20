@@ -1,23 +1,23 @@
-import { getPumpStationClient } from "@/lib/pumpstation-client";
+import { getGasStationClient } from "@/lib/gasstation-client";
 import {
   resolveGasForTransaction,
   settleGasAfterTransaction,
   type GasSponsorContext,
 } from "@/lib/gas-sponsor";
 import type {
-  PumpStationGasSponsorshipRecord,
-  PumpStationProofRequest,
-  PumpStationSettlementStatus,
-  PumpStationSpendingIntent,
-} from "@/pumpstation/pumpstation-types";
+  GasStationGasSponsorshipRecord,
+  GasStationProofRequest,
+  GasStationSettlementStatus,
+  GasStationSpendingIntent,
+} from "@/gasstation/gasstation-types";
 
-/** PUMPSTATION uygulama katmanı — gas engine orchestration */
-export const pumpStationService = {
+/** GASSTATION uygulama katmanı — gas engine orchestration */
+export const gasStationService = {
   async getAggregatedBalance(addresses: string[]) {
-    return getPumpStationClient().getAggregatedBalance(addresses);
+    return getGasStationClient().getAggregatedBalance(addresses);
   },
 
-  createSpendingIntent(intent: PumpStationSpendingIntent) {
+  createSpendingIntent(intent: GasStationSpendingIntent) {
     return { type: "create_intent" as const, payload: intent };
   },
 
@@ -26,11 +26,11 @@ export const pumpStationService = {
     amount: number;
     proofRequired: boolean;
   }) {
-    const intent: PumpStationSpendingIntent = {
+    const intent: GasStationSpendingIntent = {
       id: input.intentId,
       amount: String(input.amount),
       asset: "USD",
-      destination: "pumpstation-settlement",
+      destination: "gasstation-settlement",
       createdAt: new Date().toISOString(),
     };
     if (input.proofRequired) {
@@ -43,11 +43,11 @@ export const pumpStationService = {
     return this.createSpendingIntent(intent);
   },
 
-  requestProof(proofRequest: PumpStationProofRequest) {
+  requestProof(proofRequest: GasStationProofRequest) {
     return { type: "request_proof" as const, payload: proofRequest };
   },
 
-  trackSettlement(intentId: string): { intentId: string; status: PumpStationSettlementStatus } {
+  trackSettlement(intentId: string): { intentId: string; status: GasStationSettlementStatus } {
     return { intentId, status: "pending" };
   },
 
@@ -57,7 +57,7 @@ export const pumpStationService = {
 
   async finalizeGasSponsorship(
     sponsorshipId: string,
-  ): Promise<PumpStationGasSponsorshipRecord> {
+  ): Promise<GasStationGasSponsorshipRecord> {
     const settlement = await settleGasAfterTransaction(sponsorshipId);
     return {
       sponsorshipId,

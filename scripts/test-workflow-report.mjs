@@ -1,5 +1,5 @@
 /**
- * PUMPSTATION — iş akışı + API test raporu
+ * GASSTATION — iş akışı + API test raporu
  */
 const BASE = process.env.API_BASE ?? "http://localhost:3000";
 
@@ -19,7 +19,7 @@ async function step(name, fn) {
   }
 }
 
-console.log("=== PUMPSTATION TEST RAPORU ===\n");
+console.log("=== GASSTATION TEST RAPORU ===\n");
 console.log(`Base URL: ${BASE}\n`);
 
 await step("Health endpoint", async () => {
@@ -76,7 +76,7 @@ await step("Yakit-al page renders", async () => {
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const html = await r.text();
   const checks = [
-    ["PUMPSTATION", html.includes("PUMPSTATION")],
+    ["GASSTATION", html.includes("GASSTATION")],
     ["Cüzdan Bağla", html.includes("Cüzdan Bağla") || html.includes("CÜZDAN BAĞLA")],
     ["ATEŞLE", html.includes("ATEŞLE")],
   ];

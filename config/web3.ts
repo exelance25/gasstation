@@ -102,7 +102,7 @@ const wcProjectId = clientEnv.NEXT_PUBLIC_WC_PROJECT_ID?.trim() ?? "";
 
 const rkProjectId = isWalletConnectReady ? wcProjectId : "00000000000000000000000000000000";
 
-export const walletAppName = "PumpStation";
+export const walletAppName = "GasStation";
 
 
 
@@ -114,7 +114,7 @@ export const walletConnectParameters = {
 
     description: "EVM gas pump — USDC depozit",
 
-    url: typeof window !== "undefined" ? window.location.origin : "https://pumpstation.local",
+    url: typeof window !== "undefined" ? window.location.origin : "https://gasstation.local",
 
     icons: [`${typeof window !== "undefined" ? window.location.origin : ""}/wallets/metamask.svg`] as string[],
 

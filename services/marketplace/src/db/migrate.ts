@@ -9,7 +9,7 @@ async function migrate(): Promise<void> {
   const sql = readFileSync(join(__dirname, "schema.sql"), "utf8");
   const pool = getPool();
   await pool.query(sql);
-  console.log("[migrate] PUMPSTATION marketplace schema ready");
+  console.log("[migrate] GASSTATION marketplace schema ready");
   await closePool();
 }
 

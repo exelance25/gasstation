@@ -5,7 +5,7 @@ const envSchema = z.object({
   MARKETPLACE_PORT: z.coerce.number().default(4000),
   DATABASE_URL: z
     .string()
-    .default("postgresql://pumpstation:pumpstation_dev@localhost:5432/pumpstation_marketplace"),
+    .default("postgresql://gasstation:gasstation_dev@localhost:5432/gasstation_marketplace"),
   REDIS_URL: z.string().default("redis://localhost:6379"),
   DEPOSIT_MASTER_MNEMONIC: z.string().optional(),
   EVM_OPERATOR_PRIVATE_KEY: z.string().optional(),

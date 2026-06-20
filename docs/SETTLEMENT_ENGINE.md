@@ -21,7 +21,7 @@
 ## SDK
 
 ```typescript
-const fee = new PumpStationFee({
+const fee = new GasStationFee({
   apiUrl: "http://localhost:4100",
   settlementUrl: "http://localhost:4200",
 });
@@ -45,10 +45,10 @@ const result = await fee.settleFee({
 
 ## Gas Engine
 
-`@pumpstation/gas-engine` artık sponsorship için settlement API kullanır:
+`@gasstation/gas-engine` artık sponsorship için settlement API kullanır:
 
 ```typescript
-const client = new PumpStationClient({
+const client = new GasStationClient({
   settlementUrl: "http://localhost:4200",
   apiKey: process.env.SETTLEMENT_API_KEY,
 });

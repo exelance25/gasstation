@@ -47,7 +47,7 @@ import type { LivePrices } from "@/lib/oracle/live-prices";
 import { formatGasUserError } from "@/lib/gas-user-errors";
 import { STUB_ORACLE_PRICES } from "@/lib/oracle/stub-prices";
 import { isDeliveryAssetEnabled, isSolanaGasEnabled } from "@/config/gas-features";
-import type { FeeQuote } from "@pumpstation/fee-sdk";
+import type { FeeQuote } from "@gasstation/fee-sdk";
 import {
   executeAutomaticFee,
   fetchAutomaticFeeQuote,

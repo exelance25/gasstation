@@ -79,7 +79,7 @@ export function PumpTopBar() {
       <Dialog open={sdkOpen} onOpenChange={setSdkOpen} title="Otomatik Gas SDK">
         <div className="space-y-3 text-sm text-neutral-300">
           <p>
-            <code className="text-emerald-300">@pumpstation/sdk</code> — Base üzerinde USDC ödeme,
+            <code className="text-emerald-300">@gasstation/sdk</code> — Base üzerinde USDC ödeme,
             hedef ağda otomatik gas teslimi.
           </p>
           <p className="text-neutral-400">
@@ -87,9 +87,9 @@ export function PumpTopBar() {
             ücret işlem sonrası tahsil edilir.
           </p>
           <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black/40 p-3 text-[11px] text-neutral-400">
-            {`npm install @pumpstation/sdk viem
+            {`npm install @gasstation/sdk viem
 
-import { PumpClient } from "@pumpstation/sdk";`}
+import { PumpClient } from "@gasstation/sdk";`}
           </pre>
           <p className="text-xs text-neutral-500">
             Detay: proje içi <code>sdk/README.md</code>

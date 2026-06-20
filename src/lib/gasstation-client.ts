@@ -3,23 +3,23 @@
  */
 
 import {
-  PumpStationClient as SdkPumpStationClient,
-  PumpStationError,
+  GasStationClient as SdkGasStationClient,
+  GasStationError,
   type AggregatedBalanceResult,
-  type PumpStationConfig,
+  type GasStationConfig,
   type OptimalRoute,
   type TransferCurrency,
-} from "@pumpstation/gas-engine";
+} from "@gasstation/gas-engine";
 import { clientEnv } from "@/config/client-env";
 import type { ConnectedWallet } from "@/lib/store";
 import type { ParsedRecipient } from "@/lib/address-parser";
 
-export type { AggregatedBalanceResult, PumpStationConfig, OptimalRoute, TransferCurrency };
-export { PumpStationError };
+export type { AggregatedBalanceResult, GasStationConfig, OptimalRoute, TransferCurrency };
+export { GasStationError };
 
-let singleton: SdkPumpStationClient | null = null;
+let singleton: SdkGasStationClient | null = null;
 
-export function createPumpStationClient(config?: PumpStationConfig): SdkPumpStationClient {
+export function createGasStationClient(config?: GasStationConfig): SdkGasStationClient {
   const isServer = typeof window === "undefined";
   const settlementUrl =
     config?.settlementUrl ??
@@ -27,7 +27,7 @@ export function createPumpStationClient(config?: PumpStationConfig): SdkPumpStat
       ? process.env.SETTLEMENT_ENGINE_URL ?? "http://localhost:4200"
       : `${clientEnv.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "")}`);
 
-  return new SdkPumpStationClient({
+  return new SdkGasStationClient({
     apiUrl: config?.apiUrl ?? clientEnv.NEXT_PUBLIC_API_BASE_URL,
     settlementUrl,
     apiKey: config?.apiKey ?? (isServer ? process.env.SETTLEMENT_API_KEY : undefined),
@@ -41,15 +41,15 @@ export function createPumpStationClient(config?: PumpStationConfig): SdkPumpStat
   });
 }
 
-export function getPumpStationClient(): SdkPumpStationClient {
+export function getGasStationClient(): SdkGasStationClient {
   if (!singleton) {
-    singleton = createPumpStationClient();
+    singleton = createGasStationClient();
   }
   return singleton;
 }
 
 export async function getAggregatedBalance(addresses: string[]): Promise<AggregatedBalanceResult> {
-  const client = getPumpStationClient();
+  const client = getGasStationClient();
   return client.getAggregatedBalance(addresses.length ? addresses : ["demo-wallet"]);
 }
 
@@ -91,7 +91,7 @@ export function amountToUsd(amount: number, currency: TransferCurrency): number 
 }
 
 export function mapTransferError(error: unknown): string {
-  if (error instanceof PumpStationError) {
+  if (error instanceof GasStationError) {
     if (error.code === "INSUFFICIENT_BALANCE") return "Yetersiz bakiye";
     if (error.code === "GAS_SPONSOR_FAILED") return "GASSTATION gas sponsor hatası";
     if (error.code === "REJECTED") return "İşlem reddedildi";
@@ -117,7 +117,7 @@ export type ExecuteTransferResult = {
 export async function getTransferRoute(
   input: Omit<ExecuteTransferInput, "recipient"> & { toAddress: string },
 ) {
-  return getPumpStationClient().getOptimalRoute(
+  return getGasStationClient().getOptimalRoute(
     input.fromAddresses,
     input.toAddress,
     input.amount,
@@ -129,7 +129,7 @@ export async function executeTransfer(
   input: ExecuteTransferInput,
   existingRoute?: OptimalRoute,
 ): Promise<ExecuteTransferResult> {
-  const client = getPumpStationClient();
+  const client = getGasStationClient();
   const toAddress = input.recipient.address || input.toAddress;
 
   const route =
@@ -144,9 +144,9 @@ export async function executeTransfer(
   return { route, transactionId: result.transactionId };
 }
 
-export const pumpStationClient = {
+export const gasStationClient = {
   getAggregatedBalance,
   getAggregatedBalanceFromWallets,
   executeTransfer,
-  getClient: getPumpStationClient,
+  getClient: getGasStationClient,
 };

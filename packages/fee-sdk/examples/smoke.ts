@@ -1,9 +1,9 @@
-import { PumpStationFee } from "../src/index";
+import { GasStationFee } from "../src/index";
 
 const apiUrl = process.env.QUOTE_ENGINE_URL ?? "http://localhost:4100";
 
 async function main() {
-  const fee = new PumpStationFee({ apiUrl });
+  const fee = new GasStationFee({ apiUrl });
   const quote = await fee.getQuote({
     chain: "ethereum",
     paymentToken: "ETH",

@@ -30,11 +30,11 @@ async function main(): Promise<void> {
 
   const app = createApp();
   const server = app.listen(env.MARKETPLACE_PORT, () => {
-    console.log(`[PUMPSTATION] Marketplace API :${env.MARKETPLACE_PORT}`);
+    console.log(`[GASSTATION] Marketplace API :${env.MARKETPLACE_PORT}`);
   });
 
   const shutdown = async () => {
-    console.log("[PUMPSTATION] Kapatılıyor...");
+    console.log("[GASSTATION] Kapatılıyor...");
     server.close();
     await Promise.all(workers.map((w) => w.close()));
     await closeQueues();
@@ -47,6 +47,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  console.error("[PUMPSTATION] Başlatma hatası:", err);
+  console.error("[GASSTATION] Başlatma hatası:", err);
   process.exit(1);
 });

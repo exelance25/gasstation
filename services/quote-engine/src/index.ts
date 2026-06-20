@@ -5,5 +5,5 @@ const env = getEnv();
 const app = createApp();
 
 app.listen(env.QUOTE_ENGINE_PORT, () => {
-  console.log(`[PUMPSTATION] Quote Engine :${env.QUOTE_ENGINE_PORT}`);
+  console.log(`[GASSTATION] Quote Engine :${env.QUOTE_ENGINE_PORT}`);
 });

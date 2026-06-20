@@ -57,7 +57,7 @@ contract PumpPaymasterTest is Test {
     /// TEST 1: Sadece admin havuzdan cekebilir.
     function test_OnlyAdminCanWithdraw() public {
         vm.startPrank(user);
-        vm.expectRevert("PumpStation: Sadece Admin erisebilir");
+        vm.expectRevert("GasStation: Sadece Admin erisebilir");
         paymaster.adminWithdraw(address(0), 1 ether);
         vm.stopPrank();
     }

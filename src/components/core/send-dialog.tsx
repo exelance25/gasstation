@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { parseRecipientInput } from "@/lib/address-parser";
-import { amountToUsd, executeTransfer, getTransferRoute, mapTransferError } from "@/lib/pumpstation-client";
-import type { OptimalRoute, TransferCurrency } from "@/lib/pumpstation-client";
+import { amountToUsd, executeTransfer, getTransferRoute, mapTransferError } from "@/lib/gasstation-client";
+import type { OptimalRoute, TransferCurrency } from "@/lib/gasstation-client";
 import { useTekBakiyeStore } from "@/lib/store";
 import { useToastStore } from "@/stores/use-toast-store";
 

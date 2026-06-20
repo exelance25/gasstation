@@ -73,7 +73,7 @@ if (!collector?.startsWith("0x")) {
   process.exit(1);
 }
 
-console.log("=== PUMPSTATION E2E DISPENSE ===\n");
+console.log("=== GASSTATION E2E DISPENSE ===\n");
 console.log("API:", API_BASE);
 console.log("Collector:", collector);
 console.log("Paket: $" + PACKAGE_USD, TARGET_ASSET, "→", TEST_RECIPIENT);

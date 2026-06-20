@@ -14,7 +14,7 @@ export function createApp() {
   app.use(express.json());
 
   app.get("/health", (_req, res) => {
-    res.json({ ok: true, service: "pumpstation-marketplace" });
+    res.json({ ok: true, service: "gasstation-marketplace" });
   });
 
   const limiter = rateLimit({

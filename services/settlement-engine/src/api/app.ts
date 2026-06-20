@@ -38,7 +38,7 @@ export function createApp() {
   app.use(express.json());
 
   app.get("/health", (_req, res) => {
-    res.json({ ok: true, service: "pumpstation-settlement-engine", version: "0.1.0" });
+    res.json({ ok: true, service: "gasstation-settlement-engine", version: "0.1.0" });
   });
 
   const limiter = rateLimit({ windowMs: 60_000, max: 60 });

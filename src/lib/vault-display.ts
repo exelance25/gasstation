@@ -2,7 +2,7 @@
 export const GASSTATION_VAULT_ID = "GASSTATION";
 
 /** @deprecated GASSTATION_VAULT_ID kullanın */
-export const PUMPSTATION_VAULT_ID = GASSTATION_VAULT_ID;
+export const GASSTATION_VAULT_ID_ALIAS = GASSTATION_VAULT_ID;
 
 export function getVaultDisplayLabel(network?: string): string {
   if (!network) return GASSTATION_VAULT_ID;

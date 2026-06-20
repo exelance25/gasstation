@@ -60,7 +60,7 @@ export async function verifySolanaNativePayment(params: {
 
   const treasuryIndex = accountKeys.findIndex((k) => k.equals(treasury));
   if (treasuryIndex < 0) {
-    return { valid: false, reason: "Ödeme PUMPSTATION Solana kasasına gitmedi" };
+    return { valid: false, reason: "Ödeme GASSTATION Solana kasasına gitmedi" };
   }
 
   const pre = tx.meta.preBalances[treasuryIndex] ?? 0;

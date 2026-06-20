@@ -20,7 +20,7 @@ const ICONS = {
   alert: AlertTriangle,
 } as const;
 
-export function WhyPumpStation() {
+export function WhyGasStation() {
   return (
     <section className="border-t border-white/[0.06] bg-[#05060a]/50 px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-7xl">

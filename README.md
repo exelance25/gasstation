@@ -34,9 +34,9 @@ npm.cmd run security:audit
 
 | Paket | Klasör |
 |-------|--------|
-| `@pumpstation/sdk` | `sdk/` |
-| `@pumpstation/fee-sdk` | `packages/fee-sdk/` |
-| `@pumpstation/gas-engine` | `packages/gas-engine-stub/` |
+| `@gasstation/sdk` | `sdk/` |
+| `@gasstation/fee-sdk` | `packages/fee-sdk/` |
+| `@gasstation/gas-engine` | `packages/gas-engine-stub/` |
 
 Entegratör rehberi: `docs/INTEGRATORS.md`
 

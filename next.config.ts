@@ -24,9 +24,9 @@ const nextConfig: NextConfig = {
     ],
   },
   transpilePackages: [
-    "@pumpstation/gas-engine",
-    "@pumpstation/fee-sdk",
-    "@pumpstation/sdk",
+    "@gasstation/gas-engine",
+    "@gasstation/fee-sdk",
+    "@gasstation/sdk",
   ],
   webpack: (config, { dev }) => {
     // Windows: PackFileCacheStrategy ENOENT/rename — bellek önbelleği kullan
@@ -35,9 +35,9 @@ const nextConfig: NextConfig = {
     }
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@pumpstation/gas-engine": path.resolve(__dirname, "packages/gas-engine-stub"),
-      "@pumpstation/fee-sdk": path.resolve(__dirname, "packages/fee-sdk/src"),
-      "@pumpstation/sdk": path.resolve(__dirname, "sdk/src"),
+      "@gasstation/gas-engine": path.resolve(__dirname, "packages/gas-engine-stub"),
+      "@gasstation/fee-sdk": path.resolve(__dirname, "packages/fee-sdk/src"),
+      "@gasstation/sdk": path.resolve(__dirname, "sdk/src"),
       "pino-pretty": false,
     };
     // TypeScript paketlerinde .js uzantılı importlar (fee-sdk)

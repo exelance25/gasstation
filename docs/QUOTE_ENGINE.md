@@ -2,7 +2,7 @@
 
 ## Özellikler
 
-- **Çok kaynaklı fiyat:** Pyth + CoinGecko + Jupiter (SOL) + PUMPSTATION oracle
+- **Çok kaynaklı fiyat:** Pyth + CoinGecko + Jupiter (SOL) + GASSTATION oracle
 - **Arbitraj koruması:** Kaynak spread > %2 → quote reddedilir
 - **Konservatif fiyatlama:** Gas için yüksek USD, ödeme tokeni için düşük USD
 - **İmzalı quote:** `PRICE_SIGNER_PRIVATE_KEY` ile EIP-191 imza
@@ -15,12 +15,12 @@
 | Quote Engine | 4100 | `POST /v1/quote/fee` |
 | Next.js proxy | 3000 | `POST /api/v1/quote/fee` |
 
-## SDK — `@pumpstation/fee-sdk`
+## SDK — `@gasstation/fee-sdk`
 
 ```typescript
-import { PumpStationFee } from "@pumpstation/fee-sdk";
+import { GasStationFee } from "@gasstation/fee-sdk";
 
-const fee = new PumpStationFee({
+const fee = new GasStationFee({
   apiUrl: "http://localhost:4100", // veya /api proxy
 });
 

@@ -87,7 +87,7 @@ console.log("RPC hatları:", monadRpcUrls.join(" → "));
 const publicClient = createPublicClient({ chain: monadTestnet, transport: monadTransport });
 const walletClient = createWalletClient({ account, chain: monadTestnet, transport: monadTransport });
 
-console.log("=== PUMPSTATION MON GAS TESLİMAT TESTİ ===\n");
+console.log("=== GASSTATION MON GAS TESLİMAT TESTİ ===\n");
 console.log("Operatör:", account.address);
 console.log("Alıcı (test):", TEST_RECIPIENT);
 console.log("Ağ: Monad Testnet (10143)\n");

@@ -1,5 +1,5 @@
 {
-  "name": "@pumpstation/settlement-engine",
+  "name": "@gasstation/settlement-engine",
   "version": "0.1.0",
   "private": true,
   "type": "module",

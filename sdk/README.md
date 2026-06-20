@@ -1,4 +1,4 @@
-# @pumpstation/sdk
+# @gasstation/sdk
 
 MIT lisanslı GASSTATION SDK — fiyatlandırma, REST entegrasyonu, ERC-4337 paymaster.
 
@@ -7,7 +7,7 @@ Ana uygulama `src/lib/pricing.ts` ve `config/protocol-fees.ts` ile **senkron** t
 ## Kurulum
 
 ```bash
-npm install @pumpstation/sdk viem
+npm install @gasstation/sdk viem
 # monorepo:
 npm install file:./sdk
 ```
@@ -20,7 +20,7 @@ import {
   calculatePackageQuoteFromDeliverySync,
   computeConservativeDeliveryAmount,
   formatGasDeliveryAmount,
-} from "@pumpstation/sdk";
+} from "@gasstation/sdk";
 
 // $10 paket → MON teslim tahmini
 const quote = calculatePackageQuoteSync(10, "MON");
@@ -47,7 +47,7 @@ Oracle buffer: **%5** (`ORACLE_CONSERVATIVE_BUFFER`) — ödeme ve muhafazakâr 
 ## REST client (B2B POC)
 
 ```typescript
-import { GasStationRestClient } from "@pumpstation/sdk";
+import { GasStationRestClient } from "@gasstation/sdk";
 
 const api = new GasStationRestClient({ baseUrl: "http://localhost:3000" });
 
@@ -68,7 +68,7 @@ import {
   getTestnetDefaults,
   encodeBuyGasManuel,
   BASE_SEPOLIA_USDC,
-} from "@pumpstation/sdk";
+} from "@gasstation/sdk";
 
 const paymaster = "0xYourPaymaster" as const;
 const quote = calculatePackageQuoteSync(10, "MON");

@@ -1,5 +1,5 @@
 /**
- * PUMPSTATION protokol ücretleri — tek kaynak.
+ * GASSTATION protokol ücretleri — tek kaynak.
  * Marketplace ve SDK bu değerlerle uyumlu tutulmalı.
  */
 /** Paket / manuel dispense protokol marjı */
