@@ -116,7 +116,7 @@ export const walletConnectParameters = {
 
     url: typeof window !== "undefined" ? window.location.origin : "https://pumpstation.local",
 
-    icons: [`${typeof window !== "undefined" ? window.location.origin : ""}/wallets/metamask.svg`],
+    icons: [`${typeof window !== "undefined" ? window.location.origin : ""}/wallets/metamask.svg`] as string[],
 
   },
 
@@ -126,7 +126,7 @@ export const walletConnectParameters = {
 
   },
 
-} as const;
+};
 
 
 

@@ -25,7 +25,7 @@ git add .gitignore README.md LICENSE package.json package-lock.json
 git add next.config.ts tsconfig.json vercel.json tailwind.config.ts
 git add postcss.config.js postcss.config.mjs components.json .eslintrc.json .npmrc
 git add .env.example .env.testnet.example .env.mainnet.example .env.test.local.example
-git add dev.cmd DEPLOY.cmd GASSTATION_YENI.cmd NASIL_YUKLE.txt docker-compose.yml
+git add dev.cmd DEPLOY.cmd GASSTATION_YENI.cmd VERCEL_HAZIR.cmd ORTAK_DEPLOY.cmd NASIL_YUKLE.txt docker-compose.yml
 git add public src config sdk packages docs scripts hooks services
 git add contracts/src contracts/script contracts/test contracts/foundry.toml contracts/README.md
 git add test-integration.ts assets 2>nul

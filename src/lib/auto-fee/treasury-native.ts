@@ -1,6 +1,6 @@
 import { getCollectorAddress } from "@/lib/treasury-config";
 import { getSolanaCollectorAddress } from "@/config/solana-usdc";
-import type { DepositNetworkRow } from "../../../hooks/useDepositUsdcBalance";
+import type { DepositNetworkRow } from "@/hooks/useDepositUsdcBalance";
 
 /** Native token ödemeleri için kasa adresi */
 export function getNativeTreasuryAddress(deposit: DepositNetworkRow): string | null {

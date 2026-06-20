@@ -14,3 +14,14 @@ Bu:
 3. GitHub'i temiz GASSTATION ile degistirir
 
 Terminal kullanma. Yapistirma yapma.
+
+--- Vercel deploy ---
+Masaustu: VERCEL_HAZIR.cmd (cift tik)
+1. Once yerel build test eder
+2. Basariliysa GitHub'a push eder
+3. Vercel redeploy acar
+
+Vercel env:
+  NEXT_PUBLIC_APP_ENV=testnet
+  NEXT_PUBLIC_WC_PROJECT_ID=Reown id
+  NEXT_PUBLIC_GITHUB_REPO=https://github.com/exelance25/gasstation

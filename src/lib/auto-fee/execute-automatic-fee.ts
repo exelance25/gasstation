@@ -10,7 +10,7 @@ import { PumpStationFee, type FeeQuote, type SettleFeeResult } from "@pumpstatio
 import type { DepotAssetId } from "@/config/depot-assets";
 import { clientEnv, isAutoFeeEnabled } from "@/config/client-env";
 import { getSolanaRpcUrl } from "@/config/solana-usdc";
-import type { DepositNetworkRow } from "../../../hooks/useDepositUsdcBalance";
+import type { DepositNetworkRow } from "@/hooks/useDepositUsdcBalance";
 import {
   DEFAULT_GAS_ESTIMATE_WEI,
   deliveryChainForAsset,

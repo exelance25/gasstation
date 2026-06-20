@@ -1,5 +1,5 @@
 import type { DepotAssetId } from "@/config/depot-assets";
-import type { DepositNetworkRow } from "../../../hooks/useDepositUsdcBalance";
+import type { DepositNetworkRow } from "@/hooks/useDepositUsdcBalance";
 import type { ManuelGasTarget } from "@/lib/oracle/calculate-manuel-gas-out";
 import { isPaymasterDeployed } from "@/lib/paymaster-config";
 import { getPaymasterChainId } from "@/lib/paymaster-config";
