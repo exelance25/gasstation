@@ -1,0 +1,12 @@
+{
+  "name": "AKLN Monad",
+  "description": "AKLN test NFT — Monad Testnet. Monad logosu. Mint: 0.0001 MON.",
+  "image": "/nft/monad/image.svg",
+  "external_url": "https://testnet.monadvision.com",
+  "attributes": [
+    { "trait_type": "Collection", "value": "AKLN" },
+    { "trait_type": "Network", "value": "Monad Testnet" },
+    { "trait_type": "Symbol", "value": "AKLN-M" },
+    { "trait_type": "Max Supply", "value": "200" }
+  ]
+}

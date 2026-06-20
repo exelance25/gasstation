@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Solana">
+  <defs>
+    <linearGradient id="sol-g" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9945FF"/>
+      <stop offset="55%" stop-color="#7B3FE4"/>
+      <stop offset="100%" stop-color="#14F195"/>
+    </linearGradient>
+    <filter id="sol-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.1" flood-color="#14F195" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="24" height="24" rx="6" fill="#0D0B14"/>
+  <g filter="url(#sol-glow)" transform="translate(1 3) scale(0.92)">
+    <path fill="url(#sol-g)" d="M19.3 15.7 4.7 19.6l2.6-1.7L22 13l-2.7 1.7z"/>
+    <path fill="url(#sol-g)" d="M19.3 13.4 16.6 15l-8.5 2.6L5.5 19.3 22 12.9l-2.7-.1z"/>
+    <path fill="url(#sol-g)" d="M4.7 17.1 7.3 15.4l8.5-2.6 2.6-1.7L4.7 17.1z"/>
+  </g>
+</svg>

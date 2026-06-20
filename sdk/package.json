@@ -1,0 +1,45 @@
+{
+  "name": "@pumpstation/sdk",
+  "version": "0.1.0",
+  "description": "PUMPSTATION — Base ödeme + Monad gas teslimi SDK (MIT)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "viem": "^2.21.54"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_ORG/pumpstation.git",
+    "directory": "sdk"
+  },
+  "keywords": [
+    "pumpstation",
+    "monad",
+    "base",
+    "gas",
+    "paymaster",
+    "erc-4337"
+  ]
+}

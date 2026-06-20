@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-charcoal: #171d2a;
+  --bg-charcoal-deep: #0d0f12;
+  --neon-purple: #8a2be2;
+  --neon-accent-purple: #a855f7;
+  --neon-accent-green: #10b981;
+  /* Google Fonts yerine sistem yığını — SSL / build hatası yok */
+  --font-dotmatrix: "Consolas", "Courier New", ui-monospace, monospace;
+  --font-display: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--bg-charcoal);
+  color: #e8eaef;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-dotmatrix {
+  font-family: var(--font-dotmatrix), "Courier New", monospace;
+}
+
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+.pump-panel-layer {
+  isolation: isolate;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+.landing-page {
+  font-family: var(--font-display), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+@keyframes pump-ambient-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(3%, 2%) scale(1.04);
+  }
+}
+
+@keyframes pump-ambient-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-2%, -3%) scale(1.03);
+  }
+}
+
+.pump-ambient-blob {
+  animation-duration: 22s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.pump-ambient-blob-emerald {
+  animation-name: pump-ambient-drift-a;
+}
+
+.pump-ambient-blob-purple {
+  animation-name: pump-ambient-drift-b;
+  animation-duration: 26s;
+  animation-delay: -4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pump-ambient-blob {
+    animation: none;
+  }
+  .feedback-notepad-hanging {
+    animation: none;
+  }
+}
+
+@keyframes feedback-notepad-sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.15deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-0.65deg);
+  }
+}
+
+.feedback-notepad-hanging {
+  animation: feedback-notepad-sway 5.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.feedback-notepad-sheet {
+  background-color: #faf3dc;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, transparent 36%),
+    repeating-linear-gradient(transparent, transparent 31px, rgba(180, 150, 90, 0.14) 32px);
+  box-shadow:
+    0 2px 0 rgba(196, 165, 116, 0.35),
+    0 28px 56px rgba(0, 0, 0, 0.38),
+    0 8px 16px rgba(0, 0, 0, 0.18);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% calc(100% - 14px),
+    98% 100%,
+    94% calc(100% - 10px),
+    88% 100%,
+    82% calc(100% - 12px),
+    76% 100%,
+    70% calc(100% - 8px),
+    64% 100%,
+    58% calc(100% - 11px),
+    52% 100%,
+    46% calc(100% - 9px),
+    40% 100%,
+    34% calc(100% - 13px),
+    28% 100%,
+    22% calc(100% - 7px),
+    16% 100%,
+    10% calc(100% - 12px),
+    4% 100%,
+    0% calc(100% - 14px)
+  );
+}

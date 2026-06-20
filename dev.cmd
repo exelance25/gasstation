@@ -1,0 +1,6 @@
+@echo off
+cd /d "%~dp0"
+echo [1/2] .next onbellegi temizleniyor...
+if exist .next rmdir /s /q .next
+echo [2/2] Dev sunucusu baslatiliyor...
+npm.cmd run dev

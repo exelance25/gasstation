@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Monad logo">
+  <rect width="512" height="512" rx="56" fill="#0E091C"/>
+  <g transform="translate(256 256) rotate(45) scale(15.5) translate(-12 -12)">
+    <path
+      fill="#836EF9"
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M12 2.25c.48 0 .92.19 1.24.51l6.99 6.99a1.75 1.75 0 0 1 .51 1.24v1.02a1.75 1.75 0 0 1-.51 1.24l-6.99 6.99A1.75 1.75 0 0 1 12 21.75c-.48 0-.92-.19-1.24-.51l-6.99-6.99a1.75 1.75 0 0 1-.51-1.24v-1.02c0-.48.19-.92.51-1.24l6.99-6.99c.32-.32.76-.51 1.24-.51Zm0 4.1a1.15 1.15 0 0 0-.82.34l-3.84 3.84a1.15 1.15 0 0 0 0 1.64l3.84 3.84c.22.22.5.34.82.34s.6-.12.82-.34l3.84-3.84a1.15 1.15 0 0 0 0-1.64l-3.84-3.84A1.15 1.15 0 0 0 12 6.35Z"
+    />
+  </g>
+  <text x="256" y="462" text-anchor="middle" fill="#836EF9" font-family="Arial,Helvetica,sans-serif" font-size="40" font-weight="700" letter-spacing="6">MONAD</text>
+</svg>

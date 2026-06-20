@@ -1,0 +1,16 @@
+ONEMLI — GASSTATION ayri proje
+
+Ne oldu?
+- GitHub'a yanlislikla sadece 3 dosya gitti (akln-nft izi).
+- Eski projelerin (akln-nft, lingualayer) bilgisayardan SILINMEDI.
+- Karisiklik: git tum klasoru tek repo saniyordu.
+
+Cozum — tek adim:
+  GASSTATION_YENI.cmd  dosyasina CIFT TIKLA
+
+Bu:
+1. Karisik git'i sifirlar (sadece bu klasorde)
+2. akln-nft vb. .gitignore ile DISARIDA birakir
+3. GitHub'i temiz GASSTATION ile degistirir
+
+Terminal kullanma. Yapistirma yapma.
