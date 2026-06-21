@@ -26,6 +26,7 @@ import { markIntentConsumed } from "@/server/gas/pending-deposit-intents";
 import {
   assertOrderMatchesDispense,
   markOrderDelivered,
+  type GasOrder,
 } from "@/server/gas/gas-order";
 import type { AmountOption } from "@/lib/pricing";
 
@@ -41,6 +42,8 @@ export type RunGasDispenseInput = {
   depositorAddress?: string;
   intentId?: string;
   orderId?: string;
+  /** Retry — imzalı fiş / disk aranmaz, depozit zincirde doğrulanır */
+  recoveryMode?: boolean;
 };
 
 export type RunGasDispenseResult = {
@@ -58,7 +61,7 @@ export type RunGasDispenseResult = {
 export async function runGasDispense(
   input: RunGasDispenseInput,
 ): Promise<RunGasDispenseResult> {
-  const { txHash, targetAsset, targetAddress, packageAmount, depositorAddress, intentId, orderId } =
+  const { txHash, targetAsset, targetAddress, packageAmount, depositorAddress, intentId, orderId, recoveryMode } =
     input;
   const ticketId = orderId ?? intentId;
   const isSolanaDeposit = isSolanaSignature(txHash);
@@ -82,13 +85,31 @@ export async function runGasDispense(
     depositChainId = evmChainId;
   }
 
-  const order = assertOrderMatchesDispense(ticketId, {
-    targetAsset,
-    targetAddress,
-    packageAmount,
-    depositorAddress,
-    depositChainId,
-  });
+  let order: GasOrder;
+  if (recoveryMode) {
+    order = {
+      orderId: ticketId ?? `recovery-${txHash.slice(0, 18)}`,
+      passId: "",
+      targetAsset,
+      targetAddress: targetAddress.trim(),
+      packageAmount,
+      depositChainId,
+      depositorAddress: depositorAddress?.trim().toLowerCase() ?? "",
+      paySymbol: "USDC",
+      paymentMode: "usdc",
+      status: "awaiting_payment",
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 30 * 60 * 1000,
+    };
+  } else {
+    order = assertOrderMatchesDispense(ticketId, {
+      targetAsset,
+      targetAddress,
+      packageAmount,
+      depositorAddress,
+      depositChainId,
+    });
+  }
 
   if (order.status === "delivered" && order.deliveryTxHash) {
     return {
@@ -157,7 +178,13 @@ export async function runGasDispense(
       solAmount: quote.estimatedGasAmount,
     });
     markDepositProcessed(depositChainId, idempotencyKey, deliveryTxHash);
-    if (intentId) markIntentConsumed(intentId, txHash);
+    if (intentId) {
+      try {
+        markIntentConsumed(intentId, txHash);
+      } catch {
+        /* ephemeral disk */
+      }
+    }
     markOrderDelivered(order.orderId, txHash, deliveryTxHash);
     const ledger = recordTreasuryDispense({
       depositTxHash: txHash,

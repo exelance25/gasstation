@@ -22,7 +22,10 @@ type IntentStore = { intents: PendingDepositIntent[] };
 const TTL_MS = 2 * 60 * 60 * 1000;
 const MAX_INTENTS = 500;
 
-function storePath(): string {
+import { isEphemeralRuntime } from "@/server/gas/signed-ticket";
+
+function storePath(): string | null {
+  if (isEphemeralRuntime()) return null;
   const configured = process.env.PENDING_DEPOSIT_INTENTS_FILE?.trim();
   if (configured) return resolve(configured);
   return resolve(process.cwd(), ".data", "pending-deposit-intents.json");
@@ -30,7 +33,7 @@ function storePath(): string {
 
 function loadStore(): IntentStore {
   const path = storePath();
-  if (!existsSync(path)) return { intents: [] };
+  if (!path || !existsSync(path)) return { intents: [] };
   try {
     const parsed = JSON.parse(readFileSync(path, "utf8")) as IntentStore;
     return Array.isArray(parsed.intents) ? parsed : { intents: [] };
@@ -41,8 +44,13 @@ function loadStore(): IntentStore {
 
 function saveStore(store: IntentStore): void {
   const path = storePath();
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, JSON.stringify(store, null, 2), "utf8");
+  if (!path) return;
+  try {
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, JSON.stringify(store, null, 2), "utf8");
+  } catch {
+    /* Vercel — bellek yeterli */
+  }
 }
 
 function prune(store: IntentStore): IntentStore {

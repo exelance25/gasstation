@@ -100,9 +100,15 @@ export async function POST(request: Request) {
   } catch (e) {
     const message = e instanceof Error ? e.message : "Gas teslimatı başarısız";
     const status =
-      message.includes("yetersiz") || message.includes("Likidite")
+      message.includes("yetersiz") ||
+      message.includes("Likidite") ||
+      message.includes("tankı") ||
+      message.includes("Operatör")
         ? 503
-        : message.includes("doğrulanamadı")
+        : message.includes("doğrulanamadı") ||
+            message.includes("uyuşmuyor") ||
+            message.includes("Geçersiz") ||
+            message.includes("fişi")
           ? 422
           : 500;
 

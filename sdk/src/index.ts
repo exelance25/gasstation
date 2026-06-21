@@ -53,5 +53,8 @@ export type {
   GasDispenseResponse,
 } from "./rest-client.js";
 
+export { GasStationAutoSponsor } from "./auto-sponsor.js";
+export type { GasStationAutoSponsorConfig } from "./auto-sponsor.js";
+
 export { encodeBuyGasManuel, pumpPaymasterAbi } from "./buy-gas-manuel.js";
 export type { BuyGasManuelParams } from "./buy-gas-manuel.js";

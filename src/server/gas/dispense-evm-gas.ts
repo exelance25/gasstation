@@ -117,11 +117,6 @@ export async function dispenseEvmNativeGas(params: {
   });
 
   const operatorBalance = await publicClient.getBalance({ address: account.address });
-  if (operatorBalance < valueWei) {
-    throw new Error(
-      `Operatör likiditesi yetersiz (${chain.name}) — ${params.targetAsset} gönderilemedi`,
-    );
-  }
 
   if (isMonadChain(chain) && isMainnetAppEnv()) {
     const minBalance = getMonadMinOperatorBalanceWei(valueWei);
@@ -141,14 +136,29 @@ export async function dispenseEvmNativeGas(params: {
     value: valueWei,
   };
 
+  const gasPrice = await publicClient.getGasPrice();
+  const gasLimit = isMonadChain(chain) ? 50_000n : 21_000n;
+  const txCostReserve = gasPrice * gasLimit * 3n;
+
+  if (operatorBalance < valueWei + txCostReserve) {
+    throw new Error(
+      `Operatör likiditesi yetersiz (${chain.name}) — ${formatEther(operatorBalance)} ${chain.nativeCurrency.symbol} var, ~${formatEther(valueWei + txCostReserve)} gerekli (gas+transfer)`,
+    );
+  }
+
   if (isMonadChain(chain)) {
-    const gasPrice = await publicClient.getGasPrice();
-    sendParams.gas = 50_000n;
+    sendParams.gas = gasLimit;
     sendParams.gasPrice = gasPrice;
     sendParams.type = "legacy";
   }
 
-  const deliveryTxHash = await walletClient.sendTransaction(sendParams);
+  let deliveryTxHash: Hash;
+  try {
+    deliveryTxHash = await walletClient.sendTransaction(sendParams);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Gas transferi gönderilemedi (${chain.name}): ${detail}`);
+  }
 
   if (params.waitForReceipt) {
     const receipt = await publicClient.waitForTransactionReceipt({
@@ -181,10 +191,14 @@ export async function canDispenseEvmNativeGas(
   const publicClient = createPublicClient({ chain, transport });
   const operatorBalance = await publicClient.getBalance({ address: account.address });
 
-  if (operatorBalance < valueWei) {
+  const gasPrice = await publicClient.getGasPrice();
+  const gasLimit = isMonadChain(chain) ? 50_000n : 21_000n;
+  const totalNeeded = valueWei + gasPrice * gasLimit * 3n;
+
+  if (operatorBalance < totalNeeded) {
     return {
       ok: false,
-      reason: `Gas tankı boş (${chain.name}): kasada ${formatEther(operatorBalance)} ${chain.nativeCurrency.symbol}, gerekli ~${formatEther(valueWei)} ${targetAsset}`,
+      reason: `Gas tankı boş (${chain.name}): kasada ${formatEther(operatorBalance)} ${chain.nativeCurrency.symbol}, gerekli ~${formatEther(totalNeeded)} ${targetAsset}`,
     };
   }
   if (isMonadChain(chain) && isMainnetAppEnv()) {

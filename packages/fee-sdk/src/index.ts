@@ -1,4 +1,6 @@
 export { GasStationFee } from "./client";
+export { GasStationAutoSponsor } from "./auto-sponsor";
+export type { GasStationAutoSponsorConfig } from "./auto-sponsor";
 export type {
   FeeQuote,
   GetFeeQuoteParams,

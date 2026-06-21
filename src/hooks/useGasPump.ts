@@ -665,6 +665,8 @@ export function useGasPump() {
     setIsLoading(true);
     startFuelSession("Sipariş ve kasa kontrol ediliyor…");
     let completedDepositTx: string | undefined;
+    let completedOrderId: string | undefined;
+    let completedDepositor: string | undefined;
     try {
       if (!depositTarget) {
         throw new Error("Ödeme kaynağı seçilmedi.");
@@ -833,6 +835,8 @@ export function useGasPump() {
           paySymbol,
           paymentMode,
         });
+        completedOrderId = orderId;
+        completedDepositor = depositor;
 
         setFuelingHint("Sipariş kaydedildi — cüzdan ödemesi hazırlanıyor…");
 
@@ -983,7 +987,13 @@ export function useGasPump() {
 
       if (completedDepositTx) {
         try {
-          const retry = (await postRetryDispense(completedDepositTx)) as {
+          const retry = (await postRetryDispense(completedDepositTx, {
+            orderId: completedOrderId,
+            targetAsset: selectedAsset,
+            targetAddress: trimmedTarget,
+            packageAmount: selectedAmount,
+            depositorAddress: completedDepositor,
+          })) as {
             ok?: boolean;
             deliveryTxHash?: string;
             targetAsset?: DepotAssetId;

@@ -99,7 +99,8 @@ export function isAutoFeeEnabled(): boolean {
   const raw = process.env.NEXT_PUBLIC_AUTO_FEE_ENABLED;
   if (raw === "false") return false;
   if (raw === "true") return true;
-  return false;
+  const env = process.env.NEXT_PUBLIC_APP_ENV ?? "development";
+  return env === "testnet" || env === "development";
 }
 
 const FORBIDDEN_CLIENT_KEYS = [

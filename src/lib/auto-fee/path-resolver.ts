@@ -48,6 +48,10 @@ export function resolveAutoFeePath(params: {
     return "paymaster_usdc";
   }
 
+  if (paymasterReady && manuelTarget && params.usdcBalance > 0) {
+    return "paymaster_usdc";
+  }
+
   return null;
 }
 

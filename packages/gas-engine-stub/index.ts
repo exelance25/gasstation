@@ -272,4 +272,35 @@ export class GasStationClient {
       status: body.status ?? "GAS_DELIVERED",
     };
   }
+
+  /**
+   * dApp entegrasyonu — aktif ağda gas sponsorlu kontrat çağrısı hazırlığı.
+   * GasStationAutoSponsor (@gasstation/fee-sdk) ile birlikte kullanın.
+   */
+  async prepareSponsoredContractCall(params: {
+    userAddress: string;
+    chainId: number;
+    targetContract: string;
+    callData: string;
+    gasEstimateWei?: string;
+  }): Promise<{
+    quote: unknown;
+    treasuryAddress: string | null;
+    paymasterAddress: string | null;
+    message: string;
+  }> {
+    const sponsorship = await this.requestGasSponsorship({
+      userAddress: params.userAddress,
+      chainId: params.chainId,
+      intentId: `dapp-${Date.now()}`,
+      gasEstimateWei: params.gasEstimateWei,
+    });
+    return {
+      quote: sponsorship.quote,
+      treasuryAddress: sponsorship.treasuryAddress ?? null,
+      paymasterAddress: null,
+      message:
+        "USDC onay → kontrat onay. Gas tank + kar marjı quote içinde. GasStationAutoSponsor.executeSponsoredContractCall ile tamamlayın.",
+    };
+  }
 }

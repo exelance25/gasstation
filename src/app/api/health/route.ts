@@ -6,6 +6,7 @@ import {
 } from "@/config/operator-env";
 import { isAutoFeeEnabled } from "@/config/client-env";
 import { isWalletConnectReady } from "@config/evm-chains";
+import { getOperatorTankStatus } from "@/server/gas/operator-tank-status";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export async function GET() {
   const appEnv = process.env.NEXT_PUBLIC_APP_ENV ?? "development";
 
   const collector = getCollectorAddressSafe();
+  const tank = await getOperatorTankStatus();
 
   return NextResponse.json({
     ok: true,
@@ -25,10 +27,11 @@ export async function GET() {
     operators: {
       evm: isOperatorConfigured(),
       solana: isSolanaOperatorConfigured(),
+      address: tank.address,
+      tanks: tank.tanks,
     },
     collector: {
       configured: collector !== null,
-      /** Sunucu COLLECTOR_ADDRESS — UI için NEXT_PUBLIC_COLLECTOR_ADDRESS de gerekir */
       server: collector,
     },
     walletConnect: isWalletConnectReady,
