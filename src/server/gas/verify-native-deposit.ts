@@ -6,7 +6,7 @@ import {
   computeNativePaymentWei,
   nativePaySymbolForChain,
 } from "@/lib/manual-payment";
-import type { AmountOption } from "@/lib/pricing";
+import { roundPackageUsd, type AmountOption } from "@/lib/pricing";
 import { getServerCollectorAddress } from "@/config/operator-env";
 import { createDepositPublicClient } from "@/server/gas/verify-usdc-deposit";
 
@@ -36,7 +36,8 @@ export async function verifyNativeDeposit(params: {
 
   const treasury = getServerCollectorAddress();
   const prices = await getLivePrices();
-  const expectedWei = computeNativePaymentWei(params.packageUsd, paySymbol, prices);
+  const packageUsd = roundPackageUsd(params.packageUsd);
+  const expectedWei = computeNativePaymentWei(packageUsd, paySymbol, prices);
   const tolerance =
     process.env.NEXT_PUBLIC_APP_ENV === "mainnet" ? expectedWei / 100n : expectedWei / 20n;
   const minWei = expectedWei > tolerance ? expectedWei - tolerance : 0n;

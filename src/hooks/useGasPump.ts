@@ -670,6 +670,7 @@ export function useGasPump() {
     let completedOrderId: string | undefined;
     let completedDepositor: string | undefined;
     let completedPackageUsd: number | undefined;
+    let completedPaymentMode: "usdc" | "native" | undefined;
     try {
       if (!depositTarget) {
         throw new Error("Ödeme kaynağı seçilmedi.");
@@ -846,6 +847,7 @@ export function useGasPump() {
         completedOrderId = orderId;
         completedDepositor = depositor;
         completedPackageUsd = packageUsd;
+        completedPaymentMode = paymentMode;
 
         setFuelingHint("Sipariş kaydedildi — cüzdan ödemesi hazırlanıyor…");
 
@@ -894,7 +896,7 @@ export function useGasPump() {
           }
 
           const nativeWei = computeNativePaymentWei(
-            selectedAmount,
+            packageUsd,
             depositTarget.paySymbol,
             priceSnapshot,
           );
@@ -966,6 +968,7 @@ export function useGasPump() {
           depositorAddress: depositor,
           orderId,
           intentId: orderId,
+          paymentMode,
         });
 
         void refetchUsdc();
@@ -1028,8 +1031,12 @@ export function useGasPump() {
         }
       }
 
+      const depositLabel =
+        completedPaymentMode === "native"
+          ? "Sepolia/native depozitiniz"
+          : "USDC depozitiniz";
       const message = completedDepositTx
-        ? `USDC depozitiniz onaylandı (${completedDepositTx.slice(0, 10)}…) ancak gas teslimatı tamamlanamadı: ${base}. Kasa otomatik retry başarısız — tx hash'i saklayın.`
+        ? `${depositLabel} onaylandı (${completedDepositTx.slice(0, 10)}…) ancak gas teslimatı tamamlanamadı: ${base}. Kasa otomatik retry başarısız — tx hash'i saklayın.`
         : base;
       showToast({
         variant: "error",

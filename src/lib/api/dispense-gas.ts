@@ -10,6 +10,7 @@ export type DispenseGasRequest = {
   depositorAddress?: string;
   intentId?: string;
   orderId?: string;
+  paymentMode?: "usdc" | "native";
 };
 
 export type DispenseGasResponse = {

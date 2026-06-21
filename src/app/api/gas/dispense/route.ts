@@ -24,6 +24,7 @@ const bodySchema = z.object({
   depositorAddress: z.string().optional(),
   intentId: z.string().optional(),
   orderId: z.string().optional(),
+  paymentMode: z.enum(["usdc", "native"]).optional(),
 });
 
 function isEvmTxHash(hash: string): boolean {
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { txHash, targetAsset, targetAddress, packageAmount, depositorAddress, intentId, orderId } =
+  const { txHash, targetAsset, targetAddress, packageAmount, depositorAddress, intentId, orderId, paymentMode } =
     parsed.data;
 
   if (!isEvmTxHash(txHash) && !isSolanaSignature(txHash)) {
@@ -95,6 +96,7 @@ export async function POST(request: Request) {
       depositorAddress,
       intentId,
       orderId,
+      paymentMode,
     });
     return NextResponse.json(result);
   } catch (e) {

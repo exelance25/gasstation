@@ -19,6 +19,7 @@ import {
   monadTestnet,
   DEPOSIT_EVM_CHAIN_IDS,
 } from "@config/evm-chains";
+import { nativePaySymbolForChain } from "@/lib/manual-payment";
 import { clientEnv } from "@/config/client-env";
 import { getServerCollectorAddress } from "@/config/operator-env";
 import type { AmountOption } from "@/lib/pricing";
@@ -106,9 +107,13 @@ export type UsdcDepositFailure = {
   reason: string;
 };
 
+const NATIVE_DEPOSIT_CHAIN_IDS = DEPOSIT_EVM_CHAIN_IDS.filter(
+  (chainId) => nativePaySymbolForChain(chainId) != null,
+);
+
 export async function resolveDepositChainId(txHash: Hash): Promise<number | null> {
-  for (const chainId of DEPOSIT_EVM_CHAIN_IDS) {
-    if (!getUsdcAddress(chainId)) continue;
+  const chainIds = [...new Set([...DEPOSIT_EVM_CHAIN_IDS, ...NATIVE_DEPOSIT_CHAIN_IDS])];
+  for (const chainId of chainIds) {
     try {
       const client = createDepositPublicClient(chainId);
       const receipt = await client.getTransactionReceipt({ hash: txHash }).catch(() => null);

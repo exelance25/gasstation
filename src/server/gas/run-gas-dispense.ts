@@ -28,6 +28,8 @@ import {
   markOrderDelivered,
   type GasOrder,
 } from "@/server/gas/gas-order";
+import { isEphemeralRuntime } from "@/server/gas/signed-ticket";
+import { resolvePackageUsdForNativeDeposit } from "@/server/gas/read-deposit-from-tx";
 import type { AmountOption } from "@/lib/pricing";
 
 function isSolanaSignature(sig: string): boolean {
@@ -44,6 +46,7 @@ export type RunGasDispenseInput = {
   orderId?: string;
   /** Retry — imzalı fiş / disk aranmaz, depozit zincirde doğrulanır */
   recoveryMode?: boolean;
+  paymentMode?: "usdc" | "native";
 };
 
 export type RunGasDispenseResult = {
@@ -61,7 +64,7 @@ export type RunGasDispenseResult = {
 export async function runGasDispense(
   input: RunGasDispenseInput,
 ): Promise<RunGasDispenseResult> {
-  const { txHash, targetAsset, targetAddress, packageAmount, depositorAddress, intentId, orderId, recoveryMode } =
+  const { txHash, targetAsset, targetAddress, packageAmount, depositorAddress, intentId, orderId, recoveryMode, paymentMode } =
     input;
   const ticketId = orderId ?? intentId;
   const isSolanaDeposit = isSolanaSignature(txHash);
@@ -86,6 +89,7 @@ export async function runGasDispense(
   }
 
   let order: GasOrder;
+  let effectivePackageAmount = packageAmount;
   if (recoveryMode) {
     order = {
       orderId: ticketId ?? `recovery-${txHash.slice(0, 18)}`,
@@ -95,8 +99,8 @@ export async function runGasDispense(
       packageAmount,
       depositChainId,
       depositorAddress: depositorAddress?.trim().toLowerCase() ?? "",
-      paySymbol: "USDC",
-      paymentMode: "usdc",
+      paySymbol: paymentMode === "native" ? "ETH" : "USDC",
+      paymentMode: paymentMode ?? "usdc",
       status: "awaiting_payment",
       createdAt: Date.now(),
       expiresAt: Date.now() + 30 * 60 * 1000,
@@ -142,28 +146,81 @@ export async function runGasDispense(
   }
 
   if (!isSolanaDeposit) {
-    const usdcDeposit = await verifyUsdcDeposit({
-      txHash: txHash as Hash,
-      chainId: depositChainId,
-      packageUsd: packageAmount,
-      depositorAddress: depositorAddress as `0x${string}` | undefined,
-    });
-    if (!usdcDeposit.valid) {
-      const nativeDeposit = await verifyNativeDeposit({
+    const verifyMode = paymentMode ?? order.paymentMode;
+    const verifyNativeFirst = verifyMode === "native";
+
+    async function tryNativeVerify(usd: AmountOption) {
+      return verifyNativeDeposit({
         txHash: txHash as Hash,
         chainId: depositChainId,
-        packageUsd: packageAmount,
+        packageUsd: usd,
         depositorAddress: depositorAddress as `0x${string}` | undefined,
       });
-      if (!nativeDeposit.valid) {
-        throw new Error(nativeDeposit.reason || usdcDeposit.reason);
+    }
+
+    async function tryUsdcVerify(usd: AmountOption) {
+      return verifyUsdcDeposit({
+        txHash: txHash as Hash,
+        chainId: depositChainId,
+        packageUsd: usd,
+        depositorAddress: depositorAddress as `0x${string}` | undefined,
+      });
+    }
+
+    let depositOk = false;
+
+    if (verifyNativeFirst) {
+      let nativeDeposit = await tryNativeVerify(effectivePackageAmount);
+      if (!nativeDeposit.valid && recoveryMode) {
+        const resolved = await resolvePackageUsdForNativeDeposit({
+          txHash: txHash as Hash,
+          chainId: depositChainId,
+          hintedPackageUsd: effectivePackageAmount,
+        });
+        if (resolved) {
+          effectivePackageAmount = resolved.packageUsd;
+          nativeDeposit = await tryNativeVerify(resolved.packageUsd);
+        }
       }
+      if (nativeDeposit.valid) {
+        depositOk = true;
+      } else {
+        const usdcDeposit = await tryUsdcVerify(effectivePackageAmount);
+        if (!usdcDeposit.valid) {
+          throw new Error(nativeDeposit.reason || usdcDeposit.reason);
+        }
+        depositOk = true;
+      }
+    } else {
+      const usdcDeposit = await tryUsdcVerify(effectivePackageAmount);
+      if (!usdcDeposit.valid) {
+        let nativeDeposit = await tryNativeVerify(effectivePackageAmount);
+        if (!nativeDeposit.valid && recoveryMode) {
+          const resolved = await resolvePackageUsdForNativeDeposit({
+            txHash: txHash as Hash,
+            chainId: depositChainId,
+            hintedPackageUsd: effectivePackageAmount,
+          });
+          if (resolved) {
+            effectivePackageAmount = resolved.packageUsd;
+            nativeDeposit = await tryNativeVerify(resolved.packageUsd);
+          }
+        }
+        if (!nativeDeposit.valid) {
+          throw new Error(nativeDeposit.reason || usdcDeposit.reason);
+        }
+      }
+      depositOk = true;
+    }
+
+    if (!depositOk) {
+      throw new Error("Depozit doğrulanamadı");
     }
   }
 
-  const quote = await getConservativeDispenseQuote(packageAmount, targetAsset);
+  const quote = await getConservativeDispenseQuote(effectivePackageAmount, targetAsset);
   assertProfitableDispense(
-    packageAmount,
+    effectivePackageAmount,
     quote.estimatedGasAmount,
     targetAsset,
     quote.oracle,
@@ -214,17 +271,24 @@ export async function runGasDispense(
     targetAsset,
     targetAddress: targetAddress.trim(),
     nativeAmount: quote.estimatedGasAmount,
-    waitForReceipt: process.env.NEXT_PUBLIC_APP_ENV !== "mainnet",
+    waitForReceipt:
+      process.env.NEXT_PUBLIC_APP_ENV !== "mainnet" && !isEphemeralRuntime(),
   });
 
   markDepositProcessed(depositChainId, idempotencyKey, deliveryTxHash);
-  if (intentId) markIntentConsumed(intentId, txHash);
+  if (intentId) {
+    try {
+      markIntentConsumed(intentId, txHash);
+    } catch {
+      /* ephemeral disk */
+    }
+  }
   markOrderDelivered(order.orderId, txHash, deliveryTxHash);
   const ledger = recordTreasuryDispense({
     depositTxHash: txHash,
     deliveryTxHash,
     depositChainId,
-    packageUsd: packageAmount,
+    packageUsd: effectivePackageAmount,
     targetAsset,
     targetAddress: targetAddress.trim(),
     estimatedGasAmount: quote.estimatedGasAmount,
