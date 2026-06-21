@@ -8,36 +8,22 @@ type RequestProvider = {
   request?: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
 };
 
-/** MetaMask / Rabby — doğrudan provider üzerinden transfer (wagmi senkron sorunlarını aşar) */
-export async function sendNativeDepositViaProvider(params: {
-  connector: Connector | undefined;
-  from: Address;
-  to: Address;
-  valueWei: bigint;
-  chainId: number;
-}): Promise<Hash> {
-  if (!params.connector) {
-    throw new Error("Cüzdan connector bulunamadı — MetaMask ile yeniden bağlanın.");
-  }
-
-  const provider = (await params.connector.getProvider?.()) as RequestProvider | undefined;
-  if (!provider?.request) {
-    throw new Error("Cüzdan provider hazır değil — MetaMask'ı yeniden açın.");
-  }
-
-  const chain = getChainById(params.chainId);
-  const chainIdHex = `0x${params.chainId.toString(16)}` as Hex;
-  const valueHex = `0x${params.valueWei.toString(16)}` as Hex;
+async function ensureProviderChain(
+  provider: RequestProvider,
+  chainId: number,
+): Promise<void> {
+  const chain = getChainById(chainId);
+  const chainIdHex = `0x${chainId.toString(16)}` as Hex;
 
   try {
-    await provider.request({
+    await provider.request!({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: chainIdHex }],
     });
   } catch (switchError) {
     const code = (switchError as { code?: number })?.code;
     if (code === 4902) {
-      await provider.request({
+      await provider.request!({
         method: "wallet_addEthereumChain",
         params: [
           {
@@ -51,18 +37,44 @@ export async function sendNativeDepositViaProvider(params: {
           },
         ],
       });
-      await provider.request({
+      await provider.request!({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: chainIdHex }],
       });
-    } else if (code !== 4001) {
-      throw switchError;
+    } else if (code === 4001) {
+      throw new Error("Network switch cancelled in wallet.");
     } else {
-      throw new Error("Ağ değişimi cüzdanda iptal edildi.");
+      throw switchError;
     }
   }
+}
 
-  const hash = await provider.request({
+async function getWalletProvider(
+  connector: Connector | undefined,
+): Promise<RequestProvider> {
+  if (!connector) {
+    throw new Error("Wallet connector missing — reconnect with MetaMask or Rabby.");
+  }
+  const provider = (await connector.getProvider?.()) as RequestProvider | undefined;
+  if (!provider?.request) {
+    throw new Error("Wallet provider not ready — reopen your wallet extension.");
+  }
+  return provider;
+}
+
+/** MetaMask / Rabby — direct provider transfer (avoids wagmi sync issues) */
+export async function sendNativeDepositViaProvider(params: {
+  connector: Connector | undefined;
+  from: Address;
+  to: Address;
+  valueWei: bigint;
+  chainId: number;
+}): Promise<Hash> {
+  const provider = await getWalletProvider(params.connector);
+  await ensureProviderChain(provider, params.chainId);
+
+  const valueHex = `0x${params.valueWei.toString(16)}` as Hex;
+  const hash = await provider.request!({
     method: "eth_sendTransaction",
     params: [
       {
@@ -74,7 +86,7 @@ export async function sendNativeDepositViaProvider(params: {
   });
 
   if (typeof hash !== "string" || !hash.startsWith("0x")) {
-    throw new Error("Cüzdan geçersiz işlem yanıtı döndü.");
+    throw new Error("Wallet returned an invalid transaction hash.");
   }
 
   return hash as Hash;
@@ -88,29 +100,13 @@ export async function sendErc20TransferViaProvider(params: {
   amount: bigint;
   chainId: number;
 }): Promise<Hash> {
-  if (!params.connector) {
-    throw new Error("Cüzdan connector bulunamadı — MetaMask ile yeniden bağlanın.");
-  }
-
-  const provider = (await params.connector.getProvider?.()) as RequestProvider | undefined;
-  if (!provider?.request) {
-    throw new Error("Cüzdan provider hazır değil.");
-  }
-
-  const chainIdHex = `0x${params.chainId.toString(16)}` as Hex;
-  try {
-    await provider.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: chainIdHex }],
-    });
-  } catch {
-    /* ağ zaten doğru olabilir */
-  }
+  const provider = await getWalletProvider(params.connector);
+  await ensureProviderChain(provider, params.chainId);
 
   const transferData =
     `0xa9059cbb${params.to.slice(2).padStart(64, "0")}${params.amount.toString(16).padStart(64, "0")}` as Hex;
 
-  const hash = await provider.request({
+  const hash = await provider.request!({
     method: "eth_sendTransaction",
     params: [
       {
@@ -122,7 +118,7 @@ export async function sendErc20TransferViaProvider(params: {
   });
 
   if (typeof hash !== "string" || !hash.startsWith("0x")) {
-    throw new Error("USDC transferi cüzdandan gönderilemedi.");
+    throw new Error("USDC transfer could not be sent from wallet.");
   }
 
   return hash as Hash;

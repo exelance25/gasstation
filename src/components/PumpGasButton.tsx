@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import type { PumpActionMode, PumpButtonBlockReason } from "@/hooks/useGasPump";
 import { useToast } from "@/providers/ToastProvider";
+import { messages } from "@/i18n/messages";
 import { cn } from "@/lib/utils";
 
 interface PumpGasButtonProps {
@@ -29,7 +30,7 @@ export function PumpGasButton({
   const busy = isPumping || isLocked;
   const disabled = busy || locked;
 
-  const label = isPumping ? "İŞLEM BEKLENİYOR…" : isLocked ? "KİLİTLENDİ…" : "ATEŞLE";
+  const label = isPumping ? messages.firing : isLocked ? messages.locked : messages.fire;
 
   const handleClick = () => {
     const now = Date.now();
@@ -46,66 +47,64 @@ export function PumpGasButton({
     if (blockReason === "invalid_amount") {
       showToast({
         variant: "info",
-        title: "Miktar gerekli",
-        message: "Almak istediğiniz gas miktarını yazın.",
+        title: messages.pump.amountTitle,
+        message: messages.pump.amountMsg,
       });
       return;
     }
     if (blockReason === "wallet") {
       showToast({
         variant: "info",
-        title: "Cüzdan gerekli",
-        message: "EVM veya Solana cüzdanınızı bağlayın.",
+        title: messages.pump.walletTitle,
+        message: messages.pump.walletMsg,
       });
       return;
     }
     if (blockReason === "deposit_network") {
       showToast({
         variant: "info",
-        title: "Ödeme kaynağı",
-        message: blockDetail ?? "USDC, ETH, BASE veya MON ile ödeme kaynağı seçin.",
+        title: messages.pump.depositTitle,
+        message: blockDetail ?? messages.pump.depositMsg,
       });
       return;
     }
     if (blockReason === "below_minimum") {
       showToast({
         variant: "error",
-        title: "Yetersiz bakiye",
-        message: "Seçili ödeme kaynağında bu işlem için yeterli bakiye yok.",
+        title: messages.pump.balanceTitle,
+        message: messages.pump.balanceMsg,
       });
       return;
     }
     if (blockReason === "invalid_target") {
       showToast({
         variant: "info",
-        title: "Hedef adres",
-        message: "Gas gönderilecek geçerli bir hedef adresi girin.",
+        title: messages.pump.targetTitle,
+        message: messages.pump.targetMsg,
       });
       return;
     }
     if (blockReason === "insufficient_usdc") {
       showToast({
         variant: "error",
-        title: "Yetersiz bakiye",
-        message:
-          blockDetail ??
-          "Seçili ağda bu işlem için yeterli USDC yok — başka token veya daha küçük miktar seçin.",
+        title: messages.pump.balanceTitle,
+        message: blockDetail ?? messages.pump.usdcLowMsg,
       });
       return;
     }
     if (blockReason === "collector") {
       showToast({
         variant: "error",
-        title: "GASSTATION kasası yapılandırılmamış",
-        message: "Operatör kasası henüz hazır değil — lütfen daha sonra tekrar deneyin.",
+        title: messages.pump.collectorTitle,
+        message: messages.pump.collectorMsg,
       });
       return;
     }
     if (blockReason === "automatic_soon") {
       showToast({
         variant: "info",
-        title: "Otomatik mod kapalı",
-        message: "NEXT_PUBLIC_AUTO_FEE_ENABLED=true ile etkinleştirin veya manuel modu kullanın.",
+        title: messages.pump.autoOffTitle,
+        message: messages.pump.autoOffMsg,
       });
       return;
     }
@@ -128,28 +127,24 @@ export function PumpGasButton({
     if (blockReason === "insufficient_native") {
       showToast({
         variant: "error",
-        title: "Yetersiz bakiye",
-        message:
-          blockDetail ??
-          "Seçili token ile bu işlem için yeterli bakiye yok.",
+        title: messages.pump.balanceTitle,
+        message: blockDetail ?? messages.pump.balanceMsg,
       });
       return;
     }
     if (blockReason === "tank_empty") {
       showToast({
         variant: "error",
-        title: "Gas tankı hazır değil",
-        message:
-          blockDetail ??
-          "Operatör kasasında teslimat için yeterli ETH / BASE / MON yok. Kasayı doldurun.",
+        title: messages.pump.tankTitle,
+        message: blockDetail ?? messages.pump.tankMsg,
       });
       return;
     }
     if (blockReason === "precheck_loading") {
       showToast({
         variant: "info",
-        title: "Tank kontrol ediliyor",
-        message: "Gas tankı bakiyesi doğrulanıyor…",
+        title: messages.pump.precheckTitle,
+        message: messages.pump.precheckMsg,
       });
       return;
     }

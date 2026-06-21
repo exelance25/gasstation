@@ -1,10 +1,13 @@
 import type { DepotAsset, DepotAssetId } from "@/config/depot-assets";
 import { DEPOT_ASSETS } from "@/config/depot-assets";
 
-/** Solana gas teslimi + Phantom cüzdan — varsayılan kapalı (EVM-only tank) */
+/** Solana gas delivery + Phantom — enabled on testnet by default */
 export function isSolanaGasEnabled(): boolean {
   const raw = process.env.NEXT_PUBLIC_SOLANA_GAS_ENABLED;
-  return raw === "true";
+  if (raw === "false") return false;
+  if (raw === "true") return true;
+  const env = process.env.NEXT_PUBLIC_APP_ENV ?? "development";
+  return env === "testnet" || env === "development";
 }
 
 /** Dropdown — aktif + yakında seçenekler */

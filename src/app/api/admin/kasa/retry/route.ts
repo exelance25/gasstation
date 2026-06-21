@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await retryDepositFromTxHash(parsed.data.txHash);
+    const result = await retryDepositFromTxHash({ txHash: parsed.data.txHash });
     return NextResponse.json(result);
   } catch (e) {
     const message = e instanceof Error ? e.message : "Retry başarısız";

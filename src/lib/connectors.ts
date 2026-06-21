@@ -34,8 +34,8 @@ export function getWalletConnectors(connectors: readonly Connector[]): Connector
       continue;
     }
 
-    if (label === "Cüzdan Bağla") {
-      if (!byLabel.has("Cüzdan Bağla")) byLabel.set("Cüzdan Bağla", connector);
+    if (label === "Browser wallet") {
+      if (!byLabel.has("Browser wallet")) byLabel.set("Browser wallet", connector);
       continue;
     }
 
@@ -45,10 +45,10 @@ export function getWalletConnectors(connectors: readonly Connector[]): Connector
   }
 
   const hasNamedWallet = [...byLabel.keys()].some(
-    (k) => k !== "Cüzdan Bağla" && k !== "WalletConnect",
+    (k) => k !== "Browser wallet" && k !== "WalletConnect",
   );
   if (hasNamedWallet) {
-    byLabel.delete("Cüzdan Bağla");
+    byLabel.delete("Browser wallet");
   }
 
   return [...byLabel.values()].sort((a, b) => {
@@ -74,9 +74,16 @@ export function getConnectorLabel(connector: Connector): string {
   if (connector.id === "safe") return "Safe";
   if (connector.type === "walletConnect" || connector.id === "walletConnect")
     return "WalletConnect";
-  if (connector.id === "injected") return "Cüzdan Bağla";
+  if (connector.id === "injected") return "Browser wallet";
 
   return connector.id;
+}
+
+/** @deprecated Turkish alias */
+export function getConnectorLabelTr(connector: Connector): string {
+  const label = getConnectorLabel(connector);
+  if (label === "Browser wallet") return "Cüzdan Bağla";
+  return label;
 }
 
 export function hasWalletExtension(connectors: readonly Connector[]): boolean {

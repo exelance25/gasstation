@@ -61,7 +61,7 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
         kind: "phantom",
         id: "phantom-hybrid",
         label: "Phantom",
-        sub: "EVM onayı → Solana onayı",
+        sub: "EVM approval → Solana approval",
         connector: phantomEvmConnector,
       }
     : null;

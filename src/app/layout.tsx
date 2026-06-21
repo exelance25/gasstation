@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    <html lang="en">
       <body className="font-display antialiased">
         <AppProviders>{children}</AppProviders>
       </body>

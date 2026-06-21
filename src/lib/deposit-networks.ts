@@ -1,24 +1,24 @@
-/** Gas teslim ağları */
+/** Gas delivery networks */
 export const SUPPORTED_GAS_NETWORKS_TR = "ETH · Base · Monad · Solana";
+export const SUPPORTED_GAS_NETWORKS = SUPPORTED_GAS_NETWORKS_TR;
 
-/** Circle USDC kabul edilen ödeme ağları */
+/** Circle USDC payment networks */
 export const DEPOSIT_USDC_NETWORKS_TR = "Ethereum · Base · Monad · Solana (Circle USDC)";
+export const DEPOSIT_USDC_NETWORKS = DEPOSIT_USDC_NETWORKS_TR;
 
-/** Circle USDC + native token ödemeleri — dengeli gas tankı */
 export const PROTOCOL_TAGLINE_TR =
-  "USDC, ETH, BASE veya MON ile öde — ETH, BASE veya MON gas teslimi al";
+  "Pay with USDC, ETH, BASE, or MON — receive ETH, BASE, or MON gas";
+export const PROTOCOL_TAGLINE = PROTOCOL_TAGLINE_TR;
 
-/** Kullanıcı onayı — modal checkbox */
 export const WALLET_CONNECT_CONSENT =
-  "Bakiyemi yalnızca ödeme için okumanıza izin veriyorum. Adresim sunucuda saklanmaz.";
+  "I allow read-only balance access for payments. My address is not stored on the server.";
 
 export const SUPPORTED_PAY_ASSETS_TR = "ETH · BASE · MON · USDC";
+export const SUPPORTED_PAY_ASSETS = SUPPORTED_PAY_ASSETS_TR;
 
-/** @deprecated WALLET_CONNECT_CONSENT */
 export const PROTOCOL_USDC_CONSENT = WALLET_CONNECT_CONSENT;
 
-export const DEPOSIT_USDC_HINT =
-  "Bağlan → bakiyeni seç → miktarı yaz → ATEŞLE.";
+export const DEPOSIT_USDC_HINT = "Connect → pick balance → enter amount → FIRE.";
 
 export const SOL_DELIVERY_DEPOSIT_HINT =
-  "SOL gas için hedef Solana adresi girin. Ödeme Circle USDC ile Ethereum, Base, Monad veya Solana üzerinden yapılır.";
+  "Enter a Solana address for SOL delivery. Pay with Circle USDC on Ethereum, Base, Monad, or Solana.";

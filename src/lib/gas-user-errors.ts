@@ -1,4 +1,6 @@
-/** Kullanıcıya gösterilecek Türkçe işlem hataları */
+import { messages } from "@/i18n/messages";
+
+/** User-facing transaction errors (English) */
 export function formatGasUserError(error: unknown): string {
   const parts: string[] = [];
   const collect = (value: unknown, depth = 0) => {
@@ -16,31 +18,55 @@ export function formatGasUserError(error: unknown): string {
   collect(error);
   const blob = parts.join(" ").toLowerCase();
 
-  if (blob.includes("user rejected") || blob.includes("user denied") || blob.includes("rejected the request")) {
-    return "İşlem cüzdanınızda iptal edildi.";
+  if (
+    blob.includes("user rejected") ||
+    blob.includes("user denied") ||
+    blob.includes("rejected the request") ||
+    blob.includes("iptal")
+  ) {
+    return messages.errors.cancelled;
   }
-  if (blob.includes("insufficient funds") || blob.includes("yetersiz")) {
-    return "Cüzdanınızda bu ödeme için yeterli bakiye yok.";
+  if (
+    blob.includes("insufficient funds") ||
+    blob.includes("yetersiz") ||
+    blob.includes("insufficient balance")
+  ) {
+    return messages.errors.insufficient;
   }
-  if (blob.includes("operatör likiditesi") || blob.includes("likidite")) {
-    return "Gas tankı boş veya yetersiz — operatör kasasına Sepolia ETH / Base ETH / MON yükleyin.";
+  if (
+    blob.includes("operatör likiditesi") ||
+    blob.includes("likidite") ||
+    blob.includes("tankı") ||
+    blob.includes("tank")
+  ) {
+    return messages.errors.tankEmpty;
   }
-  if (blob.includes("doğrulanamadı") || blob.includes("treasury")) {
-    return "Ödeme kasaya ulaşmadı veya tutar eşleşmedi. Ağ ve miktarı kontrol edin.";
+  if (
+    blob.includes("doğrulanamadı") ||
+    blob.includes("treasury") ||
+    blob.includes("transferi okunamadı")
+  ) {
+    return messages.errors.depositMismatch;
   }
   if (blob.includes("chain") && blob.includes("match")) {
-    return "MetaMask yanlış ağda — ödeme ağına geçin ve tekrar deneyin.";
+    return messages.errors.wrongChain;
   }
   if (blob.includes("unsupported chain") || blob.includes("unrecognized chain")) {
-    return "Bu ağ MetaMask'ta ekli değil — Sepolia, Base Sepolia veya Monad Testnet ekleyin.";
+    return messages.errors.chainNotAdded;
   }
   if (blob.includes("collector") || blob.includes("kasa")) {
-    return "GASSTATION kasası yapılandırılmamış (.env.local COLLECTOR_ADDRESS).";
+    return messages.errors.collectorMissing;
   }
-  if (blob.includes("abort")) {
-    return "Sunucu yanıt vermedi — bağlantıyı kontrol edip tekrar deneyin.";
+  if (blob.includes("abort") || blob.includes("timed out") || blob.includes("timeout")) {
+    return messages.errors.timeout;
+  }
+  if (blob.includes("execution reverted") || blob.includes("transfer amount exceeds")) {
+    return messages.errors.insufficient;
+  }
+  if (blob.includes("network") && blob.includes("switch")) {
+    return messages.errors.wrongChain;
   }
 
   const raw = parts.join(" ").trim();
-  return raw || "İşlem tamamlanamadı — bilinmeyen hata.";
+  return raw || messages.errors.unknown;
 }

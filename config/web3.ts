@@ -206,9 +206,9 @@ const rainbowConnectors = connectorsForWallets(
 
   [
 
-    { groupName: "Önerilen", wallets: recommendedWallets },
+    { groupName: "Recommended", wallets: recommendedWallets },
 
-    ...(moreWallets.length ? [{ groupName: "Diğer Cüzdanlar", wallets: moreWallets }] : []),
+    ...(moreWallets.length ? [{ groupName: "More wallets", wallets: moreWallets }] : []),
 
   ],
 

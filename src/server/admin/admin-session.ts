@@ -12,14 +12,21 @@ function sessionSecret(): string {
   const env = getServerEnv();
   if (env.API_SECRET_KEY) return env.API_SECRET_KEY;
   if (env.SESSION_ENCRYPTION_KEY) return env.SESSION_ENCRYPTION_KEY;
-  if (env.NODE_ENV === "production") {
+
+  const appEnv = process.env.NEXT_PUBLIC_APP_ENV ?? "development";
+  const admin = getAdminWalletAddress();
+
+  if (env.NODE_ENV === "production" && appEnv === "mainnet") {
     throw new Error(
-      "Production: API_SECRET_KEY veya SESSION_ENCRYPTION_KEY zorunlu",
+      "Production mainnet: API_SECRET_KEY veya SESSION_ENCRYPTION_KEY zorunlu",
     );
   }
-  const admin = getAdminWalletAddress();
-  if (!admin) throw new Error("ADMIN_WALLET_ADDRESS is not configured");
-  return `pump-admin-dev-only:${admin.toLowerCase()}`;
+
+  if (admin) {
+    return `pump-admin-${appEnv}:${admin.toLowerCase()}`;
+  }
+
+  throw new Error("ADMIN_WALLET_ADDRESS veya operatör cüzdanı yapılandırılmamış");
 }
 
 function signPayload(payload: string): string {

@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
+import { messages } from "@/i18n/messages";
 
 type AdminStatus = {
   authenticated: boolean;
   configured: boolean;
+  adminWallet?: string;
 };
 
 export function useAdminSession() {
@@ -33,7 +35,7 @@ export function useAdminSession() {
 
   const signIn = useCallback(async () => {
     if (!isConnected || !address) {
-      setError("Önce cüzdanınızı bağlayın.");
+      setError(messages.admin.connectFirst);
       return false;
     }
 
@@ -44,7 +46,7 @@ export function useAdminSession() {
         credentials: "include",
       });
       if (!challengeRes.ok) {
-        throw new Error("Doğrulama başlatılamadı.");
+        throw new Error(messages.admin.challengeFailed);
       }
       const { message } = (await challengeRes.json()) as { message: string };
       const signature = await signMessageAsync({ message });
@@ -57,13 +59,13 @@ export function useAdminSession() {
       });
 
       if (!verifyRes.ok) {
-        throw new Error("Yetkisiz cüzdan veya geçersiz imza.");
+        throw new Error(messages.admin.unauthorized);
       }
 
       await refresh();
       return true;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Giriş başarısız.");
+      setError(e instanceof Error ? e.message : messages.admin.signInFailed);
       return false;
     } finally {
       setSigningIn(false);
@@ -85,6 +87,7 @@ export function useAdminSession() {
     signOut,
     refresh,
     isConnected,
+    adminWallet: status.adminWallet,
     address,
   };
 }

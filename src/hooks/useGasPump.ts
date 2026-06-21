@@ -830,6 +830,10 @@ export function useGasPump() {
           );
         }
 
+        if (depositTarget.kind === "evm") {
+          await ensureEvmDepositChain();
+        }
+
         const paySymbol = depositTarget.paySymbol;
         const paymentMode = depositTarget.paymentMode;
         const passId = pumpPassSilent.getPassId() ?? undefined;

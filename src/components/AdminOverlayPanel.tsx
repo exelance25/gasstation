@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAdminSession } from "@/hooks/useAdminSession";
+import { messages } from "@/i18n/messages";
 
 type FeedbackRow = {
   id: string;
@@ -120,9 +121,9 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
         <header className="flex items-center justify-between border-b border-white/10 px-5 py-4">
           <div>
             <h2 id="admin-panel-title" className="text-lg font-bold text-white">
-              Admin
+              {messages.admin.title}
             </h2>
-            <p className="text-xs text-neutral-500">Kasa cüzdanı ile doğrulanmış erişim</p>
+            <p className="text-xs text-neutral-500">{messages.admin.subtitle}</p>
           </div>
           <button
             type="button"
@@ -137,15 +138,20 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
         <div className="space-y-5 p-5">
           {!admin.configured && (
             <p className="rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3 text-sm text-amber-200">
-              Admin cüzdanı sunucuda tanımlı değil (`ADMIN_WALLET_ADDRESS`).
+              {messages.admin.notConfigured}
             </p>
           )}
 
           {admin.configured && !admin.authenticated && (
             <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-5 text-center">
+              {admin.adminWallet && (
+                <p className="mb-3 text-xs text-neutral-500">
+                  {messages.admin.expectedWallet}:{" "}
+                  <code className="text-emerald-400">{admin.adminWallet.slice(0, 10)}…</code>
+                </p>
+              )}
               <p className="text-sm text-neutral-300">
-                Kasa yönetim paneline girmek için admin cüzdanınızı bağlayın ve imza ile
-                doğrulayın.
+                Connect the treasury admin wallet and sign to access the vault panel.
               </p>
               {!admin.isConnected ? (
                 <button
@@ -153,7 +159,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                   onClick={() => openConnectModal?.()}
                   className="mt-4 w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-500"
                 >
-                  Cüzdan bağla
+                  {messages.admin.connectWallet}
                 </button>
               ) : (
                 <>
@@ -166,7 +172,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                     onClick={() => void admin.signIn()}
                     className="mt-4 w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-bold text-white hover:bg-purple-500 disabled:opacity-50"
                   >
-                    {admin.signingIn ? "İmzalanıyor…" : "Cüzdan ile doğrula"}
+                    {admin.signingIn ? messages.admin.signingIn : messages.admin.signIn}
                   </button>
                 </>
               )}

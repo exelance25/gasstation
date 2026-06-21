@@ -33,8 +33,8 @@ export function GasHavuzuGuard({ children }: { children: ReactNode }) {
       <div className="w-full max-w-xl rounded-xl border border-amber-500/50 bg-amber-950/30 p-6 text-center text-amber-100">
         <p className="font-semibold">Admin yapılandırması eksik</p>
         <p className="mt-2 text-sm">
-          Sunucuda <code className="text-xs">ADMIN_WALLET_ADDRESS</code> tanımlayın
-          (.env.local — git&apos;e eklenmez).
+          Testnet&apos;te operatör cüzdanı otomatik admin sayılır. Mainnet için{" "}
+          <code className="text-xs">ADMIN_WALLET_ADDRESS</code> tanımlayın.
         </p>
       </div>
     );
