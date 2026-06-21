@@ -138,7 +138,8 @@ export async function verifyUsdcDeposit(params: {
   }
 
   const treasury = getServerCollectorAddress();
-  const expectedWei = parseUnits(String(packageUsd), 6);
+  const roundedUsd = Math.round(packageUsd * 1_000_000) / 1_000_000;
+  const expectedWei = parseUnits(roundedUsd.toFixed(6), 6);
   const client = createDepositPublicClient(chainId);
 
   const receipt = await client.getTransactionReceipt({ hash: txHash }).catch(() => null);

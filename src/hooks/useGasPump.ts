@@ -174,7 +174,9 @@ export function useGasPump() {
 
   const selectedAmount: AmountOption = useMemo(() => {
     if (!isDeliveryAmountValid || parsedDeliveryAmount === null) return 0;
-    if (quote?.packageUsd && quote.packageUsd > 0) return quote.packageUsd;
+    if (quote?.packageUsd && quote.packageUsd > 0) {
+      return roundPackageUsd(quote.packageUsd);
+    }
     const prices =
       priceSnapshot ??
       ({
@@ -667,15 +669,21 @@ export function useGasPump() {
     let completedDepositTx: string | undefined;
     let completedOrderId: string | undefined;
     let completedDepositor: string | undefined;
+    let completedPackageUsd: number | undefined;
     try {
       if (!depositTarget) {
         throw new Error("Ödeme kaynağı seçilmedi.");
       }
 
       await runLocked(async () => {
+        const packageUsd = roundPackageUsd(selectedAmount);
+        if (packageUsd <= 0) {
+          throw new Error("Geçersiz ödeme tutarı — gas miktarını kontrol edin.");
+        }
+
         const precheck = await postDispensePrecheck({
           targetAsset: selectedAsset,
-          packageAmount: selectedAmount,
+          packageAmount: packageUsd,
           targetAddress: trimmedTarget,
         });
         if (!precheck.ok) {
@@ -828,7 +836,7 @@ export function useGasPump() {
         const { orderId } = await postDepositIntent({
           targetAsset: selectedAsset,
           targetAddress: trimmedTarget,
-          packageAmount: selectedAmount,
+          packageAmount: packageUsd,
           depositChainId: depositTarget.chainId,
           depositorAddress: depositor,
           passId,
@@ -837,10 +845,11 @@ export function useGasPump() {
         });
         completedOrderId = orderId;
         completedDepositor = depositor;
+        completedPackageUsd = packageUsd;
 
         setFuelingHint("Sipariş kaydedildi — cüzdan ödemesi hazırlanıyor…");
 
-        const amountPaidWei = parseUnits(String(roundPackageUsd(selectedAmount)), 6);
+        const amountPaidWei = parseUnits(String(packageUsd), 6);
         let depositTxHash: string;
 
         if (depositTarget.kind === "solana") {
@@ -953,7 +962,7 @@ export function useGasPump() {
           txHash: depositTxHash,
           targetAsset: selectedAsset,
           targetAddress: trimmedTarget,
-          packageAmount: selectedAmount,
+          packageAmount: packageUsd,
           depositorAddress: depositor,
           orderId,
           intentId: orderId,
@@ -991,7 +1000,7 @@ export function useGasPump() {
             orderId: completedOrderId,
             targetAsset: selectedAsset,
             targetAddress: trimmedTarget,
-            packageAmount: selectedAmount,
+            packageAmount: completedPackageUsd ?? roundPackageUsd(selectedAmount),
             depositorAddress: completedDepositor,
           })) as {
             ok?: boolean;

@@ -214,6 +214,7 @@ export async function runGasDispense(
     targetAsset,
     targetAddress: targetAddress.trim(),
     nativeAmount: quote.estimatedGasAmount,
+    waitForReceipt: process.env.NEXT_PUBLIC_APP_ENV !== "mainnet",
   });
 
   markDepositProcessed(depositChainId, idempotencyKey, deliveryTxHash);
