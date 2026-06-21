@@ -19,33 +19,32 @@ export function formatGasUserError(error: unknown): string {
   const blob = parts.join(" ").toLowerCase();
 
   if (
+    blob.includes("operatör") ||
+    blob.includes("operator likid") ||
+    blob.includes("gas tank") ||
+    blob.includes("tankı") ||
+    blob.includes("kasada") ||
+    blob.includes("likidite")
+  ) {
+    return messages.errors.deliveryUnavailable;
+  }
+
+  if (
     blob.includes("user rejected") ||
     blob.includes("user denied") ||
     blob.includes("rejected the request") ||
-    blob.includes("iptal")
+    blob.includes("cancelled in wallet")
   ) {
     return messages.errors.cancelled;
   }
   if (
     blob.includes("insufficient funds") ||
-    blob.includes("yetersiz") ||
-    blob.includes("insufficient balance")
+    blob.includes("insufficient balance") ||
+    blob.includes("yetersiz")
   ) {
     return messages.errors.insufficient;
   }
-  if (
-    blob.includes("operatör likiditesi") ||
-    blob.includes("likidite") ||
-    blob.includes("tankı") ||
-    blob.includes("tank")
-  ) {
-    return messages.errors.tankEmpty;
-  }
-  if (
-    blob.includes("doğrulanamadı") ||
-    blob.includes("treasury") ||
-    blob.includes("transferi okunamadı")
-  ) {
+  if (blob.includes("doğrulanamadı") || blob.includes("treasury")) {
     return messages.errors.depositMismatch;
   }
   if (blob.includes("chain") && blob.includes("match")) {
@@ -54,19 +53,16 @@ export function formatGasUserError(error: unknown): string {
   if (blob.includes("unsupported chain") || blob.includes("unrecognized chain")) {
     return messages.errors.chainNotAdded;
   }
-  if (blob.includes("collector") || blob.includes("kasa")) {
-    return messages.errors.collectorMissing;
-  }
   if (blob.includes("abort") || blob.includes("timed out") || blob.includes("timeout")) {
     return messages.errors.timeout;
   }
   if (blob.includes("execution reverted") || blob.includes("transfer amount exceeds")) {
     return messages.errors.insufficient;
   }
-  if (blob.includes("network") && blob.includes("switch")) {
-    return messages.errors.wrongChain;
-  }
 
   const raw = parts.join(" ").trim();
+  if (raw.includes("0x") && (raw.includes("ETH") || raw.includes("MON") || raw.includes("operator"))) {
+    return messages.errors.deliveryUnavailable;
+  }
   return raw || messages.errors.unknown;
 }

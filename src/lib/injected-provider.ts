@@ -6,6 +6,17 @@ type RequestProvider = {
   removeListener?: (event: string, handler: (...args: unknown[]) => void) => void;
 };
 
+export function getRabbyEthereumProvider(): RequestProvider | undefined {
+  if (typeof window === "undefined") return undefined;
+  const w = window as Window & {
+    rabby?: RequestProvider;
+    ethereum?: RequestProvider & { isRabby?: boolean };
+  };
+  if (w.rabby?.request) return w.rabby;
+  if (w.ethereum?.isRabby && w.ethereum.request) return w.ethereum;
+  return undefined;
+}
+
 export function getPhantomEthereumProvider(): RequestProvider | undefined {
   if (typeof window === "undefined") return undefined;
   return (window as Window & { phantom?: { ethereum?: RequestProvider } }).phantom

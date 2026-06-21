@@ -7,8 +7,9 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
 import { getConnectorLabel, getWalletConnectors } from "@/lib/connectors";
 import { useWalletContext } from "@/providers/WalletContext";
-import { WALLET_CONNECT_CONSENT, SUPPORTED_PAY_ASSETS_TR } from "@/lib/deposit-networks";
+import { WALLET_CONNECT_CONSENT, SUPPORTED_PAY_ASSETS } from "@/lib/deposit-networks";
 import { isSolanaGasEnabled } from "@/config/gas-features";
+import { messages } from "@/i18n/messages";
 import { WalletBrandIcon } from "@/components/WalletBrandIcon";
 import { cn } from "@/lib/utils";
 
@@ -40,11 +41,16 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
     solanaConnected,
   } = useWalletContext();
 
+  const rabbyConnector =
+    evmConnectors.find((c) => getConnectorLabel(c) === "Rabby") ?? null;
   const phantomEvmConnector =
     evmConnectors.find((c) => getConnectorLabel(c) === "Phantom") ?? null;
 
   const evmRows: WalletRow[] = evmConnectors
-    .filter((c) => getConnectorLabel(c) !== "Phantom")
+    .filter((c) => {
+      const label = getConnectorLabel(c);
+      return label !== "Phantom" && label !== "Rabby";
+    })
     .map((connector) => {
       const label = getConnectorLabel(connector);
       return {
@@ -56,12 +62,22 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
       };
     });
 
+  const rabbyRow: WalletRow | null = rabbyConnector
+    ? {
+        kind: "evm",
+        id: "rabby-priority",
+        label: "Rabby",
+        sub: "EVM",
+        connector: rabbyConnector,
+      }
+    : null;
+
   const phantomRow: WalletRow | null = phantomEvmConnector
     ? {
         kind: "phantom",
         id: "phantom-hybrid",
         label: "Phantom",
-        sub: "EVM approval → Solana approval",
+        sub: messages.wallet.phantomSub,
         connector: phantomEvmConnector,
       }
     : null;
@@ -81,9 +97,14 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
       walletName: w.adapter.name,
     }));
 
+  const orderedEvm = [
+    ...(rabbyRow && rabbyRow.connector ? [rabbyRow] : []),
+    ...evmRows,
+  ];
+
   const rows: WalletRow[] = isSolanaGasEnabled()
-    ? [...(phantomRow ? [phantomRow] : []), ...evmRows, ...solanaRows]
-    : evmRows;
+    ? [...(phantomRow ? [phantomRow] : []), ...orderedEvm, ...solanaRows]
+    : orderedEvm;
 
   useEffect(() => {
     if (!open) {
@@ -115,6 +136,7 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
 
   const handlePick = async (row: WalletRow) => {
     if (!accepted || connectingId) return;
+    if (row.kind !== "solana" && !("connector" in row && row.connector)) return;
     setConnectingId(row.id);
     setError(null);
     try {
@@ -127,9 +149,7 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
       }
       onClose();
     } catch (e) {
-      const message =
-        e instanceof Error ? e.message : "Cüzdan bağlantısı reddedildi veya başarısız";
-      setError(message);
+      setError(e instanceof Error ? e.message : messages.wallet.connectFailed);
     } finally {
       setConnectingId(null);
     }
@@ -138,32 +158,35 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
   if (!open) return null;
 
   const busy = connectingId !== null || solanaConnecting;
+  const visibleRows = rows.filter(
+    (r) => r.kind === "solana" || ("connector" in r && Boolean(r.connector)),
+  );
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div
         ref={panelRef}
         role="dialog"
-        aria-label="Cüzdan seçin"
+        aria-label={messages.wallet.pickWallet}
         className="flex max-h-[min(90vh,640px)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-950 shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
       >
         <div className="border-b border-white/10 px-4 py-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-white">
-              Cüzdan Bağla
+              {messages.wallet.connectTitle}
             </h3>
             <button
               type="button"
               onClick={onClose}
               disabled={Boolean(connectingId)}
               className="text-neutral-500 transition hover:text-white disabled:opacity-40"
-              aria-label="Kapat"
+              aria-label={messages.wallet.close}
             >
               ✕
             </button>
           </div>
           <p className="mt-1 text-[10px] text-neutral-500">
-            Ödeme: {SUPPORTED_PAY_ASSETS_TR}
+            Pay with: {SUPPORTED_PAY_ASSETS}
           </p>
         </div>
 
@@ -185,15 +208,13 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
         )}
 
         <div className="flex-1 overflow-y-auto p-3">
-          {rows.length === 0 ? (
-            <p className="py-6 text-center text-xs text-neutral-500">
-              Cüzdan bulunamadı. MetaMask, Rabby veya Phantom kurun.
-            </p>
+          {visibleRows.length === 0 ? (
+            <p className="py-6 text-center text-xs text-neutral-500">{messages.wallet.noWallets}</p>
           ) : (
             <ul className="space-y-2">
-              {rows.map((row) => {
+              {visibleRows.map((row) => {
                 const isConnecting = connectingId === row.id;
-                const disabled = !accepted || busy;
+                const disabled = !accepted || busy || (row.kind !== "solana" && !row.connector);
 
                 return (
                   <li key={row.id}>
@@ -208,6 +229,7 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
                           : "border-white/10 bg-white/[0.03] hover:border-emerald-500/35 hover:bg-emerald-950/20",
                         isConnecting && "animate-pulse border-emerald-500/40",
                         row.kind === "phantom" && !disabled && "border-purple-500/25",
+                        row.label === "Rabby" && !disabled && "border-blue-500/20",
                       )}
                     >
                       <WalletBrandIcon
@@ -219,7 +241,9 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
                         <span className="text-[10px] text-neutral-500">{row.sub}</span>
                       </span>
                       {isConnecting && (
-                        <span className="ml-auto text-[10px] text-emerald-400">Onay bekleniyor…</span>
+                        <span className="ml-auto text-[10px] text-emerald-400">
+                          {messages.wallet.waitingApproval}
+                        </span>
                       )}
                     </button>
                   </li>
@@ -230,7 +254,7 @@ export function UnifiedWalletModal({ open, onClose }: UnifiedWalletModalProps) {
         </div>
 
         <p className="border-t border-white/10 px-4 py-2 text-center text-[9px] text-neutral-600">
-          Phantom: önce EVM, sonra Solana onayı · Adresler sunucuda saklanmaz
+          {messages.wallet.phantomFootnote}
         </p>
       </div>
     </div>

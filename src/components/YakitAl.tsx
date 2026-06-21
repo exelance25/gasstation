@@ -21,7 +21,6 @@ import { PumpWelcomeBanner } from "@/components/PumpWelcomeBanner";
 import { PumpUserCounter } from "@/components/PumpUserCounter";
 import { PumpAppTopTabs } from "@/components/PumpAppTopTabs";
 import { GasStationLogo } from "@/components/GasStationLogo";
-import { OperatorTankBanner } from "@/components/OperatorTankBanner";
 
 export function YakitAl() {
   const [sdkPanelOpen, setSdkPanelOpen] = useState(false);
@@ -164,7 +163,6 @@ export function YakitAl() {
               onSelect={setSelectedAsset}
               disabled={busy}
             />
-            <OperatorTankBanner deliveryAsset={selectedAsset} />
           </div>
 
           {/* Sağ — paket tutarı veya otomatik quote */}

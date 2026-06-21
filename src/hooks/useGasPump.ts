@@ -45,6 +45,7 @@ import {
 import { rowUsdValue } from "@/lib/payment-portfolio-filter";
 import type { LivePrices } from "@/lib/oracle/live-prices";
 import { formatGasUserError } from "@/lib/gas-user-errors";
+import { messages } from "@/i18n/messages";
 import { STUB_ORACLE_PRICES } from "@/lib/oracle/stub-prices";
 import { isDeliveryAssetEnabled, isSolanaGasEnabled } from "@/config/gas-features";
 import type { FeeQuote } from "@gasstation/fee-sdk";
@@ -373,50 +374,6 @@ export function useGasPump() {
   const isValidTarget = isValidDeliveryTarget(selectedAsset, targetAddress);
   const isTargetMismatch = isTargetFormatMismatch(selectedAsset, targetAddress);
 
-  const tankPrecheckQuery = useQuery({
-    queryKey: [
-      "tank-precheck",
-      selectedAsset,
-      deferredPackageAmount,
-      deferredTarget,
-      mode,
-    ],
-    queryFn: async () => {
-      if (
-        !isDeliveryAmountValid ||
-        !isValidTarget ||
-        deferredPackageAmount <= 0 ||
-        !isDeliveryAssetEnabled(selectedAsset)
-      ) {
-        return { ok: false as const, reason: "Geçersiz sipariş" };
-      }
-      return postDispensePrecheck({
-        targetAsset: selectedAsset,
-        packageAmount: deferredPackageAmount,
-        targetAddress: deferredTarget,
-      });
-    },
-    enabled:
-      mode === "manual" &&
-      anyConnected &&
-      isDeliveryAmountValid &&
-      isValidTarget &&
-      deferredPackageAmount > 0 &&
-      isDeliveryAssetEnabled(selectedAsset) &&
-      deferredTarget.length > 0,
-    refetchInterval: 25_000,
-    staleTime: 12_000,
-    retry: false,
-  });
-
-  useEffect(() => {
-    if (tankPrecheckQuery.data?.ok === false && tankPrecheckQuery.data.reason) {
-      setPumpBlockDetail(tankPrecheckQuery.data.reason);
-    } else if (tankPrecheckQuery.data?.ok) {
-      setPumpBlockDetail(null);
-    }
-  }, [tankPrecheckQuery.data]);
-
   useEffect(() => {
     if (!isSolanaGasEnabled() && selectedAsset === "SOL") {
       setSelectedAsset("ETH");
@@ -509,9 +466,7 @@ export function useGasPump() {
     if (!isDeliveryAssetEnabled(selectedAsset)) return "invalid_target";
 
     if (mode === "manual") {
-      if (tankPrecheckQuery.data && !tankPrecheckQuery.data.ok) {
-        return "tank_empty";
-      }
+      /* Operator tank precheck removed — no preemptive vault warnings for users */
     }
 
     if (mode === "automatic") {
@@ -571,7 +526,6 @@ export function useGasPump() {
     isCollectorReady,
     collectorLoading,
     selectedAsset,
-    tankPrecheckQuery.data,
     evmConnected,
   ]);
 
@@ -589,13 +543,6 @@ export function useGasPump() {
       return false;
     }
     if (quoteLoading || quoteRefreshing) return true;
-    if (
-      mode === "manual" &&
-      tankPrecheckQuery.isFetching &&
-      tankPrecheckQuery.data === undefined
-    ) {
-      return true;
-    }
     return false;
   }, [
     pumpFlow.phase,
@@ -605,16 +552,12 @@ export function useGasPump() {
     isValidTarget,
     quoteLoading,
     quoteRefreshing,
-    mode,
-    tankPrecheckQuery.isFetching,
-    tankPrecheckQuery.data,
   ]);
 
   const prepareMessage = useMemo(() => {
-    if (quoteLoading || quoteRefreshing) return "Canlı fiyat hesaplanıyor…";
-    if (tankPrecheckQuery.isFetching) return "Gas tankı ve kasa kontrol ediliyor…";
-    return "Sipariş hazırlanıyor…";
-  }, [quoteLoading, quoteRefreshing, tankPrecheckQuery.isFetching]);
+    if (quoteLoading || quoteRefreshing) return "Fetching live prices…";
+    return messages.pump.preparingOrder;
+  }, [quoteLoading, quoteRefreshing]);
 
   const selectDeliveryAsset = useCallback((id: DepotAssetId) => {
     if (isActiveGasDeliveryAsset(id)) {
@@ -688,7 +631,7 @@ export function useGasPump() {
           targetAddress: trimmedTarget,
         });
         if (!precheck.ok) {
-          throw new Error(precheck.reason ?? "Kasadan çıkış precheck başarısız");
+          throw new Error(messages.pump.deliveryUnavailable);
         }
 
         setFuelingHint("Ödeme adımına geçiliyor…");
@@ -705,7 +648,7 @@ export function useGasPump() {
             }
             statusToastIdRef.current = showToast({
               variant: "status",
-              title,
+              title: title || messages.pump.pendingTitle,
               message,
               persist: true,
             });
@@ -794,7 +737,13 @@ export function useGasPump() {
                 ? { publicKey: solanaPublicKey, sendTransaction: solanaSendTransaction }
                 : undefined,
             onStatus: (title, message) => {
-              showToast({ variant: "status", title, message, persist: true });
+              if (statusToastIdRef.current) dismissToast(statusToastIdRef.current);
+              statusToastIdRef.current = showToast({
+                variant: "status",
+                title: title || messages.pump.pendingTitle,
+                message,
+                persist: true,
+              });
             },
           });
 
@@ -1037,20 +986,20 @@ export function useGasPump() {
 
       const depositLabel =
         completedPaymentMode === "native"
-          ? "Sepolia/native depozitiniz"
-          : "USDC depozitiniz";
+          ? "Your native deposit"
+          : "Your USDC deposit";
       const message = completedDepositTx
-        ? `${depositLabel} onaylandı (${completedDepositTx.slice(0, 10)}…) ancak gas teslimatı tamamlanamadı: ${base}. Kasa otomatik retry başarısız — tx hash'i saklayın.`
+        ? `${depositLabel} was confirmed (${completedDepositTx.slice(0, 10)}…) but gas delivery failed: ${base}. Save the transaction hash if you need support.`
         : base;
       showToast({
         variant: "error",
-        title: "İşlem başarısız",
+        title: messages.pump.failedTitle,
         message,
         persist: true,
       });
       setPumpFlow({
         phase: "error",
-        title: "İşlem tamamlanamadı",
+        title: messages.pump.failedTitle,
         detail: message,
       });
     } finally {

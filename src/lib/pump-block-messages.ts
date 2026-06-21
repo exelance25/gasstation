@@ -1,26 +1,25 @@
 import type { PumpButtonBlockReason } from "@/hooks/useGasPump";
+import { messages } from "@/i18n/messages";
 
 const BLOCK_TITLES: Partial<Record<NonNullable<PumpButtonBlockReason>, string>> = {
-  wallet: "Cüzdan gerekli",
-  invalid_amount: "Miktar gerekli",
-  deposit_network: "Ödeme kaynağı seçin",
-  invalid_target: "Hedef adres gerekli",
-  below_minimum: "Yetersiz bakiye",
-  insufficient_usdc: "Yetersiz USDC",
-  insufficient_native: "Yetersiz bakiye",
-  collector: "Kasa yapılandırılmamış",
-  tank_empty: "Gas tankı hazır değil",
-  precheck_loading: "Kontrol ediliyor",
-  automatic_soon: "Otomatik mod kapalı",
-  treasury_native: "Native kasa eksik",
-  auto_quote: "Ücret hesaplanıyor",
-  insufficient_usdc_paymaster: "Yetersiz USDC",
-  paymaster_chain: "Paymaster ağı gerekli",
+  wallet: messages.pump.walletTitle,
+  invalid_amount: messages.pump.amountTitle,
+  deposit_network: messages.pump.depositTitle,
+  invalid_target: messages.pump.targetTitle,
+  below_minimum: messages.pump.balanceTitle,
+  insufficient_usdc: messages.pump.balanceTitle,
+  insufficient_native: messages.pump.balanceTitle,
+  collector: messages.pump.collectorTitle,
+  automatic_soon: messages.pump.autoOffTitle,
+  treasury_native: messages.pump.treasuryNativeTitle,
+  auto_quote: messages.pump.quoteTitle,
+  insufficient_usdc_paymaster: messages.pump.paymasterUsdcTitle,
+  paymaster_chain: messages.pump.paymasterChainTitle,
 };
 
 export function getPumpBlockTitle(reason: PumpButtonBlockReason): string | null {
   if (!reason || reason === "pumping") return null;
-  return BLOCK_TITLES[reason] ?? "İşlem şu an yapılamıyor";
+  return BLOCK_TITLES[reason] ?? null;
 }
 
 export function getPumpBlockMessage(
@@ -28,31 +27,44 @@ export function getPumpBlockMessage(
   detail?: string | null,
 ): string | null {
   if (!reason || reason === "pumping") return null;
-
-  if (detail) return detail;
+  if (detail) return sanitizeUserFacingDetail(detail);
 
   switch (reason) {
     case "wallet":
-      return "Ödeme için EVM cüzdanınızı bağlayın.";
+      return messages.pump.walletMsg;
     case "invalid_amount":
-      return "Almak istediğiniz gas miktarını yazın.";
+      return messages.pump.amountMsg;
     case "deposit_network":
-      return "USDC, ETH, BASE veya MON ile ödeme kaynağı seçin.";
+      return messages.pump.depositMsg;
     case "invalid_target":
-      return "Gas gönderilecek geçerli bir hedef adresi girin.";
+      return messages.pump.targetMsg;
     case "below_minimum":
     case "insufficient_usdc":
     case "insufficient_native":
-      return "Seçili ödeme kaynağında bu işlem için yeterli bakiye yok.";
+      return messages.pump.balanceMsg;
     case "collector":
-      return "GASSTATION kasası henüz hazır değil.";
-    case "tank_empty":
-      return "Operatör kasasında teslimat için yeterli ETH / BASE / MON yok.";
-    case "precheck_loading":
-      return "Gas tankı bakiyesi doğrulanıyor…";
+      return messages.pump.collectorMsg;
     case "automatic_soon":
-      return "Manuel modu kullanın.";
+      return messages.pump.autoOffMsg;
     default:
       return null;
   }
+}
+
+/** Never expose operator balances, addresses, or internal tank state to users */
+export function sanitizeUserFacingDetail(detail: string): string {
+  const lower = detail.toLowerCase();
+  if (
+    lower.includes("operatör") ||
+    lower.includes("operator") ||
+    lower.includes("tank") ||
+    lower.includes("kasada") ||
+    lower.includes("treasury") ||
+    lower.includes("0x") ||
+    lower.includes("sepolia eth gönder") ||
+    lower.includes("fund operator")
+  ) {
+    return messages.errors.deliveryUnavailable;
+  }
+  return detail;
 }

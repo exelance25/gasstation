@@ -1,8 +1,8 @@
 "use client";
 
 import type { PumpButtonBlockReason, PumpFlowStatus } from "@/hooks/useGasPump";
-import { getPumpBlockMessage, getPumpBlockTitle } from "@/lib/pump-block-messages";
 import { getDeliveryExplorerUrl } from "@/lib/explorer-urls";
+import { messages } from "@/i18n/messages";
 import { cn } from "@/lib/utils";
 
 type PumpActionStatusProps = {
@@ -52,7 +52,7 @@ export function PumpActionStatus({
             rel="noopener noreferrer"
             className="mt-2 inline-block text-[10px] font-medium text-emerald-300/90 underline underline-offset-2 hover:text-emerald-200"
           >
-            Teslimat → explorer
+            View on explorer
           </a>
         ) : null}
         {onDismissResult ? (
@@ -66,7 +66,7 @@ export function PumpActionStatus({
                 : "bg-red-500/15 text-red-200 hover:bg-red-500/25",
             )}
           >
-            {isSuccess ? "Tamam" : "Kapat"}
+            {isSuccess ? messages.common.ok : messages.common.close}
           </button>
         ) : null}
       </div>
@@ -75,36 +75,6 @@ export function PumpActionStatus({
 
   if (busy || flow.phase === "fueling") return null;
 
-  const title = getPumpBlockTitle(blockReason);
-  const message = getPumpBlockMessage(blockReason, blockDetail);
-  if (!title || !message) return null;
-
-  const isWarn =
-    blockReason === "tank_empty" ||
-    blockReason === "below_minimum" ||
-    blockReason === "insufficient_usdc" ||
-    blockReason === "insufficient_native" ||
-    blockReason === "collector" ||
-    blockReason === "treasury_native" ||
-    blockReason === "insufficient_usdc_paymaster";
-
-  return (
-    <div
-      className={cn(
-        "rounded-2xl border px-3.5 py-2.5 text-center backdrop-blur-[2px]",
-        isWarn
-          ? "border-amber-500/20 bg-amber-950/15 text-amber-100/90"
-          : "border-white/[0.06] bg-white/[0.02] text-neutral-400",
-      )}
-      role="status"
-    >
-      <p className="text-[10px] font-medium tracking-wide text-neutral-500">{title}</p>
-      <p className="mt-0.5 text-xs leading-relaxed text-neutral-400">{message}</p>
-      {blockReason === "tank_empty" && (
-        <p className="mt-1.5 text-[10px] leading-snug text-neutral-500">
-          Geçici kasa limiti — daha küçük miktar deneyin.
-        </p>
-      )}
-    </div>
-  );
+  /* No preemptive block banners — user sees feedback only after FIRE or on failure */
+  return null;
 }

@@ -153,7 +153,7 @@ function ToastItem({
           {toast.variant === "status" && (
             <span className="mb-1 inline-block h-1.5 w-8 rounded-full bg-gradient-to-r from-neon-accent-purple to-neon-accent-green" />
           )}
-          <p className="text-sm font-semibold leading-snug">{toast.title}</p>
+          <p className="text-sm font-semibold leading-snug">{toast.title ?? "Notice"}</p>
           {toast.message ? (
             <p className="mt-1 break-all text-xs opacity-90">{toast.message}</p>
           ) : null}
@@ -162,7 +162,7 @@ function ToastItem({
           type="button"
           onClick={() => onDismiss(toast.id)}
           className="shrink-0 rounded border border-white/10 px-1.5 text-xs opacity-60 hover:opacity-100"
-          aria-label="Kapat"
+          aria-label="Close"
         >
           ✕
         </button>

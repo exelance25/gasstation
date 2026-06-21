@@ -111,16 +111,16 @@ export function PumpGasButton({
     if (blockReason === "treasury_native") {
       showToast({
         variant: "error",
-        title: "Native kasa yapılandırılmamış",
-        message: "GASSTATION treasury adresleri .env içinde tanımlanmalı.",
+        title: messages.pump.treasuryNativeTitle,
+        message: messages.pump.treasuryNativeMsg,
       });
       return;
     }
     if (blockReason === "auto_quote") {
       showToast({
         variant: "info",
-        title: "Ücret hesaplanıyor",
-        message: "Quote engine'den otomatik ücret teklifi alınıyor…",
+        title: messages.pump.quoteTitle,
+        message: messages.pump.quoteMsg,
       });
       return;
     }
@@ -151,16 +151,16 @@ export function PumpGasButton({
     if (blockReason === "insufficient_usdc_paymaster") {
       showToast({
         variant: "error",
-        title: "Yetersiz USDC",
-        message: "Paymaster ağında bu paket için yeterli USDC yok.",
+        title: messages.pump.paymasterUsdcTitle,
+        message: messages.pump.paymasterUsdcMsg,
       });
       return;
     }
     if (blockReason === "paymaster_chain") {
       showToast({
         variant: "info",
-        title: "Paymaster ağı gerekli",
-        message: "Native yetersiz — paymaster ağına geçin veya USDC yükleyin.",
+        title: messages.pump.paymasterChainTitle,
+        message: messages.pump.paymasterChainMsg,
       });
       return;
     }

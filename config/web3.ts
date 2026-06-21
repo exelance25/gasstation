@@ -18,8 +18,6 @@ import {
 
   okxWallet,
 
-  rabbyWallet,
-
   rainbowWallet,
 
   trustWallet,
@@ -39,6 +37,7 @@ import { clientEnv } from "@/config/client-env";
 import { wrapWalletFactory } from "@/lib/wrap-wallet-force-approval";
 
 import { phantomEvmWallet } from "@/wallets/phantom-evm-wallet";
+import { rabbyEvmWallet } from "@/wallets/rabby-evm-wallet";
 
 import {
 
@@ -146,7 +145,7 @@ const localDevWallets = [
 
   wrapWalletFactory(() => metaMaskWallet(rkParams)),
 
-  wrapWalletFactory(rabbyWallet),
+  wrapWalletFactory(rabbyEvmWallet),
 
   phantomEvmWallet,
 
@@ -164,7 +163,7 @@ const fullWalletsRecommended = [
 
   wrapWalletFactory(() => metaMaskWallet(rkParams)),
 
-  wrapWalletFactory(rabbyWallet),
+  wrapWalletFactory(rabbyEvmWallet),
 
   phantomEvmWallet,
 
@@ -232,7 +231,7 @@ export const wagmiConfig: Config = createConfig({
 
   connectors: rainbowConnectors,
 
-  multiInjectedProviderDiscovery: false,
+  multiInjectedProviderDiscovery: true,
 
   storage: createStorage({
 

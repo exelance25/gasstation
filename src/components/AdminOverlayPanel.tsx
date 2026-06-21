@@ -57,7 +57,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
       fetch("/api/admin/feedback", { credentials: "include" }),
     ]);
     if (!kasaRes.ok) {
-      setLoadError("Kasa verisi alınamadı.");
+      setLoadError(messages.admin.loadFailed);
       setKasa(null);
       setMessages([]);
       return;
@@ -182,21 +182,21 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
           {admin.authenticated && (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs text-emerald-400/90">Oturum açık — kasa verileri yüklendi</p>
+                <p className="text-xs text-emerald-400/90">{messages.admin.sessionOpen}</p>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => void loadAdminData()}
                     className="rounded border border-white/10 px-2 py-1 text-xs text-neutral-400 hover:text-white"
                   >
-                    Yenile
+                    {messages.admin.refresh}
                   </button>
                   <button
                     type="button"
                     onClick={() => void admin.signOut()}
                     className="rounded border border-white/10 px-2 py-1 text-xs text-neutral-400 hover:text-white"
                   >
-                    Çıkış
+                    {messages.admin.signOut}
                   </button>
                 </div>
               </div>
