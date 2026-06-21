@@ -38,12 +38,13 @@ export async function POST(request: Request) {
   }
 
   const wallet = depositorAddress.trim();
-  const passId =
-    parsed.data.passId && validatePumpPass(parsed.data.passId, wallet)
-      ? parsed.data.passId
-      : issuePumpPass(wallet).passId;
 
   try {
+    const passId =
+      parsed.data.passId && validatePumpPass(parsed.data.passId, wallet)
+        ? parsed.data.passId
+        : issuePumpPass(wallet).passId;
+
     const order = createGasOrder({
       passId,
       targetAsset: targetAsset as GasDeliveryAsset,

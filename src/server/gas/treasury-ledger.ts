@@ -53,8 +53,12 @@ export function recordTreasuryDispense(params: {
   };
 
   const path = ledgerPath();
-  mkdirSync(dirname(path), { recursive: true });
-  appendFileSync(path, `${JSON.stringify(entry)}\n`, "utf8");
+  try {
+    mkdirSync(dirname(path), { recursive: true });
+    appendFileSync(path, `${JSON.stringify(entry)}\n`, "utf8");
+  } catch {
+    /* Vercel — ledger opsiyonel, gas teslimi devam eder */
+  }
   return entry;
 }
 

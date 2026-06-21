@@ -23,6 +23,8 @@ let storeLoaded = false;
 function resolveStorePath(): string | null {
   const configured = process.env.DISPENSE_IDEMPOTENCY_FILE?.trim();
   if (configured) return resolve(configured);
+  /* Vercel/Lambda — disk yazılamaz; bellek içi idempotency yeterli */
+  if (process.env.VERCEL ?? process.env.AWS_LAMBDA_FUNCTION_NAME) return null;
   if (process.env.NODE_ENV === "production") {
     return resolve(process.cwd(), ".data", "dispense-processed.json");
   }
@@ -73,8 +75,12 @@ function pruneStore(store: IdempotencyStore): IdempotencyStore {
 }
 
 function persistStore(path: string, store: IdempotencyStore): void {
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, JSON.stringify(pruneStore(store), null, 2), "utf8");
+  try {
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, JSON.stringify(pruneStore(store), null, 2), "utf8");
+  } catch {
+    /* ephemeral runtime — bellek yeterli */
+  }
 }
 
 function hydrateMemoryFromStore(store: IdempotencyStore): void {
