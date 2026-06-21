@@ -1,5 +1,6 @@
 import type { DepotAssetId } from "@/config/depot-assets";
 import type { AmountOption } from "@/lib/pricing";
+import { apiErrorMessage, parseResponseJson } from "@/lib/api/parse-response-json";
 
 export type DispenseGasRequest = {
   txHash: string;
@@ -42,14 +43,14 @@ export async function postDispenseGas(
     clearTimeout(timeout);
   }
 
-  const data = (await res.json()) as DispenseGasResponse | DispenseGasError;
+  const data = await parseResponseJson<DispenseGasResponse | DispenseGasError>(res);
+
+  if (!data) {
+    throw new Error(apiErrorMessage(res, null, "Gas teslimat API hatası"));
+  }
 
   if (!res.ok) {
-    const message =
-      "error" in data && data.error
-        ? data.error
-        : `Gas teslimat API hatası (${res.status})`;
-    throw new Error(message);
+    throw new Error(apiErrorMessage(res, data, "Gas teslimat API hatası"));
   }
 
   return data as DispenseGasResponse;

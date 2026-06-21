@@ -29,7 +29,7 @@ import {
   isValidDeliveryTarget,
 } from "@/lib/delivery-target";
 import { erc20Abi } from "@/lib/erc20-abi";
-import { getCollectorAddress, isCollectorConfigured } from "@/lib/treasury-config";
+import { useCollectorAddress } from "@/hooks/useCollectorAddress";
 import { getSolanaRpcUrl } from "@/config/solana-usdc";
 import { buildSolanaUsdcTransferTransaction } from "@/lib/solana-spl-usdc";
 import { useToast } from "@/providers/ToastProvider";
@@ -346,7 +346,8 @@ export function useGasPump() {
   ]);
 
   const depositChainName = depositTarget?.chainName ?? "—";
-  const collectorAddress = getCollectorAddress();
+  const { address: collectorAddress, isConfigured: isCollectorReady, isLoading: collectorLoading } =
+    useCollectorAddress();
 
   useEffect(() => {
     if (!anyConnected) {
@@ -542,7 +543,8 @@ export function useGasPump() {
     if (!hasEnoughOnSelectedChain || !isFeeTokenReady) {
       return depositTarget?.paymentMode === "native" ? "insufficient_native" : "insufficient_usdc";
     }
-    if (depositTarget.kind === "evm" && (!isCollectorConfigured() || !collectorAddress)) {
+    if (depositTarget.kind === "evm" && collectorLoading) return "precheck_loading";
+    if (depositTarget.kind === "evm" && (!isCollectorReady || !collectorAddress)) {
       return "collector";
     }
     return null;
@@ -564,6 +566,8 @@ export function useGasPump() {
     hasEnoughOnSelectedChain,
     isFeeTokenReady,
     collectorAddress,
+    isCollectorReady,
+    collectorLoading,
     selectedAsset,
     tankPrecheckQuery.data,
     evmConnected,

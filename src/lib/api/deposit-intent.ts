@@ -1,6 +1,7 @@
 import type { DepotAssetId } from "@/config/depot-assets";
 import type { PaySymbol } from "@/config/payment-assets";
 import type { AmountOption } from "@/lib/pricing";
+import { apiErrorMessage, parseResponseJson } from "@/lib/api/parse-response-json";
 
 export async function postDepositIntent(payload: {
   targetAsset: DepotAssetId;
@@ -17,14 +18,16 @@ export async function postDepositIntent(payload: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  const data = (await res.json()) as {
+  const data = await parseResponseJson<{
     intentId?: string;
     orderId?: string;
     passId?: string;
     error?: string;
-  };
-  if (!res.ok || !data.orderId) {
-    throw new Error(data.error ?? "Sipariş kaydı oluşturulamadı");
+  }>(res);
+  if (!res.ok || !data?.orderId) {
+    throw new Error(
+      apiErrorMessage(res, data, "Sipariş kaydı oluşturulamadı"),
+    );
   }
   return {
     intentId: data.orderId,
@@ -39,9 +42,12 @@ export async function postRetryDispense(txHash: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ txHash }),
   });
-  const data = await res.json();
+  const data = await parseResponseJson<{ error?: string }>(res);
   if (!res.ok) {
-    throw new Error(data.error ?? "Kasa retry başarısız");
+    throw new Error(apiErrorMessage(res, data, "Kasa retry başarısız"));
+  }
+  if (!data) {
+    throw new Error("Kasa retry — boş yanıt");
   }
   return data;
 }

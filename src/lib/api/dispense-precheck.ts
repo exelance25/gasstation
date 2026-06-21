@@ -1,5 +1,6 @@
 import type { DepotAssetId } from "@/config/depot-assets";
 import type { AmountOption } from "@/lib/pricing";
+import { apiErrorMessage, parseResponseJson } from "@/lib/api/parse-response-json";
 
 export type DispensePrecheckResponse = {
   ok: boolean;
@@ -19,11 +20,19 @@ export async function postDispensePrecheck(payload: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  const data = (await res.json()) as DispensePrecheckResponse & { error?: string };
+  const data = await parseResponseJson<
+    DispensePrecheckResponse & { error?: string }
+  >(res);
+  if (!data) {
+    return {
+      ok: false,
+      reason: apiErrorMessage(res, null, "Kasadan çıkış kontrolü başarısız"),
+    };
+  }
   if (!res.ok) {
     return {
       ok: false,
-      reason: data.reason ?? data.error ?? "Kasadan çıkış kontrolü başarısız",
+      reason: apiErrorMessage(res, data, "Kasadan çıkış kontrolü başarısız"),
     };
   }
   return data;
