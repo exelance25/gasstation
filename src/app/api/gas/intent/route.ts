@@ -9,7 +9,7 @@ import { SUPPORTED_PAY_SYMBOLS } from "@/config/payment-assets";
 import type { PaySymbol } from "@/config/payment-assets";
 
 const bodySchema = z.object({
-  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL"]),
+  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL", "USDC"]),
   targetAddress: z.string().min(1),
   packageAmount: z.number().refine(isValidPackageUsd),
   depositChainId: z.number().int().positive(),

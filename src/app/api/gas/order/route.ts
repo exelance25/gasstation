@@ -8,7 +8,7 @@ import { createGasOrder } from "@/server/gas/gas-order";
 
 const bodySchema = z.object({
   passId: z.string().min(4),
-  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL"]),
+  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL", "USDC"]),
   targetAddress: z.string().min(1),
   packageAmount: z.number().refine(isValidPackageUsd),
   depositChainId: z.number().int().positive(),

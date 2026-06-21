@@ -3,9 +3,19 @@ import "server-only";
 import {
   createPublicClient,
   formatEther,
+  formatUnits,
   http,
+  type Address,
   type Transport,
 } from "viem";
+import {
+  DEPOSIT_EVM_CHAIN_IDS,
+  getChainDisplayName,
+  getUsdcAddress,
+  supportedEvmChains,
+  USDC_DECIMALS,
+} from "@config/evm-chains";
+import { erc20Abi } from "@/lib/erc20-abi";
 import {
   getCollectorAddressSafe,
   getOperatorAddressSafe,
@@ -64,6 +74,7 @@ export type OperatorTankStatus = {
     chainName: string;
     balanceNative: string;
     symbol: string;
+    kind: "native" | "usdc";
   }>;
 };
 
@@ -100,6 +111,35 @@ export async function getOperatorTankStatus(): Promise<OperatorTankStatus> {
       chainName: chain.name,
       balanceNative: formatEther(balance),
       symbol: chain.nativeCurrency.symbol,
+      kind: "native",
+    });
+  }
+
+  for (const chainId of DEPOSIT_EVM_CHAIN_IDS) {
+    const usdcToken = getUsdcAddress(chainId);
+    if (!usdcToken) continue;
+    const chainDef = supportedEvmChains.find((c) => c.id === chainId);
+    if (!chainDef) continue;
+    const transport: Transport = isMonadTestnetChainId(chainId)
+      ? createMonadTestnetTransport()
+      : http(resolveDeliveryRpc(chainId));
+    const client = createPublicClient({ chain: chainDef, transport });
+    const holder = address as Address;
+    const raw = (await client
+      .readContract({
+        address: usdcToken,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [holder],
+      })
+      .catch(() => 0n)) as bigint;
+    tanks.push({
+      asset: "USDC",
+      chainId,
+      chainName: getChainDisplayName(chainId),
+      balanceNative: formatUnits(raw, USDC_DECIMALS),
+      symbol: "USDC",
+      kind: "usdc",
     });
   }
 

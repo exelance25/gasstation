@@ -12,11 +12,11 @@ assertVaultSecretsNotPublic();
 
 export const dynamic = "force-dynamic";
 
-const ASSETS = new Set<GasDeliveryAsset>(["ETH", "MON", "BASE", "SOL"]);
+const ASSETS = new Set<GasDeliveryAsset>(["ETH", "MON", "BASE", "SOL", "USDC"]);
 
 const bodySchema = z.object({
   txHash: z.string().min(32).max(128),
-  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL"]),
+  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL", "USDC"]),
   targetAddress: z.string().min(1),
   packageAmount: z.number().refine(isValidPackageUsd, {
     message: "Geçersiz tutar",

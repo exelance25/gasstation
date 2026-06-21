@@ -46,6 +46,7 @@ import { rowUsdValue } from "@/lib/payment-portfolio-filter";
 import type { LivePrices } from "@/lib/oracle/live-prices";
 import { formatGasUserError } from "@/lib/gas-user-errors";
 import { messages } from "@/i18n/messages";
+import { pumpFailedTitle } from "@/i18n/index";
 import { STUB_ORACLE_PRICES } from "@/lib/oracle/stub-prices";
 import { isDeliveryAssetEnabled, isSolanaGasEnabled } from "@/config/gas-features";
 import type { FeeQuote } from "@gasstation/fee-sdk";
@@ -391,7 +392,7 @@ export function useGasPump() {
         ? { ...prev, fuelHint: hint }
         : {
             phase: "fueling",
-            title: "Dolum",
+            title: messages.pump.fueling,
             fuelHint: hint,
             fuelStartedAt: fuelSessionRef.current.startedAt,
             fuelEstimateSec: fuelSessionRef.current.estimateSec,
@@ -400,7 +401,7 @@ export function useGasPump() {
   }, []);
 
   const startFuelSession = useCallback(
-    (hint = "Sipariş hazırlanıyor…") => {
+    (hint = messages.pump.preparingOrder) => {
       const estimateSec = estimatePumpFuelSeconds({
         depositChainId: depositTarget?.chainId,
         deliveryAsset: selectedAsset,
@@ -409,7 +410,7 @@ export function useGasPump() {
       fuelSessionRef.current = { startedAt, estimateSec };
       setPumpFlow({
         phase: "fueling",
-        title: "Dolum",
+        title: messages.pump.fueling,
         fuelHint: hint,
         fuelStartedAt: startedAt,
         fuelEstimateSec: estimateSec,
@@ -442,12 +443,17 @@ export function useGasPump() {
     }
   }, [trimmedTarget, detectedTargetKind, selectedAsset, setSelectedAsset]);
 
-  // Ödeme ağı değişince varsayılan gas teslim tokenı (Sepolia USDC → ETH, vb.)
-  const lastDepositChainRef = useRef<number | null>(null);
+  // When paying with USDC, default delivery to USDC from the gas tank
+  const lastDepositKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (!depositTarget) return;
-    if (lastDepositChainRef.current === depositTarget.chainId) return;
-    lastDepositChainRef.current = depositTarget.chainId;
+    const key = `${depositTarget.chainId}:${depositTarget.paySymbol}:${depositTarget.paymentMode}`;
+    if (lastDepositKeyRef.current === key) return;
+    lastDepositKeyRef.current = key;
+    if (depositTarget.paySymbol === "USDC" && depositTarget.paymentMode !== "native") {
+      setSelectedAsset("USDC");
+      return;
+    }
     setSelectedAsset(defaultDeliveryAssetForDepositChain(depositTarget.chainId));
   }, [depositTarget, setSelectedAsset]);
 
@@ -608,7 +614,7 @@ export function useGasPump() {
 
   const pumpGas = useCallback(async () => {
     setIsLoading(true);
-    startFuelSession("Sipariş ve kasa kontrol ediliyor…");
+    startFuelSession(messages.pump.checkingOrder);
     let completedDepositTx: string | undefined;
     let completedOrderId: string | undefined;
     let completedDepositor: string | undefined;
@@ -616,25 +622,16 @@ export function useGasPump() {
     let completedPaymentMode: "usdc" | "native" | undefined;
     try {
       if (!depositTarget) {
-        throw new Error("Ödeme kaynağı seçilmedi.");
+        throw new Error(messages.pump.paymentSourceMissing);
       }
 
       await runLocked(async () => {
         const packageUsd = roundPackageUsd(selectedAmount);
         if (packageUsd <= 0) {
-          throw new Error("Geçersiz ödeme tutarı — gas miktarını kontrol edin.");
+          throw new Error(messages.pump.invalidAmount);
         }
 
-        const precheck = await postDispensePrecheck({
-          targetAsset: selectedAsset,
-          packageAmount: packageUsd,
-          targetAddress: trimmedTarget,
-        });
-        if (!precheck.ok) {
-          throw new Error(messages.pump.deliveryUnavailable);
-        }
-
-        setFuelingHint("Ödeme adımına geçiliyor…");
+        setFuelingHint("Continuing to payment…");
         if (autoFeeOn) {
           const payer =
             depositTarget.kind === "solana"
@@ -927,18 +924,20 @@ export function useGasPump() {
         void refetchUsdc();
 
         const gasLabel =
-          selectedAsset === "SOL"
-            ? dispense.estimatedGasAmount.toFixed(4)
-            : dispense.estimatedGasAmount.toFixed(6);
+          selectedAsset === "USDC"
+            ? dispense.estimatedGasAmount.toFixed(2)
+            : selectedAsset === "SOL"
+              ? dispense.estimatedGasAmount.toFixed(4)
+              : dispense.estimatedGasAmount.toFixed(6);
 
         if (statusToastIdRef.current) {
           dismissToast(statusToastIdRef.current);
           statusToastIdRef.current = null;
         }
         presentPumpSuccess({
-          title: "Yakıt gönderildi",
+          title: messages.pump.successTitle,
           message: `~${gasLabel} ${selectedAsset} · ${getDeliveryNetworkLabel(selectedAsset)} → ${trimmedTarget.slice(0, 8)}…`,
-          panelDetail: `~${gasLabel} ${selectedAsset} hedef adrese ulaştı.`,
+          panelDetail: `~${gasLabel} ${selectedAsset} delivered to your address.`,
           deliveryTxHash: dispense.deliveryTxHash,
           deliveryAsset: selectedAsset,
         });
@@ -967,13 +966,15 @@ export function useGasPump() {
           };
           if (retry.ok && retry.deliveryTxHash && retry.targetAsset) {
             const gasLabel =
-              retry.targetAsset === "SOL"
+              retry.targetAsset === "USDC"
+                ? (retry.estimatedGasAmount ?? 0).toFixed(2)
+                : retry.targetAsset === "SOL"
                 ? (retry.estimatedGasAmount ?? 0).toFixed(4)
                 : (retry.estimatedGasAmount ?? 0).toFixed(6);
             presentPumpSuccess({
-              title: retry.idempotent ? "Yakıt zaten gönderilmişti" : "Kasa teslimatı tamamlandı",
+              title: retry.idempotent ? messages.pump.successAlreadyTitle : messages.pump.successRetryTitle,
               message: `~${gasLabel} ${retry.targetAsset} · ${getDeliveryNetworkLabel(retry.targetAsset)}`,
-              panelDetail: `~${gasLabel} ${retry.targetAsset} teslim edildi.`,
+              panelDetail: `~${gasLabel} ${retry.targetAsset} delivered.`,
               deliveryTxHash: retry.deliveryTxHash,
               deliveryAsset: retry.targetAsset,
             });
@@ -993,13 +994,13 @@ export function useGasPump() {
         : base;
       showToast({
         variant: "error",
-        title: messages.pump.failedTitle,
+        title: pumpFailedTitle(),
         message,
         persist: true,
       });
       setPumpFlow({
         phase: "error",
-        title: messages.pump.failedTitle,
+        title: pumpFailedTitle(),
         detail: message,
       });
     } finally {

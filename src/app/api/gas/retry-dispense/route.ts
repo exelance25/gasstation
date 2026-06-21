@@ -12,7 +12,7 @@ const bodySchema = z.object({
 
   orderId: z.string().optional(),
 
-  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL"]).optional(),
+  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL", "USDC"]).optional(),
 
   targetAddress: z.string().optional(),
 

@@ -15,6 +15,7 @@ import {
 import { verifyNativeDeposit } from "@/server/gas/verify-native-deposit";
 import { verifySolanaUsdcDeposit } from "@/server/gas/verify-solana-usdc-deposit";
 import { dispenseEvmNativeGas } from "@/server/gas/dispense-evm-gas";
+import { canDispenseEvmUsdc, dispenseEvmUsdc } from "@/server/gas/dispense-evm-usdc";
 import { dispenseSolanaGas } from "@/server/gas/dispense-solana-gas";
 import {
   getProcessedDeposit,
@@ -260,6 +261,49 @@ export async function runGasDispense(
       estimatedGasAmount: quote.estimatedGasAmount,
       treasuryRetainedUsd: ledger.treasuryRetainedUsd,
       message: "SOL gas teslim edildi",
+    };
+  }
+
+  if (targetAsset === "USDC") {
+    if (!isOperatorConfigured()) {
+      throw new Error("EVM operator key is not configured");
+    }
+    const { deliveryTxHash, chainId: deliveryChainId } = await dispenseEvmUsdc({
+      chainId: depositChainId,
+      targetAddress: targetAddress.trim(),
+      usdcAmount: quote.estimatedGasAmount,
+      waitForReceipt:
+        process.env.NEXT_PUBLIC_APP_ENV !== "mainnet" && !isEphemeralRuntime(),
+    });
+
+    markDepositProcessed(depositChainId, idempotencyKey, deliveryTxHash);
+    if (intentId) {
+      try {
+        markIntentConsumed(intentId, txHash);
+      } catch {
+        /* ephemeral disk */
+      }
+    }
+    markOrderDelivered(order.orderId, txHash, deliveryTxHash);
+    const ledger = recordTreasuryDispense({
+      depositTxHash: txHash,
+      deliveryTxHash,
+      depositChainId,
+      packageUsd: effectivePackageAmount,
+      targetAsset,
+      targetAddress: targetAddress.trim(),
+      estimatedGasAmount: quote.estimatedGasAmount,
+    });
+
+    return {
+      ok: true,
+      depositTxHash: txHash,
+      deliveryTxHash,
+      deliveryChainId,
+      targetAsset,
+      estimatedGasAmount: quote.estimatedGasAmount,
+      treasuryRetainedUsd: ledger.treasuryRetainedUsd,
+      message: "USDC delivered",
     };
   }
 

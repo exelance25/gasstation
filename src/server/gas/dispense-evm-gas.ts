@@ -32,6 +32,8 @@ export function getDeliveryChain(asset: GasDeliveryAsset): Chain {
       return isMainnetAppEnv() ? monadMainnet : monadTestnet;
     case "BASE":
       return isMainnetAppEnv() ? base : baseSepolia;
+    case "USDC":
+      return isMainnetAppEnv() ? base : baseSepolia;
     case "ETH":
       return isMainnetAppEnv() ? mainnet : sepolia;
     default:
@@ -90,7 +92,10 @@ export async function dispenseEvmNativeGas(params: {
   waitForReceipt?: boolean;
 }): Promise<{ deliveryTxHash: Hash; chainId: number; confirmed: boolean }> {
   if (params.targetAsset === "SOL") {
-    throw new Error("SOL teslimatı EVM fonksiyonu ile yapılamaz");
+    throw new Error("SOL delivery cannot use the EVM native gas function");
+  }
+  if (params.targetAsset === "USDC") {
+    throw new Error("USDC delivery uses dispenseEvmUsdc");
   }
 
   const recipient = params.targetAddress.trim();
@@ -176,7 +181,7 @@ export async function dispenseEvmNativeGas(params: {
 }
 
 export async function canDispenseEvmNativeGas(
-  targetAsset: Exclude<GasDeliveryAsset, "SOL">,
+  targetAsset: Exclude<GasDeliveryAsset, "SOL" | "USDC">,
   nativeAmount: number,
 ): Promise<{ ok: true } | { ok: false; reason: string }> {
   if (!Number.isFinite(nativeAmount) || nativeAmount <= 0) {

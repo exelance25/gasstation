@@ -7,14 +7,16 @@ import { isValidPackageUsd } from "@/lib/pricing";
 import { getConservativeDispenseQuote } from "@/server/oracle/oracle-service";
 import { assertProfitableDispense } from "@/lib/treasury-accounting";
 import { canDispenseEvmNativeGas } from "@/server/gas/dispense-evm-gas";
+import { canDispenseEvmUsdc } from "@/server/gas/dispense-evm-usdc";
 import { canDispenseSolanaGas } from "@/server/gas/dispense-solana-gas";
 
 const bodySchema = z.object({
-  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL"]),
+  targetAsset: z.enum(["ETH", "MON", "BASE", "SOL", "USDC"]),
   packageAmount: z.number().refine(isValidPackageUsd, {
-    message: "Geçersiz tutar",
+    message: "Invalid amount",
   }),
   targetAddress: z.string().min(1),
+  depositChainId: z.number().int().positive().optional(),
 });
 
 function isValidTargetAddress(asset: GasDeliveryAsset, address: string): boolean {
@@ -26,13 +28,13 @@ function isValidTargetAddress(asset: GasDeliveryAsset, address: string): boolean
 export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, reason: "Geçersiz istek" }, { status: 400 });
+    return NextResponse.json({ ok: false, reason: "Invalid request" }, { status: 400 });
   }
 
-  const { targetAsset, packageAmount, targetAddress } = parsed.data;
+  const { targetAsset, packageAmount, targetAddress, depositChainId } = parsed.data;
   if (!isValidTargetAddress(targetAsset, targetAddress)) {
     return NextResponse.json(
-      { ok: false, reason: "Hedef adres formatı seçilen ağ ile uyumsuz" },
+      { ok: false, reason: "Target address format does not match the selected network" },
       { status: 400 },
     );
   }
@@ -49,7 +51,9 @@ export async function POST(request: Request) {
     const check =
       targetAsset === "SOL"
         ? await canDispenseSolanaGas(quote.estimatedGasAmount)
-        : await canDispenseEvmNativeGas(targetAsset, quote.estimatedGasAmount);
+        : targetAsset === "USDC"
+          ? await canDispenseEvmUsdc(depositChainId ?? 84532, quote.estimatedGasAmount)
+          : await canDispenseEvmNativeGas(targetAsset, quote.estimatedGasAmount);
 
     if (!check.ok) {
       return NextResponse.json({ ok: false, reason: check.reason }, { status: 422 });
