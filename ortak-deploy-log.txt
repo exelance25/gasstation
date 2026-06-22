@@ -144,3 +144,60 @@ Route (app)                                 Size  First Load JS
 
 BUILD_EXIT:0 
 [3/4] git add + commit 
+warning: in the working copy of 'ortak-deploy-log.txt', LF will be replaced by CRLF the next time Git touches it
+[main 75107e7] refactor: marka adi gasstation (@gasstation/sdk) + operator env redeploy
+ 141 files changed, 1683 insertions(+), 472 deletions(-)
+ create mode 100644 FIX_PUSH.cmd
+ create mode 100644 GITHUB_YUKLE.cmd
+ create mode 100644 GO.cmd
+ create mode 100644 OPEN_DEPLOY.cmd
+ create mode 100644 ORTAK_FIX_DEPLOY.cmd
+ create mode 100644 ORTAK_RENAME_REDEPLOY.cmd
+ create mode 100644 ORTAK_RUN_NOW.cmd
+ create mode 100644 PUSH_NOW.cmd
+ create mode 100644 PUSH_SADECE.cmd
+ create mode 100644 RUN_ALL_TESTS.cmd
+ create mode 100644 SON_DUZELTME.cmd
+ create mode 100644 START.cmd
+ create mode 100644 START_FULL_STACK.cmd
+ create mode 100644 START_MARKETPLACE.cmd
+ create mode 100644 START_QUOTE_LITE.cmd
+ create mode 100644 START_STACK.cmd
+ create mode 100644 TAMAM.cmd
+ create mode 100644 VERCEL_OPERATOR_ENV.cmd
+ create mode 100644 VERCEL_REDEPLOY.cmd
+ create mode 100644 agent-tools/696861e2-2d00-4930-aceb-c0b0a1efb0fe.txt
+ create mode 100644 agent-tools/b7b52b7d-f182-49d1-9978-7ee35e77beaf.txt
+ create mode 100644 agent-tools/c47f18d9-8fe7-4576-ba24-dbd365d62285.txt
+ create mode 100644 agent-tools/da2fea2e-fb7a-4dfb-b4ec-9df21ac50058.txt
+ create mode 100644 agent-tools/df31c546-5329-4af2-a2c3-149c7ed8b300.txt
+ create mode 100644 contracts/.gitmodules
+ create mode 100644 contracts/NFT-README.md
+ create mode 100644 contracts/foundry.lock
+ create mode 100644 contracts/remappings.txt
+ create mode 100644 deploy-log.txt
+ rename docs/{PUMPSTATION_GAS_ROADMAP.md => GASSTATION_GAS_ROADMAP.md} (80%)
+ create mode 100644 install.cmd
+ create mode 100644 ortak-deploy-log.txt
+ create mode 100644 push-log.txt
+ create mode 100644 redeploy-now.cmd
+ rename src/components/{PumpStationLogo.tsx => GasStationLogo.tsx} (88%)
+ rename src/components/{PumpStationPage.tsx => GasStationPage.tsx} (90%)
+ rename src/components/{PumpStationSilhouette.tsx => GasStationSilhouette.tsx} (96%)
+ rename src/components/landing/{PumpStationLandingPage.tsx => GasStationLandingPage.tsx} (94%)
+ rename src/components/landing/{WhyPumpStation.tsx => WhyGasStation.tsx} (98%)
+ rename src/{pumpstation/pumpstation-service.ts => gasstation/gasstation-service.ts} (68%)
+ rename src/{pumpstation/pumpstation-types.ts => gasstation/gasstation-types.ts} (52%)
+ rename src/hooks/{use-pumpstation-balance-sync.ts => use-gasstation-balance-sync.ts} (88%)
+ rename src/lib/{pump-station-sdk.ts => gas-station-sdk.ts} (97%)
+ rename src/lib/{pumpstation-client.ts => gasstation-client.ts} (82%)
+ create mode 100644 src/lib/gasstation-gas-engine.README.md
+ delete mode 100644 src/lib/pumpstation-gas-engine.README.md
+COMMIT_EXIT:0 
+[4/4] git push 
+To https://github.com/exelance25/gasstation.git
+   8b7ffe4..75107e7  main -> main
+branch 'main' set up to track 'origin/main'.
+PUSH_EXIT:0 
+75107e7 refactor: marka adi gasstation (@gasstation/sdk) + operator env redeploy
+===== END Cmt 20.06.2026 23:35:51,46 ===== 

@@ -5,6 +5,7 @@ import type { GasDeliveryAsset } from "@/config/depot-assets";
 import { getDepotAsset } from "@/config/depot-assets";
 import type { PumpFlowStatus } from "@/hooks/useGasPump";
 import { getDeliveryExplorerUrl } from "@/lib/explorer-urls";
+import { messages } from "@/i18n/messages";
 import { cn } from "@/lib/utils";
 
 type PumpFlowOverlayProps = {
@@ -42,6 +43,9 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
       ? getDeliveryExplorerUrl(flow.deliveryAsset, flow.deliveryTxHash)
       : null;
 
+  const errorTitle = flow.title || messages.pump.failedTitle;
+  const errorDetail = flow.detail || messages.errors.unknown;
+
   return (
     <div
       className="fixed inset-0 z-[250] flex items-center justify-center px-4"
@@ -50,14 +54,9 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
       aria-busy={isFueling}
       aria-live="polite"
     >
-      {/* Hafif perde — arayüz arkada görünür */}
-      <div
-        className="absolute inset-0 bg-black/20 backdrop-blur-[3px]"
-        aria-hidden
-      />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-[3px]" aria-hidden />
 
       <div className="relative flex flex-col items-center">
-        {/* Dış glow */}
         <div
           className={cn(
             "absolute h-52 w-52 rounded-full blur-3xl sm:h-60 sm:w-60",
@@ -76,7 +75,6 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
         />
 
         <div className="relative h-48 w-48 sm:h-56 sm:w-56">
-          {/* Dönen halka 1 — token */}
           {isFueling && (
             <>
               <div
@@ -86,17 +84,6 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
                   mask: "radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px))",
                   WebkitMask:
                     "radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px))",
-                }}
-                aria-hidden
-              />
-              <div
-                className="absolute inset-1 animate-spin rounded-full opacity-70 [animation-direction:reverse] [animation-duration:1.6s]"
-                style={{
-                  background:
-                    "conic-gradient(from 120deg, #10b981, #a855f7, #10b981, transparent 40%, transparent 60%, #a855f7)",
-                  mask: "radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px))",
-                  WebkitMask:
-                    "radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px))",
                 }}
                 aria-hidden
               />
@@ -129,7 +116,6 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
             />
           )}
 
-          {/* İç cam daire — metin burada */}
           <div className="absolute inset-5 flex flex-col items-center justify-center rounded-full border border-white/15 bg-black/25 px-3 text-center shadow-[inset_0_0_40px_rgba(255,255,255,0.06)] backdrop-blur-md sm:inset-6">
             {isFueling && (
               <>
@@ -142,10 +128,10 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
                   {remaining}
                 </span>
                 <span className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/50">
-                  sn
+                  sec
                 </span>
                 <p className="mt-2 text-[11px] font-medium leading-tight text-white/90 sm:text-xs">
-                  Dolum yapılıyor
+                  {messages.pump.fueling}
                 </p>
                 {flow.fuelHint ? (
                   <p className="mt-1 line-clamp-2 text-[9px] leading-snug text-white/45 sm:text-[10px]">
@@ -162,7 +148,7 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
                     <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                   </svg>
                 </div>
-                <p className="mt-2 text-xs font-bold text-emerald-200 sm:text-sm">Tamamlandı</p>
+                <p className="mt-2 text-xs font-bold text-emerald-200 sm:text-sm">Complete</p>
                 <p className="mt-1 line-clamp-3 text-[9px] leading-snug text-emerald-100/70 sm:text-[10px]">
                   {flow.detail ?? flow.title}
                 </p>
@@ -173,7 +159,7 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
                     rel="noopener noreferrer"
                     className="mt-1.5 text-[9px] text-emerald-300/90 underline underline-offset-2"
                   >
-                    Explorer
+                    {messages.common.explorer}
                   </a>
                 ) : null}
               </>
@@ -184,9 +170,9 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 text-red-300">
                   <span className="text-lg font-bold">!</span>
                 </div>
-                <p className="mt-2 text-xs font-bold text-red-200">Olmadı</p>
+                <p className="mt-2 text-xs font-bold text-red-200">{errorTitle}</p>
                 <p className="mt-1 line-clamp-4 text-[9px] leading-snug text-red-100/75 sm:text-[10px]">
-                  {flow.detail ?? flow.title}
+                  {errorDetail}
                 </p>
               </>
             )}
@@ -194,8 +180,8 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
         </div>
 
         <p className="mt-4 text-center text-[11px] text-white/40">
-          {isFueling && "Lütfen bekleyiniz — pencereyi kapatmayın"}
-          {isSuccess && "Gas yolunda · zincir onayı birkaç saniye sürebilir"}
+          {isFueling && "Please wait — do not close this window"}
+          {isSuccess && "Gas is on the way · confirmation may take a few seconds"}
         </p>
 
         {(isSuccess || isError) && onDismiss ? (
@@ -209,7 +195,7 @@ export function PumpFlowOverlay({ flow, deliveryAsset, onDismiss }: PumpFlowOver
                 : "border border-red-400/40 bg-red-500/15 text-red-100",
             )}
           >
-            {isSuccess ? "Tamam" : "Kapat"}
+            {isSuccess ? messages.common.ok : messages.common.close}
           </button>
         ) : null}
       </div>

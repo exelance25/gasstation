@@ -50,6 +50,8 @@ export function getAssetUsdPrice(
       return prices.SOL_Price * buffer;
     case "BASE":
       return prices.BASE_Price * buffer;
+    case "USDC":
+      return 1;
     case "ETH":
     default:
       return prices.ETH_Price * buffer;

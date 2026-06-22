@@ -31,7 +31,7 @@ export function getEnabledDeliveryAssets(): DepotAsset[] {
 export function isDeliveryAssetEnabled(id: DepotAssetId): boolean {
   if (id === "ARB" || id === "BTC") return false;
   if (id === "SOL") return isSolanaGasEnabled();
-  return id === "ETH" || id === "MON" || id === "BASE";
+  return id === "ETH" || id === "MON" || id === "BASE" || id === "USDC";
 }
 
 export function isDeliveryAssetSelectable(id: DepotAssetId): boolean {

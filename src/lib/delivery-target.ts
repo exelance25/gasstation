@@ -1,14 +1,14 @@
-/** Hedef adres validasyon — seçilen gas projesine göre */
+/** Destination address validation — by selected gas asset */
 import type { DepotAssetId } from "@/config/depot-assets";
+import { messages } from "@/i18n/messages";
 
-/** EVM: 0x + 40 hex (42 karakter) */
+/** EVM: 0x + 40 hex (42 chars) */
 export const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 
-/** Solana Base58: 32–44 karakter, 0/O/I/l yok */
+/** Solana Base58: 32–44 chars */
 export const SOLANA_ADDRESS_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
-export const TARGET_FORMAT_ERROR =
-  "Hata: Seçilen ağ ile hedef adres formatı uyumsuz!";
+export const TARGET_FORMAT_ERROR = messages.target.formatError;
 
 export type DetectedTargetKind = "evm" | "solana" | null;
 
@@ -30,7 +30,6 @@ export function isValidDeliveryTarget(
   return EVM_ADDRESS_REGEX.test(trimmed);
 }
 
-/** Dolu girdi + format uyumsuzluğu */
 export function isTargetFormatMismatch(
   asset: DepotAssetId,
   raw: string,
@@ -41,8 +40,6 @@ export function isTargetFormatMismatch(
 }
 
 export function deliveryTargetHint(asset: DepotAssetId): string {
-  if (asset === "SOL") {
-    return "Solana Base58 adresi (32–44 karakter).";
-  }
-  return "EVM adresi: 0x ile başlayan 42 karakter.";
+  if (asset === "SOL") return messages.target.solHint;
+  return messages.target.evmHint;
 }

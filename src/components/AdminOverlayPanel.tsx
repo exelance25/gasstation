@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAdminSession } from "@/hooks/useAdminSession";
-import { messages } from "@/i18n/messages";
+import { adminTr } from "@/i18n/admin-tr";
 
 type FeedbackRow = {
   id: string;
@@ -19,6 +19,11 @@ type KasaOverview = {
     totalDepositsUsd: number;
     totalRetainedUsd: number;
     count: number;
+  };
+  platformStats?: {
+    uniqueUsers: number;
+    completedTransactions: number;
+    profitMarginPercent: number;
   };
   openOrders: Array<{ orderId: string; packageAmount: number; targetAsset: string }>;
 };
@@ -45,7 +50,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
   const admin = useAdminSession();
   const { openConnectModal } = useConnectModal();
   const [kasa, setKasa] = useState<KasaOverview | null>(null);
-  const [messages, setMessages] = useState<FeedbackRow[]>([]);
+  const [feedbackList, setFeedbackList] = useState<FeedbackRow[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -57,17 +62,17 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
       fetch("/api/admin/feedback", { credentials: "include" }),
     ]);
     if (!kasaRes.ok) {
-      setLoadError(messages.admin.loadFailed);
+      setLoadError(adminTr.loadFailed);
       setKasa(null);
-      setMessages([]);
+      setFeedbackList([]);
       return;
     }
     setKasa((await kasaRes.json()) as KasaOverview);
     if (fbRes.ok) {
       const fb = (await fbRes.json()) as { messages?: FeedbackRow[] };
-      setMessages(Array.isArray(fb.messages) ? fb.messages : []);
+      setFeedbackList(Array.isArray(fb.messages) ? fb.messages : []);
     } else {
-      setMessages([]);
+      setFeedbackList([]);
     }
     notifyFeedbackChanged();
   }, []);
@@ -81,7 +86,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
           credentials: "include",
         });
         if (!res.ok) return;
-        setMessages((prev) => prev.filter((m) => m.id !== id));
+        setFeedbackList((prev) => prev.filter((m) => m.id !== id));
         if (expandedId === id) setExpandedId(null);
         notifyFeedbackChanged();
       } finally {
@@ -106,6 +111,12 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
 
   if (!open) return null;
 
+  const wrongWallet =
+    admin.isConnected &&
+    admin.adminWallet &&
+    admin.address &&
+    admin.adminWallet.toLowerCase() !== admin.address.toLowerCase();
+
   return (
     <div
       className="fixed inset-0 z-[400] flex items-start justify-center overflow-y-auto bg-black/70 p-4 pt-8 backdrop-blur-sm sm:pt-12"
@@ -121,15 +132,15 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
         <header className="flex items-center justify-between border-b border-white/10 px-5 py-4">
           <div>
             <h2 id="admin-panel-title" className="text-lg font-bold text-white">
-              {messages.admin.title}
+              {adminTr.title}
             </h2>
-            <p className="text-xs text-neutral-500">{messages.admin.subtitle}</p>
+            <p className="text-xs text-neutral-500">{adminTr.subtitle}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg border border-white/10 px-2 py-1 text-sm text-neutral-400 hover:text-white"
-            aria-label="Kapat"
+            aria-label={adminTr.close}
           >
             ✕
           </button>
@@ -138,28 +149,35 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
         <div className="space-y-5 p-5">
           {!admin.configured && (
             <p className="rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3 text-sm text-amber-200">
-              {messages.admin.notConfigured}
+              {adminTr.notConfigured}
             </p>
           )}
 
           {admin.configured && !admin.authenticated && (
             <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-5 text-center">
               {admin.adminWallet && (
-                <p className="mb-3 text-xs text-neutral-500">
-                  {messages.admin.expectedWallet}:{" "}
-                  <code className="text-emerald-400">{admin.adminWallet.slice(0, 10)}…</code>
+                <p className="mb-2 text-xs text-neutral-500">
+                  {adminTr.expectedWallet}:{" "}
+                  <code className="break-all text-emerald-400">{admin.adminWallet}</code>
                 </p>
               )}
-              <p className="text-sm text-neutral-300">
-                Connect the treasury admin wallet and sign to access the vault panel.
-              </p>
+              {admin.isConnected && admin.address && (
+                <p className="mb-2 text-xs text-neutral-500">
+                  {adminTr.connectedWallet}:{" "}
+                  <code className="break-all text-white/80">{admin.address}</code>
+                </p>
+              )}
+              {wrongWallet && (
+                <p className="mb-3 text-sm text-amber-300">{adminTr.wrongWallet}</p>
+              )}
+              <p className="text-sm text-neutral-300">{adminTr.signInPrompt}</p>
               {!admin.isConnected ? (
                 <button
                   type="button"
                   onClick={() => openConnectModal?.()}
                   className="mt-4 w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-500"
                 >
-                  {messages.admin.connectWallet}
+                  {adminTr.connectWallet}
                 </button>
               ) : (
                 <>
@@ -172,7 +190,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                     onClick={() => void admin.signIn()}
                     className="mt-4 w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-bold text-white hover:bg-purple-500 disabled:opacity-50"
                   >
-                    {admin.signingIn ? messages.admin.signingIn : messages.admin.signIn}
+                    {admin.signingIn ? adminTr.signingIn : adminTr.signIn}
                   </button>
                 </>
               )}
@@ -182,41 +200,64 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
           {admin.authenticated && (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs text-emerald-400/90">{messages.admin.sessionOpen}</p>
+                <p className="text-xs text-emerald-400/90">{adminTr.sessionOpen}</p>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => void loadAdminData()}
                     className="rounded border border-white/10 px-2 py-1 text-xs text-neutral-400 hover:text-white"
                   >
-                    {messages.admin.refresh}
+                    {adminTr.refresh}
                   </button>
                   <button
                     type="button"
                     onClick={() => void admin.signOut()}
                     className="rounded border border-white/10 px-2 py-1 text-xs text-neutral-400 hover:text-white"
                   >
-                    {messages.admin.signOut}
+                    {adminTr.signOut}
                   </button>
                 </div>
               </div>
 
               {loadError && <p className="text-sm text-red-400">{loadError}</p>}
 
+              {kasa?.platformStats && (
+                <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <KpiCard
+                    label={adminTr.kpiUsers}
+                    value={String(kasa.platformStats.uniqueUsers)}
+                    hint={adminTr.kpiUsersHint}
+                    accent="emerald"
+                  />
+                  <KpiCard
+                    label={adminTr.kpiMarginRate}
+                    value={`${kasa.platformStats.profitMarginPercent.toFixed(1)}%`}
+                    hint={adminTr.kpiMarginRateHint}
+                    accent="purple"
+                  />
+                  <KpiCard
+                    label={adminTr.kpiTransactions}
+                    value={String(kasa.platformStats.completedTransactions)}
+                    hint={`$${kasa.ledgerSummary.totalRetainedUsd.toFixed(2)} ${adminTr.margin.toLowerCase()}`}
+                    accent="amber"
+                  />
+                </section>
+              )}
+
               {kasa && (
                 <>
                   <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                      Gerçekleşen hacim
+                      {adminTr.volume}
                     </h3>
                     <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                      <Stat label="İşlem" value={String(kasa.ledgerSummary.count)} />
+                      <Stat label={adminTr.orders} value={String(kasa.ledgerSummary.count)} />
                       <Stat
-                        label="Toplam depozit"
+                        label={adminTr.totalDeposits}
                         value={`$${kasa.ledgerSummary.totalDepositsUsd.toFixed(2)}`}
                       />
                       <Stat
-                        label="Kasa marjı"
+                        label={adminTr.margin}
                         value={`$${kasa.ledgerSummary.totalRetainedUsd.toFixed(2)}`}
                       />
                     </div>
@@ -224,7 +265,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
 
                   <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                      Kasa içeriği
+                      {adminTr.vaultContents}
                     </h3>
                     <ul className="mt-3 space-y-2">
                       {kasa.balances.map((b) => (
@@ -244,12 +285,12 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                         </li>
                       ))}
                       {kasa.balances.length === 0 && (
-                        <li className="text-sm text-neutral-500">Bakiye okunamadı.</li>
+                        <li className="text-sm text-neutral-500">{adminTr.balanceUnreadable}</li>
                       )}
                     </ul>
                     {kasa.openOrders.length > 0 && (
                       <p className="mt-3 text-xs text-amber-400/90">
-                        {kasa.openOrders.length} açık sipariş bekliyor
+                        {adminTr.openOrders.replace("{count}", String(kasa.openOrders.length))}
                       </p>
                     )}
                   </section>
@@ -258,13 +299,13 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
 
               <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                  Kullanıcı mesajları
+                  {adminTr.userMessages}
                 </h3>
-                {messages.length === 0 ? (
-                  <p className="mt-3 text-sm text-neutral-500">Henüz mesaj yok.</p>
+                {feedbackList.length === 0 ? (
+                  <p className="mt-3 text-sm text-neutral-500">{adminTr.noMessages}</p>
                 ) : (
                   <ul className="mt-3 max-h-72 space-y-2 overflow-y-auto pr-1">
-                    {messages.map((m) => {
+                    {feedbackList.map((m) => {
                       const expanded = expandedId === m.id;
                       return (
                         <li
@@ -282,7 +323,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                               </span>
                               <span className="text-[10px] text-neutral-500">
                                 {formatDate(m.createdAt)}
-                                {!expanded ? " · açmak için tıkla" : ""}
+                                {!expanded ? adminTr.clickToExpand : ""}
                               </span>
                             </button>
                             <button
@@ -290,8 +331,8 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                               disabled={deletingId === m.id}
                               onClick={() => void deleteMessage(m.id)}
                               className="shrink-0 rounded-lg p-2 text-neutral-400 transition hover:bg-red-950/40 hover:text-red-400 disabled:opacity-40"
-                              aria-label="Mesajı sil"
-                              title="Sil"
+                              aria-label={adminTr.deleteMessage}
+                              title={adminTr.deleteMessage}
                             >
                               <TrashIcon />
                             </button>
@@ -313,6 +354,39 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function KpiCard({
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  accent: "emerald" | "purple" | "amber";
+}) {
+  const ring =
+    accent === "emerald"
+      ? "border-emerald-500/30 bg-emerald-950/20"
+      : accent === "purple"
+        ? "border-purple-500/30 bg-purple-950/20"
+        : "border-amber-500/30 bg-amber-950/20";
+  const valueColor =
+    accent === "emerald"
+      ? "text-emerald-300"
+      : accent === "purple"
+        ? "text-purple-300"
+        : "text-amber-300";
+
+  return (
+    <div className={`rounded-xl border p-4 ${ring}`}>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">{label}</p>
+      <p className={`mt-1 text-2xl font-bold tabular-nums ${valueColor}`}>{value}</p>
+      <p className="mt-1 text-[10px] leading-snug text-neutral-500">{hint}</p>
     </div>
   );
 }

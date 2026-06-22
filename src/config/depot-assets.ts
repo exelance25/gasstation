@@ -1,7 +1,7 @@
 import { MONAD_BRAND } from "@/config/monad-brand";
 
 /** On-chain gas teslimi desteklenen ağlar */
-export type GasDeliveryAsset = "ETH" | "MON" | "BASE" | "SOL";
+export type GasDeliveryAsset = "ETH" | "MON" | "BASE" | "SOL" | "USDC";
 
 /** UI'da listelenen tüm gas seçenekleri (yakında olanlar dahil) */
 export type DepotAssetId = GasDeliveryAsset | "ARB" | "BTC";
@@ -42,6 +42,13 @@ export const DEPOT_ASSETS: DepotAsset[] = [
     accent: "rgba(0,82,255,0.35)",
   },
   {
+    id: "USDC",
+    label: "USDC",
+    colorFrom: "#2775CA",
+    colorTo: "#1A5490",
+    accent: "rgba(39,117,202,0.35)",
+  },
+  {
     id: "ARB",
     label: "ARB",
     colorFrom: "#28A0F0",
@@ -73,5 +80,5 @@ export function getDepotAsset(id: DepotAssetId): DepotAsset {
 }
 
 export function isActiveGasDeliveryAsset(id: DepotAssetId): id is GasDeliveryAsset {
-  return id === "ETH" || id === "MON" || id === "BASE" || id === "SOL";
+  return id === "ETH" || id === "MON" || id === "BASE" || id === "SOL" || id === "USDC";
 }

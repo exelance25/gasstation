@@ -7,7 +7,7 @@ import {
   isValidDeliveryTarget,
   TARGET_FORMAT_ERROR,
 } from "@/lib/delivery-target";
-import { isSolanaGasEnabled } from "@/config/gas-features";
+import { messages } from "@/i18n/messages";
 import { cn } from "@/lib/utils";
 
 type TargetAddressInputProps = {
@@ -15,7 +15,6 @@ type TargetAddressInputProps = {
   onChange: (value: string) => void;
   deliveryAsset: DepotAssetId;
   disabled?: boolean;
-  /** Bağlı ödeme cüzdanı — "Kendi adresim" kısayolu */
   ownWalletAddress?: string;
 };
 
@@ -40,10 +39,8 @@ export function TargetAddressInput({
     <div className="space-y-2">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold text-amber-100/90">Gas gidecek adres</p>
-          <p className="mt-0.5 text-[11px] text-neutral-400">
-            Kendi cüzdanın veya başka herhangi bir EVM adresi
-          </p>
+          <p className="text-xs font-semibold text-amber-100/90">{messages.target.title}</p>
+          <p className="mt-0.5 text-[11px] text-neutral-400">{messages.target.hint}</p>
         </div>
         {canUseOwn && (
           <button
@@ -52,7 +49,7 @@ export function TargetAddressInput({
             onClick={() => onChange(ownWalletAddress)}
             className="shrink-0 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-medium text-emerald-300/90 hover:bg-white/[0.08] disabled:opacity-50"
           >
-            Kendi adresim
+            {messages.target.useOwn}
           </button>
         )}
       </div>
@@ -61,7 +58,7 @@ export function TargetAddressInput({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="0x… hedef EVM adresi"
+        placeholder={messages.target.placeholder}
         autoComplete="off"
         spellCheck={false}
         aria-invalid={hasMismatch}
@@ -75,7 +72,7 @@ export function TargetAddressInput({
       {hasMismatch && <p className="text-xs text-red-400">{TARGET_FORMAT_ERROR}</p>}
       {showSuccess && (
         <p className="text-xs text-emerald-400">
-          Adres geçerli · {trimmed.slice(0, 6)}…{trimmed.slice(-4)}
+          {messages.target.valid} · {trimmed.slice(0, 6)}…{trimmed.slice(-4)}
         </p>
       )}
       {trimmed.length > 0 && !isValid && !hasMismatch && (

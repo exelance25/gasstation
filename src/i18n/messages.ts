@@ -2,12 +2,12 @@
 
 export const messages = {
   appName: "GASSTATION",
-  tagline: "Pay with USDC, ETH, BASE, or MON — receive ETH, BASE, or MON gas",
+  tagline: "Pay with USDC, ETH, BASE, or MON — receive USDC, ETH, BASE, or MON gas",
   supportedPayAssets: "ETH · BASE · MON · USDC",
   walletConsent:
     "I allow read-only balance access for payments. My address is not stored on the server.",
 
-  fire: "FIRE",
+  fueling: "Fueling",
   firing: "PROCESSING…",
   locked: "LOCKED…",
 
@@ -82,6 +82,85 @@ export const messages = {
     paymasterChainTitle: "Paymaster network required",
     paymasterChainMsg: "Switch to the paymaster network or add USDC.",
     pendingTitle: "Waiting for confirmation",
+    continuingPayment: "Continuing to payment…",
+    amountEmpty: "Enter the amount you want to receive",
+    amountInvalidNumber: "Enter a valid number",
+    amountMustBePositive: "Amount must be greater than zero",
+    selectPaymentSource: "Select a payment source",
+    amountNeeded: "This order needs ~{amount}",
+    switchNetworkHint: "{chain} — confirm the network switch in your wallet.",
+    evmWalletRequired: "EVM wallet required",
+    smartAccountRequired: "Smart account wallet required",
+    autoQuoteNotReady: "Automatic fee quote is not ready",
+    gasDeliveredAuto: "Gas delivered",
+    gaslessDelivered: "Gasless delivery sent",
+    solanaWalletMissing: "Solana wallet not connected",
+    solanaUsdcLow: "Not enough USDC on Solana — at least ${amount} required",
+    evmDepositMissing: "Wallet or treasury missing for EVM deposit",
+    tokenNotSupported: "This payment token is not supported in manual mode",
+    nativeLow: "Not enough {symbol} on {chain}",
+    nativeDepositFailed: "Native deposit failed on-chain",
+    usdcLowOnChain: "Not enough USDC on {chain} — at least ${amount} required",
+    usdcDepositFailed: "USDC transfer failed on-chain",
+    solanaPending: "Solana: ${amount} USDC — confirm in Phantom.",
+    pendingTx: "Transaction pending",
+  },
+
+  depot: {
+    deliveryTitle: "Gas delivery",
+    deliveryHint: "Choose which network receives your gas",
+    selectedNetwork: "Selected network",
+    deliveryNetwork: "Gas delivery network",
+    comingSoon: "Coming soon",
+  },
+
+  target: {
+    title: "Destination address",
+    hint: "Your wallet or any EVM address",
+    useOwn: "Use my address",
+    placeholder: "0x… destination EVM address",
+    formatError: "Address format does not match the selected network.",
+    valid: "Valid address",
+    solHint: "Solana Base58 address (32–44 characters).",
+    evmHint: "EVM address: 0x followed by 40 hex characters.",
+  },
+
+  amount: {
+    label: "Amount to receive",
+    placeholder: "e.g. 0.0001",
+    oracleNote: "Live price + {buffer}% buffer — refreshes every 5s",
+    estimatedDelivery: "Estimated gas you will receive:",
+    estimatedPayment: "Estimated payment",
+    live: "live",
+    charge: "charged",
+    enterValid: "Enter a valid amount…",
+    delivered: "delivered",
+    netGas: "Net gas",
+  },
+
+  walletPicker: {
+    title: "Wallet balance",
+    scanning: "Scanning…",
+    selectSource: "Select payment source",
+    scanningBalances: "Scanning balances…",
+    emptyHint:
+      "No USDC, ETH, BASE, or MON found. Make sure tokens are on Sepolia, Base Sepolia, or Monad.",
+    insufficientFor: "Insufficient for {amount}",
+  },
+
+  payment: {
+    label: "Payment",
+    selectedBalance: "Selected balance",
+  },
+
+  mode: {
+    manual: "Manual",
+    automatic: "Automatic",
+    groupLabel: "Gas mode",
+    manualHint: "USDC · ETH · BASE · MON → gas",
+    autoActive: "Sponsor + automatic fee enabled",
+    autoSdk: "SDK packages — dApp & B2B integration",
+    sdkTitle: "Developer SDK packages — integration guide",
   },
 
   errors: {
@@ -141,6 +220,20 @@ export const messages = {
     close: "Close",
     dismiss: "Dismiss",
     explorer: "View on explorer",
+  },
+
+  nav: {
+    menu: "Top menu",
+    about: "About",
+    contact: "Contact",
+    contactFull: "Contact & feedback",
+    admin: "Admin",
+    preparingGas: "Preparing gas",
+    passLoading: "Preparing your pass…",
+    passReady: "Your pass — treasury recognizes you",
+    statsLabel: "Platform statistics",
+    users: "users",
+    completedTx: "completed transactions",
   },
 } as const;
 

@@ -20,6 +20,7 @@ import { AssetIcon } from "@/components/AssetIcon";
 
 import { getDeliveryNetworkLabel } from "@/lib/explorer-urls";
 
+import { messages } from "@/i18n/messages";
 import { cn } from "@/lib/utils";
 
 
@@ -110,11 +111,11 @@ export function DepotAssetSelector({
 
       <div>
 
-        <p className="text-xs font-semibold text-amber-100/90">Gas teslimi</p>
+        <p className="text-xs font-semibold text-amber-100/90">{messages.depot.deliveryTitle}</p>
 
         <p className="mt-0.5 text-[11px] leading-snug text-neutral-400">
 
-          Hangi ağa yakıt göndereceğinizi seçin
+          {messages.depot.deliveryHint}
 
         </p>
 
@@ -158,7 +159,7 @@ export function DepotAssetSelector({
 
             <p className="text-[10px] font-medium uppercase tracking-wider text-neutral-500">
 
-              Seçili ağ
+              {messages.depot.selectedNetwork}
 
             </p>
 
@@ -202,7 +203,7 @@ export function DepotAssetSelector({
 
           role="listbox"
 
-          aria-label="Gas teslim ağı"
+          aria-label={messages.depot.deliveryNetwork}
 
           className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-[110] max-h-[min(420px,60vh)] overflow-y-auto rounded-2xl border border-amber-400/20 bg-neutral-950/95 shadow-[0_20px_60px_rgba(0,0,0,0.65)] backdrop-blur-xl"
 
@@ -282,7 +283,7 @@ export function DepotAssetSelector({
 
                       {!selectable && (
 
-                        <p className="mt-0.5 text-[10px] font-medium text-amber-400/90">Yakında</p>
+                        <p className="mt-0.5 text-[10px] font-medium text-amber-400/90">{messages.depot.comingSoon}</p>
 
                       )}
 

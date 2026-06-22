@@ -324,21 +324,21 @@ export function useGasPump() {
   const isBelowMinimumBalance = false;
 
   const amountInvalidHint = useMemo(() => {
-    if (!desiredAmountInput.trim()) return "Almak istediğiniz miktarı girin";
-    if (parsedDeliveryAmount === null) return "Geçerli bir sayı girin";
-    if (!isDeliveryAmountValid) return "Miktar 0'dan büyük olmalı";
+    if (!desiredAmountInput.trim()) return messages.pump.amountEmpty;
+    if (parsedDeliveryAmount === null) return messages.pump.amountInvalidNumber;
+    if (!isDeliveryAmountValid) return messages.pump.amountMustBePositive;
     return null;
   }, [desiredAmountInput, parsedDeliveryAmount, isDeliveryAmountValid]);
 
   const balanceWarning = useMemo(() => {
     if (!anyConnected) return null;
-    if (!selectedDepositKey) return "Ödeme kaynağı seçin";
+    if (!selectedDepositKey) return messages.pump.selectPaymentSource;
     if (
       isDeliveryAmountValid &&
       selectedAmount > 0 &&
       selectedPaymentUsd < selectedAmount
     ) {
-      return `Bu işlem için ~${formatPackageUsd(selectedAmount)} gerekir`;
+      return messages.pump.amountNeeded.replace("{amount}", formatPackageUsd(selectedAmount));
     }
     return null;
   }, [
@@ -422,12 +422,14 @@ export function useGasPump() {
   const ensureEvmDepositChain = useCallback(async () => {
     if (!depositTarget || depositTarget.kind !== "evm") return;
     if (walletChainId === depositTarget.chainId) return;
-    setFuelingHint(`${depositTarget.chainName} — MetaMask'ta ağı onaylayın.`);
+    setFuelingHint(
+      messages.pump.switchNetworkHint.replace("{chain}", depositTarget.chainName),
+    );
     try {
       await switchChainAsync({ chainId: depositTarget.chainId });
     } catch (e) {
       throw new Error(
-        `${depositTarget.chainName} ağına geçilemedi — MetaMask'ta bu ağı ekleyip onaylayın.`,
+        messages.pump.switchNetworkFailed,
       );
     }
   }, [depositTarget, walletChainId, switchChainAsync, setFuelingHint]);
@@ -631,13 +633,13 @@ export function useGasPump() {
           throw new Error(messages.pump.invalidAmount);
         }
 
-        setFuelingHint("Continuing to payment…");
+        setFuelingHint(messages.pump.continuingPayment);
         if (autoFeeOn) {
           const payer =
             depositTarget.kind === "solana"
               ? solanaPublicKey?.toBase58()
               : evmAddress;
-          if (!payer) throw new Error("Cüzdan adresi bulunamadı");
+          if (!payer) throw new Error(messages.pump.walletAddressMissing);
 
           const onStatus = (title: string, message: string) => {
             if (statusToastIdRef.current) {
@@ -652,7 +654,7 @@ export function useGasPump() {
           };
 
           if (autoFeePath === "paymaster_usdc") {
-            if (!evmAddress || !publicClient) throw new Error("EVM cüzdanı gerekli");
+            if (!evmAddress || !publicClient) throw new Error(messages.pump.evmWalletRequired);
             const result = await executePaymasterUsdc({
               deliveryAsset: selectedAsset,
               beneficiaryAddress: trimmedTarget,
@@ -676,9 +678,9 @@ export function useGasPump() {
             });
             void refetchUsdc();
             presentPumpSuccess({
-              title: "Yakıt gönderildi",
+              title: messages.pump.gasDeliveredAuto,
               message: `$${result.usdcPaid} USDC · paymaster · tx ${result.deliveryTxHash.slice(0, 10)}…`,
-              panelDetail: `$${result.usdcPaid} USDC paymaster ile teslim edildi.`,
+              panelDetail: `$${result.usdcPaid} USDC delivered via paymaster.`,
               deliveryTxHash: result.deliveryTxHash,
               deliveryAsset: selectedAsset,
             });
@@ -686,7 +688,7 @@ export function useGasPump() {
           }
 
           if (autoFeePath === "erc4337_relay") {
-            if (!walletClient || !evmAddress) throw new Error("Smart account cüzdanı gerekli");
+            if (!walletClient || !evmAddress) throw new Error(messages.pump.smartAccountRequired);
             const result = await executeErc4337GasPurchase({
               smartAccountAddress: evmAddress,
               deliveryAsset: selectedAsset,
@@ -699,13 +701,13 @@ export function useGasPump() {
             void refetchUsdc();
             showToast({
               variant: "success",
-              title: "Gasless yakıt gönderildi",
+              title: messages.pump.gaslessDelivered,
               message: `ERC-4337 relayer · tx ${result.transactionHash.slice(0, 10)}…`,
             });
             return;
           }
 
-          if (!autoFeeQuote) throw new Error("Otomatik ücret teklifi hazır değil");
+          if (!autoFeeQuote) throw new Error(messages.pump.autoQuoteNotReady);
 
           const result = await executeAutomaticFee({
             deposit: depositTarget,
@@ -751,9 +753,9 @@ export function useGasPump() {
             statusToastIdRef.current = null;
           }
           presentPumpSuccess({
-            title: "Yakıt gönderildi",
-            message: `${formatNativePaymentDisplay(autoFeeQuote)} ödendi · teslimat ${result.deliveryTxHash?.slice(0, 10) ?? "—"}…`,
-            panelDetail: `${formatNativePaymentDisplay(autoFeeQuote)} ödendi.`,
+            title: messages.pump.gasDeliveredAuto,
+            message: `${formatNativePaymentDisplay(autoFeeQuote)} paid · delivery ${result.deliveryTxHash?.slice(0, 10) ?? "—"}…`,
+            panelDetail: `${formatNativePaymentDisplay(autoFeeQuote)} paid.`,
             deliveryTxHash: result.deliveryTxHash,
             deliveryAsset: selectedAsset,
           });
@@ -761,19 +763,17 @@ export function useGasPump() {
         }
 
         if (selectedAmount <= 0) {
-          throw new Error("Geçersiz ödeme tutarı — gas miktarını kontrol edin.");
+          throw new Error(messages.pump.invalidAmount);
         }
 
         const depositor =
           depositTarget.kind === "solana"
             ? solanaPublicKey?.toBase58()
             : paymentEvmAddress;
-        if (!depositor) throw new Error("Cüzdan adresi bulunamadı");
+        if (!depositor) throw new Error(messages.pump.walletAddressMissing);
 
         if (depositTarget.kind === "evm" && (!ctxEvmConnected || !paymentEvmAddress)) {
-          throw new Error(
-            "EVM cüzdanı tam bağlı değil — sayfayı yenileyip MetaMask ile tekrar bağlanın.",
-          );
+          throw new Error(messages.pump.evmNotConnected);
         }
 
         if (depositTarget.kind === "evm") {
@@ -799,18 +799,18 @@ export function useGasPump() {
         completedPackageUsd = packageUsd;
         completedPaymentMode = paymentMode;
 
-        setFuelingHint("Sipariş kaydedildi — cüzdan ödemesi hazırlanıyor…");
+        setFuelingHint(messages.pump.orderSaved);
 
         const amountPaidWei = parseUnits(String(packageUsd), 6);
         let depositTxHash: string;
 
         if (depositTarget.kind === "solana") {
           if (!solanaPublicKey || !solanaSendTransaction) {
-            throw new Error("Solana cüzdanı bağlı değil");
+            throw new Error(messages.pump.solanaWalletMissing);
           }
           if (depositTarget.amountRaw < amountPaidWei) {
             throw new Error(
-              `Solana'da yetersiz USDC — en az $${selectedAmount} gerekli`,
+              messages.pump.solanaUsdcLow.replace("{amount}", String(selectedAmount)),
             );
           }
 
@@ -820,8 +820,8 @@ export function useGasPump() {
           }
           statusToastIdRef.current = showToast({
             variant: "status",
-            title: "İşlem bekleniyor",
-            message: `Solana: $${selectedAmount} USDC — Phantom onayını verin.`,
+            title: messages.pump.pendingTx,
+            message: messages.pump.solanaPending.replace("{amount}", String(selectedAmount)),
             persist: true,
           });
 
@@ -835,14 +835,14 @@ export function useGasPump() {
           depositTxHash = sig;
         } else if (depositTarget.paymentMode === "native") {
           if (!paymentEvmAddress || !collectorAddress || !priceSnapshot) {
-            throw new Error("EVM native depozit için cüzdan veya kasa eksik");
+            throw new Error(messages.pump.evmDepositMissing);
           }
           if (
             depositTarget.paySymbol !== "ETH" &&
             depositTarget.paySymbol !== "BASE" &&
             depositTarget.paySymbol !== "MON"
           ) {
-            throw new Error("Bu ödeme tokenı manuel modda desteklenmiyor");
+            throw new Error(messages.pump.tokenNotSupported);
           }
 
           const nativeWei = computeNativePaymentWei(
@@ -852,11 +852,13 @@ export function useGasPump() {
           );
           if (depositTarget.amountRaw < nativeWei) {
             throw new Error(
-              `${depositTarget.chainName} üzerinde yetersiz ${depositTarget.paySymbol}`,
+              messages.pump.nativeLow
+                .replace("{symbol}", depositTarget.paySymbol)
+                .replace("{chain}", depositTarget.chainName),
             );
           }
 
-          setFuelingHint("MetaMask'ta ödemeyi onaylayın — gas otomatik gönderilir.");
+          setFuelingHint(messages.pump.confirmNative);
 
           const nativeTxHash = await sendNativeDepositViaProvider({
             connector,
@@ -866,27 +868,29 @@ export function useGasPump() {
             chainId: depositTarget.chainId,
           });
 
-          setFuelingHint("Ödeme gönderildi — blok onayı bekleniyor…");
+          setFuelingHint(messages.pump.paymentSent);
 
           const nativeReceipt = await waitForDepositReceipt(
             depositTarget.chainId,
             nativeTxHash,
           );
           if (nativeReceipt.status !== "success") {
-            throw new Error("Native depozit blokzincirde başarısız oldu");
+            throw new Error(messages.pump.nativeDepositFailed);
           }
           depositTxHash = nativeTxHash;
         } else {
           if (!paymentEvmAddress || !collectorAddress || !depositTarget.usdcAddress) {
-            throw new Error("EVM depozit için cüzdan veya kasa eksik");
+            throw new Error(messages.pump.evmDepositMissing);
           }
           if (depositTarget.amountRaw < amountPaidWei) {
             throw new Error(
-              `${depositTarget.chainName} üzerinde yetersiz USDC — en az $${selectedAmount} gerekli`,
+              messages.pump.usdcLowOnChain
+                .replace("{chain}", depositTarget.chainName)
+                .replace("{amount}", String(selectedAmount)),
             );
           }
 
-          setFuelingHint("MetaMask'ta USDC ödemesini onaylayın.");
+          setFuelingHint(messages.pump.confirmUsdc);
 
           const usdcTxHash = await sendErc20TransferViaProvider({
             connector,
@@ -897,18 +901,18 @@ export function useGasPump() {
             chainId: depositTarget.chainId,
           });
 
-          setFuelingHint("Ödeme gönderildi — blok onayı bekleniyor…");
+          setFuelingHint(messages.pump.paymentSent);
 
           const usdcReceipt = await waitForDepositReceipt(depositTarget.chainId, usdcTxHash);
           if (usdcReceipt.status !== "success") {
-            throw new Error("USDC transferi blokzincirde başarısız oldu");
+            throw new Error(messages.pump.usdcDepositFailed);
           }
           depositTxHash = usdcTxHash;
         }
 
         completedDepositTx = depositTxHash;
 
-        setFuelingHint("Kasadan gas gönderiliyor…");
+        setFuelingHint(messages.pump.delivering);
 
         const dispense = await postDispenseGas({
           txHash: depositTxHash,

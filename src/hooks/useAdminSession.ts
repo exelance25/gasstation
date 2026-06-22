@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import { messages } from "@/i18n/messages";
+import { adminTr } from "@/i18n/admin-tr";
 
 type AdminStatus = {
   authenticated: boolean;
@@ -35,7 +35,15 @@ export function useAdminSession() {
 
   const signIn = useCallback(async () => {
     if (!isConnected || !address) {
-      setError(messages.admin.connectFirst);
+      setError(adminTr.connectFirst);
+      return false;
+    }
+
+    if (
+      status.adminWallet &&
+      address.toLowerCase() !== status.adminWallet.toLowerCase()
+    ) {
+      setError(adminTr.wrongWallet);
       return false;
     }
 
@@ -46,7 +54,7 @@ export function useAdminSession() {
         credentials: "include",
       });
       if (!challengeRes.ok) {
-        throw new Error(messages.admin.challengeFailed);
+        throw new Error(adminTr.challengeFailed);
       }
       const { message } = (await challengeRes.json()) as { message: string };
       const signature = await signMessageAsync({ message });
@@ -59,18 +67,18 @@ export function useAdminSession() {
       });
 
       if (!verifyRes.ok) {
-        throw new Error(messages.admin.unauthorized);
+        throw new Error(adminTr.unauthorized);
       }
 
       await refresh();
       return true;
     } catch (e) {
-      setError(e instanceof Error ? e.message : messages.admin.signInFailed);
+      setError(e instanceof Error ? e.message : adminTr.signInFailed);
       return false;
     } finally {
       setSigningIn(false);
     }
-  }, [address, isConnected, refresh, signMessageAsync]);
+  }, [address, isConnected, refresh, signMessageAsync, status.adminWallet]);
 
   const signOut = useCallback(async () => {
     await fetch("/api/admin/session", { method: "DELETE", credentials: "include" });

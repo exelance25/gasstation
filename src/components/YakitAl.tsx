@@ -17,6 +17,7 @@ import { useGasMode } from "@/hooks/useGasMode";
 import { isAutoFeeEnabled } from "@/config/client-env";
 import { useWalletContext } from "@/providers/WalletContext";
 import { DEPOSIT_USDC_HINT } from "@/lib/deposit-networks";
+import { messages } from "@/i18n/messages";
 import { PumpWelcomeBanner } from "@/components/PumpWelcomeBanner";
 import { PumpUserCounter } from "@/components/PumpUserCounter";
 import { PumpAppTopTabs } from "@/components/PumpAppTopTabs";
@@ -199,9 +200,9 @@ export function YakitAl() {
             )}
             {anyConnected && depositChainName !== "—" && !showAutoPanel && depositTarget && (
               <p className="mt-2 text-center text-[10px] text-neutral-600">
-                Ödeme: <span className="text-emerald-400/90">{depositChainName}</span>
+                {messages.payment.label}: <span className="text-emerald-400/90">{depositChainName}</span>
                 {" · "}
-                Seçili bakiye:{" "}
+                {messages.payment.selectedBalance}:{" "}
                 <span className="text-emerald-300/90">
                   {depositTarget.paySymbol === "USDC"
                     ? selectedChainUsdc.toFixed(2)

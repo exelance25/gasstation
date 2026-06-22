@@ -64,6 +64,7 @@ import { clientEnv } from "@/config/client-env";
 
 import { getPaymentAsset } from "@/config/pool-tokens";
 import { isAdminConfigured } from "@/server/admin/admin-wallet";
+import { listDeliveredOrderStats } from "@/server/gas/gas-order-stats";
 
 
 
@@ -120,6 +121,12 @@ export type KasaOverview = {
   openOrders: GasOrder[];
 
   activePasses: PumpPass[];
+
+  platformStats: {
+    uniqueUsers: number;
+    completedTransactions: number;
+    profitMarginPercent: number;
+  };
 
 };
 
@@ -403,9 +410,40 @@ export async function getKasaOverview(): Promise<KasaOverview> {
 
 
 
+  if (operator) {
+    for (const chainId of DEPOSIT_EVM_CHAIN_IDS) {
+      const usdc = getUsdcAddress(chainId);
+      if (!usdc) continue;
+      balances.push(
+        await readErc20Balance(
+          operator,
+          usdc,
+          chainId,
+          "USDC",
+          `USDC · ${getChainDisplayName(chainId)} (gas tank)`,
+          "operator",
+          6,
+        ).catch(() => ({
+          label: `USDC · ${getChainDisplayName(chainId)} (gas tank)`,
+          chainId,
+          symbol: "USDC",
+          amount: "0",
+          role: "operator" as const,
+          kind: "erc20" as const,
+        })),
+      );
+    }
+  }
+
+
+
   const ledger = readTreasuryLedger(80);
-
-
+  const ledgerSummary = summarizeTreasuryLedger(ledger);
+  const orderStats = listDeliveredOrderStats();
+  const profitMarginPercent =
+    ledgerSummary.totalDepositsUsd > 0
+      ? (ledgerSummary.totalRetainedUsd / ledgerSummary.totalDepositsUsd) * 100
+      : 0;
 
   return {
 
@@ -429,13 +467,19 @@ export async function getKasaOverview(): Promise<KasaOverview> {
 
     ledger,
 
-    ledgerSummary: summarizeTreasuryLedger(ledger),
+    ledgerSummary,
 
     recentDispenses: listRecentProcessedDeposits(40),
 
     openOrders: listOpenOrders(30),
 
     activePasses: listActivePasses(30),
+
+    platformStats: {
+      uniqueUsers: orderStats.uniqueUsers,
+      completedTransactions: orderStats.completedTransactions,
+      profitMarginPercent,
+    },
 
   };
 

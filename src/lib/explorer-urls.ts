@@ -17,6 +17,10 @@ export function getDeliveryExplorerUrl(asset: DepotAssetId, txHash: string): str
       return mainnet
         ? `https://monadexplorer.com/tx/${txHash}`
         : `https://testnet.monadexplorer.com/tx/${txHash}`;
+    case "USDC":
+      return mainnet
+        ? `https://basescan.org/tx/${txHash}`
+        : `https://sepolia.basescan.org/tx/${txHash}`;
     case "SOL":
       return mainnet
         ? `https://solscan.io/tx/${txHash}`
@@ -34,6 +38,8 @@ export function getDeliveryNetworkLabel(asset: DepotAssetId): string {
       return mainnet ? "Base" : "Base Sepolia";
     case "MON":
       return mainnet ? "Monad" : "Monad Testnet";
+    case "USDC":
+      return mainnet ? "USDC (Base)" : "USDC (Base Sepolia)";
     case "SOL":
       return mainnet ? "Solana" : "Solana Devnet";
     case "ARB":

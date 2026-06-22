@@ -2,11 +2,11 @@
 
 import { useGasMode } from "@/hooks/useGasMode";
 import { isAutoFeeEnabled } from "@/config/client-env";
+import { messages } from "@/i18n/messages";
 import type { GasMode } from "@/types/gas-mode";
 
 type GasModeSwitchProps = {
   disabled?: boolean;
-  /** Otomatik düğmesi — SDK paketleri penceresi */
   onOpenSdkPackages?: () => void;
 };
 
@@ -75,29 +75,29 @@ export function GasModeSwitch({ disabled, onOpenSdkPackages }: GasModeSwitchProp
   };
 
   return (
-    <div className="flex flex-col items-end gap-1" role="group" aria-label="Gas modu">
+    <div className="flex flex-col items-end gap-1" role="group" aria-label={messages.mode.groupLabel}>
       <div className="flex rounded-xl border border-neutral-700/80 bg-neutral-900/60 p-1">
         <ModeOption
           active={mode === "manual"}
-          label="Manuel"
+          label={messages.mode.manual}
           disabled={disabled}
           onClick={() => select("manual")}
         />
         <ModeOption
           active={mode === "automatic" && autoAvailable}
-          label="Otomatik"
+          label={messages.mode.automatic}
           disabled={disabled}
           highlight={!autoAvailable}
-          title="Geliştirici SDK paketleri — entegrasyon rehberi"
+          title={messages.mode.sdkTitle}
           onClick={openSdk}
         />
       </div>
       <p className="max-w-[13rem] text-right text-[9px] leading-snug text-neutral-500">
         {mode === "manual"
-          ? "USDC · ETH · BASE · MON → gas"
+          ? messages.mode.manualHint
           : autoAvailable
-            ? "Sponsor + otomatik fee aktif"
-            : "SDK paketleri — dApp & B2B entegrasyon"}
+            ? messages.mode.autoActive
+            : messages.mode.autoSdk}
       </p>
     </div>
   );

@@ -5,7 +5,7 @@ import type { PaymentAssetRow } from "../../hooks/usePaymentPortfolio";
 import { formatPackageUsd } from "@/lib/pricing";
 import type { LivePrices } from "@/lib/oracle/live-prices";
 import { rowUsdValue } from "@/lib/payment-portfolio-filter";
-import { cn } from "@/lib/utils";
+import { messages } from "@/i18n/messages";
 
 type WalletContentPickerProps = {
   assets: PaymentAssetRow[];
@@ -92,14 +92,14 @@ export function WalletContentPicker({
       >
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-            Cüzdan içeriği
+            {messages.walletPicker.title}
           </p>
           <p className="mt-0.5 truncate text-sm font-bold text-white">
             {isLoading
-              ? "Taranıyor…"
+              ? messages.walletPicker.scanning
               : selectedRow
                 ? rowLabel(selectedRow)
-                : "Ödeme kaynağı seçin"}
+                : messages.walletPicker.selectSource}
           </p>
           {selectedRow && !isLoading && (
             <p className="mt-0.5 text-xs tabular-nums text-emerald-400/90">
@@ -121,15 +121,16 @@ export function WalletContentPicker({
       {open && (
         <div
           role="listbox"
-          aria-label="Cüzdan içeriği"
+          aria-label={messages.walletPicker.title}
           className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-[120] max-h-[min(60vh,320px)] overflow-y-auto rounded-2xl border border-white/10 bg-neutral-950/95 p-2 shadow-[0_24px_80px_rgba(0,0,0,0.75)] backdrop-blur-xl"
         >
           {isLoading && sortedAssets.length === 0 ? (
-            <p className="px-3 py-4 text-center text-xs text-neutral-500">Bakiyeler taranıyor…</p>
+            <p className="px-3 py-4 text-center text-xs text-neutral-500">
+              {messages.walletPicker.scanningBalances}
+            </p>
           ) : sortedAssets.length === 0 ? (
             <p className="px-3 py-4 text-center text-xs text-amber-300/90">
-              USDC, ETH, BASE veya MON bakiyesi bulunamadı. Sepolia / Base Sepolia / Monad
-              ağında token olduğundan emin olun.
+              {messages.walletPicker.emptyHint}
             </p>
           ) : (
             <ul className="flex flex-col gap-1">
@@ -181,7 +182,10 @@ export function WalletContentPicker({
                           row.amount > 0 &&
                           !canPayPackage && (
                             <p className="text-[9px] text-amber-400/90">
-                              {formatPackageUsd(selectedPackageUsd)} için yetersiz
+                              {messages.walletPicker.insufficientFor.replace(
+                                "{amount}",
+                                formatPackageUsd(selectedPackageUsd),
+                              )}
                             </p>
                           )}
                       </div>

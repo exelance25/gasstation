@@ -17,6 +17,7 @@ import { useAdminFeedbackCount } from "@/hooks/useAdminFeedbackCount";
 import { useAdminSession } from "@/hooks/useAdminSession";
 
 import { cn } from "@/lib/utils";
+import { messages } from "@/i18n/messages";
 
 
 
@@ -92,13 +93,13 @@ export function PumpAppTopTabs({
 
         className="flex flex-wrap items-center justify-center gap-1 rounded-full border border-white/10 bg-black/30 p-0.5"
 
-        aria-label="Üst menü"
+        aria-label={messages.nav.menu}
 
       >
 
         <TabButton active={openPanel === "about"} disabled={disabled} onClick={openAbout}>
 
-          Hakkımızda
+          {messages.nav.about}
 
         </TabButton>
 
@@ -112,9 +113,9 @@ export function PumpAppTopTabs({
 
         >
 
-          <span className="hidden min-[420px]:inline">İletişim ve geri bildirim</span>
+          <span className="hidden min-[420px]:inline">{messages.nav.contactFull}</span>
 
-          <span className="min-[420px]:hidden">İletişim</span>
+          <span className="min-[420px]:hidden">{messages.nav.contact}</span>
 
         </TabButton>
 
@@ -220,7 +221,7 @@ function TabButton({
 
           className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white shadow-[0_0_8px_rgba(220,38,38,0.5)]"
 
-          aria-label={`${badge} mesaj`}
+          aria-label={`${badge} messages`}
 
         >
 

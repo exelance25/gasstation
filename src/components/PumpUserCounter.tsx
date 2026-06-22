@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { isMainnetClientEnv } from "@/lib/app-env";
+import { messages } from "@/i18n/messages";
 
 type Stats = {
   uniqueUsers: number;
@@ -45,11 +46,11 @@ export function PumpUserCounter() {
     <div
       className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-full border border-emerald-500/25 bg-emerald-950/30 px-4 py-1.5 text-center text-[11px] text-emerald-100/90 shadow-[0_0_20px_rgba(16,185,129,0.12)]"
       role="status"
-      aria-label="Platform istatistikleri"
+      aria-label={messages.nav.statsLabel}
     >
       <span>
         <span className="font-bold tabular-nums text-emerald-300">{stats.uniqueUsers}</span>{" "}
-        kullanıcı
+        {messages.nav.users}
       </span>
       <span className="hidden text-emerald-600/80 sm:inline" aria-hidden>
         ·
@@ -58,7 +59,7 @@ export function PumpUserCounter() {
         <span className="font-bold tabular-nums text-emerald-300">
           {stats.completedTransactions}
         </span>{" "}
-        tamamlanan işlem
+        {messages.nav.completedTx}
       </span>
     </div>
   );

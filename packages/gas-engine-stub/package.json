@@ -1,7 +1,14 @@
-{
-  "name": "@gasstation/gas-engine",
-  "version": "0.0.1-stub",
-  "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts"
-}
+{
+
+  "name": "@gasstation/gas-engine",
+
+  "version": "0.0.1-stub",
+
+  "private": true,
+
+  "main": "./index.ts",
+
+  "types": "./index.ts"
+
+}
+
