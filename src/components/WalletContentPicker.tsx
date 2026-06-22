@@ -6,6 +6,7 @@ import { formatPackageUsd } from "@/lib/pricing";
 import type { LivePrices } from "@/lib/oracle/live-prices";
 import { rowUsdValue } from "@/lib/payment-portfolio-filter";
 import { messages } from "@/i18n/messages";
+import { cn } from "@/lib/utils";
 
 type WalletContentPickerProps = {
   assets: PaymentAssetRow[];

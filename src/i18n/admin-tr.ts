@@ -40,7 +40,7 @@ export const adminTr = {
   verifyDetail:
     "Devam etmek için admin cüzdanınızla imzalayın. Adres tarayıcıda saklanmaz.",
   verifyButton: "Cüzdan ile doğrula",
-  signInPrompt: "Kasa paneline erişmek için admin cüzdanını bağlayıp imzala.",
+  signInPrompt: "Admin cüzdanını bağlayın, ardından imzalayın.",
   guardLoading: "Yükleniyor…",
   guardMisconfigured: "Admin yapılandırması eksik",
   guardMisconfiguredDetail:

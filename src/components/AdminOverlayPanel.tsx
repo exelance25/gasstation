@@ -13,7 +13,6 @@ type FeedbackRow = {
 };
 
 type KasaOverview = {
-  env: string;
   balances: Array<{ label: string; symbol: string; amount: string; role: string }>;
   ledgerSummary: {
     totalDepositsUsd: number;
@@ -25,7 +24,6 @@ type KasaOverview = {
     completedTransactions: number;
     profitMarginPercent: number;
   };
-  openOrders: Array<{ orderId: string; packageAmount: number; targetAsset: string }>;
 };
 
 type AdminOverlayPanelProps = {
@@ -53,27 +51,29 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
   const [feedbackList, setFeedbackList] = useState<FeedbackRow[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [kasaError, setKasaError] = useState<string | null>(null);
 
   const loadAdminData = useCallback(async () => {
-    setLoadError(null);
+    setKasaError(null);
     const [kasaRes, fbRes] = await Promise.all([
       fetch("/api/admin/kasa", { credentials: "include" }),
       fetch("/api/admin/feedback", { credentials: "include" }),
     ]);
-    if (!kasaRes.ok) {
-      setLoadError(adminTr.loadFailed);
+
+    if (kasaRes.ok) {
+      setKasa((await kasaRes.json()) as KasaOverview);
+    } else {
       setKasa(null);
-      setFeedbackList([]);
-      return;
+      setKasaError(adminTr.loadFailed);
     }
-    setKasa((await kasaRes.json()) as KasaOverview);
+
     if (fbRes.ok) {
       const fb = (await fbRes.json()) as { messages?: FeedbackRow[] };
       setFeedbackList(Array.isArray(fb.messages) ? fb.messages : []);
     } else {
       setFeedbackList([]);
     }
+
     notifyFeedbackChanged();
   }, []);
 
@@ -106,16 +106,16 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
   }, [open, onClose]);
 
   useEffect(() => {
-    if (open && admin.authenticated) void loadAdminData();
+    if (!open) return;
+    if (admin.authenticated) void loadAdminData();
+    else {
+      setKasa(null);
+      setFeedbackList([]);
+      setKasaError(null);
+    }
   }, [open, admin.authenticated, loadAdminData]);
 
   if (!open) return null;
-
-  const wrongWallet =
-    admin.isConnected &&
-    admin.adminWallet &&
-    admin.address &&
-    admin.adminWallet.toLowerCase() !== admin.address.toLowerCase();
 
   return (
     <div
@@ -154,33 +154,21 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
           )}
 
           {admin.configured && !admin.authenticated && (
-            <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-5 text-center">
-              {admin.adminWallet && (
-                <p className="mb-2 text-xs text-neutral-500">
-                  {adminTr.expectedWallet}:{" "}
-                  <code className="break-all text-emerald-400">{admin.adminWallet}</code>
-                </p>
-              )}
-              {admin.isConnected && admin.address && (
-                <p className="mb-2 text-xs text-neutral-500">
-                  {adminTr.connectedWallet}:{" "}
-                  <code className="break-all text-white/80">{admin.address}</code>
-                </p>
-              )}
-              {wrongWallet && (
-                <p className="mb-3 text-sm text-amber-300">{adminTr.wrongWallet}</p>
-              )}
-              <p className="text-sm text-neutral-300">{adminTr.signInPrompt}</p>
+            <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-6 text-center">
               {!admin.isConnected ? (
-                <button
-                  type="button"
-                  onClick={() => openConnectModal?.()}
-                  className="mt-4 w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-500"
-                >
-                  {adminTr.connectWallet}
-                </button>
+                <>
+                  <p className="text-sm text-neutral-300">{adminTr.signInPrompt}</p>
+                  <button
+                    type="button"
+                    onClick={() => openConnectModal?.()}
+                    className="mt-5 w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-500"
+                  >
+                    {adminTr.connectWallet}
+                  </button>
+                </>
               ) : (
                 <>
+                  <p className="text-sm text-neutral-300">{adminTr.verifyDetail}</p>
                   {admin.error && (
                     <p className="mt-3 text-sm text-red-400">{admin.error}</p>
                   )}
@@ -188,7 +176,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                     type="button"
                     disabled={admin.signingIn}
                     onClick={() => void admin.signIn()}
-                    className="mt-4 w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-bold text-white hover:bg-purple-500 disabled:opacity-50"
+                    className="mt-5 w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-bold text-white hover:bg-purple-500 disabled:opacity-50"
                   >
                     {admin.signingIn ? adminTr.signingIn : adminTr.signIn}
                   </button>
@@ -219,7 +207,7 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                 </div>
               </div>
 
-              {loadError && <p className="text-sm text-red-400">{loadError}</p>}
+              {kasaError && <p className="text-sm text-red-400">{kasaError}</p>}
 
               {kasa?.platformStats && (
                 <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -227,74 +215,42 @@ export function AdminOverlayPanel({ open, onClose }: AdminOverlayPanelProps) {
                     label={adminTr.kpiUsers}
                     value={String(kasa.platformStats.uniqueUsers)}
                     hint={adminTr.kpiUsersHint}
-                    accent="emerald"
                   />
                   <KpiCard
                     label={adminTr.kpiMarginRate}
                     value={`${kasa.platformStats.profitMarginPercent.toFixed(1)}%`}
                     hint={adminTr.kpiMarginRateHint}
-                    accent="purple"
                   />
                   <KpiCard
                     label={adminTr.kpiTransactions}
                     value={String(kasa.platformStats.completedTransactions)}
                     hint={`$${kasa.ledgerSummary.totalRetainedUsd.toFixed(2)} ${adminTr.margin.toLowerCase()}`}
-                    accent="amber"
                   />
                 </section>
               )}
 
               {kasa && (
-                <>
-                  <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                      {adminTr.volume}
-                    </h3>
-                    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                      <Stat label={adminTr.orders} value={String(kasa.ledgerSummary.count)} />
-                      <Stat
-                        label={adminTr.totalDeposits}
-                        value={`$${kasa.ledgerSummary.totalDepositsUsd.toFixed(2)}`}
-                      />
-                      <Stat
-                        label={adminTr.margin}
-                        value={`$${kasa.ledgerSummary.totalRetainedUsd.toFixed(2)}`}
-                      />
-                    </div>
-                  </section>
-
-                  <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                      {adminTr.vaultContents}
-                    </h3>
-                    <ul className="mt-3 space-y-2">
-                      {kasa.balances.map((b) => (
-                        <li
-                          key={`${b.label}-${b.symbol}`}
-                          className="flex items-center justify-between gap-2 rounded-lg border border-white/5 bg-black/20 px-3 py-2 text-sm"
-                        >
-                          <span className="text-neutral-400">
-                            {b.label}{" "}
-                            <span className="text-[10px] uppercase text-neutral-600">
-                              ({b.role})
-                            </span>
-                          </span>
-                          <span className="font-mono text-emerald-300">
-                            {b.amount} {b.symbol}
-                          </span>
-                        </li>
-                      ))}
-                      {kasa.balances.length === 0 && (
-                        <li className="text-sm text-neutral-500">{adminTr.balanceUnreadable}</li>
-                      )}
-                    </ul>
-                    {kasa.openOrders.length > 0 && (
-                      <p className="mt-3 text-xs text-amber-400/90">
-                        {adminTr.openOrders.replace("{count}", String(kasa.openOrders.length))}
-                      </p>
+                <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    {adminTr.vaultContents}
+                  </h3>
+                  <ul className="mt-3 max-h-64 space-y-2 overflow-y-auto">
+                    {kasa.balances.map((b) => (
+                      <li
+                        key={`${b.label}-${b.symbol}`}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-white/5 bg-black/20 px-3 py-2 text-sm"
+                      >
+                        <span className="text-neutral-400">{b.label}</span>
+                        <span className="font-mono text-emerald-300">
+                          {b.amount} {b.symbol}
+                        </span>
+                      </li>
+                    ))}
+                    {kasa.balances.length === 0 && (
+                      <li className="text-sm text-neutral-500">{adminTr.balanceUnreadable}</li>
                     )}
-                  </section>
-                </>
+                  </ul>
+                </section>
               )}
 
               <section className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
@@ -362,30 +318,15 @@ function KpiCard({
   label,
   value,
   hint,
-  accent,
 }: {
   label: string;
   value: string;
   hint: string;
-  accent: "emerald" | "purple" | "amber";
 }) {
-  const ring =
-    accent === "emerald"
-      ? "border-emerald-500/30 bg-emerald-950/20"
-      : accent === "purple"
-        ? "border-purple-500/30 bg-purple-950/20"
-        : "border-amber-500/30 bg-amber-950/20";
-  const valueColor =
-    accent === "emerald"
-      ? "text-emerald-300"
-      : accent === "purple"
-        ? "text-purple-300"
-        : "text-amber-300";
-
   return (
-    <div className={`rounded-xl border p-4 ${ring}`}>
+    <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">{label}</p>
-      <p className={`mt-1 text-2xl font-bold tabular-nums ${valueColor}`}>{value}</p>
+      <p className="mt-1 text-2xl font-bold tabular-nums text-emerald-300">{value}</p>
       <p className="mt-1 text-[10px] leading-snug text-neutral-500">{hint}</p>
     </div>
   );
@@ -396,14 +337,5 @@ function TrashIcon() {
     <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
       <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
     </svg>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-white/5 bg-black/30 px-3 py-2">
-      <p className="text-[10px] uppercase tracking-wider text-neutral-500">{label}</p>
-      <p className="mt-0.5 text-lg font-bold tabular-nums text-white">{value}</p>
-    </div>
   );
 }

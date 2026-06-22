@@ -7,7 +7,6 @@ import { adminTr } from "@/i18n/admin-tr";
 type AdminStatus = {
   authenticated: boolean;
   configured: boolean;
-  adminWallet?: string;
 };
 
 export function useAdminSession() {
@@ -36,14 +35,6 @@ export function useAdminSession() {
   const signIn = useCallback(async () => {
     if (!isConnected || !address) {
       setError(adminTr.connectFirst);
-      return false;
-    }
-
-    if (
-      status.adminWallet &&
-      address.toLowerCase() !== status.adminWallet.toLowerCase()
-    ) {
-      setError(adminTr.wrongWallet);
       return false;
     }
 
@@ -78,7 +69,7 @@ export function useAdminSession() {
     } finally {
       setSigningIn(false);
     }
-  }, [address, isConnected, refresh, signMessageAsync, status.adminWallet]);
+  }, [address, isConnected, refresh, signMessageAsync]);
 
   const signOut = useCallback(async () => {
     await fetch("/api/admin/session", { method: "DELETE", credentials: "include" });
@@ -95,7 +86,6 @@ export function useAdminSession() {
     signOut,
     refresh,
     isConnected,
-    adminWallet: status.adminWallet,
     address,
   };
 }
