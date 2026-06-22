@@ -2,12 +2,14 @@
 
 import { useEffect } from "react";
 import {
+  AUTO_FEE_ARCHITECTURE,
   AUTO_FEE_EXPLAINER,
   GASSTATION_MISSION,
   GASSTATION_VISION,
   HOW_GASSTATION_WORKS,
 } from "@/config/gasstation-content";
 import { GasStationLogo } from "@/components/GasStationLogo";
+import { messages } from "@/i18n/messages";
 
 type AboutGasstationPanelProps = {
   open: boolean;
@@ -41,15 +43,15 @@ export function AboutGasstationPanel({ open, onClose }: AboutGasstationPanelProp
           <GasStationLogo className="h-9 w-9 shrink-0" />
           <div className="min-w-0 flex-1">
             <h2 id="about-gasstation-title" className="text-base font-bold text-white">
-              Hakkımızda
+              {messages.about.title}
             </h2>
-            <p className="text-[11px] text-neutral-500">GASSTATION · Cross-chain gas istasyonu</p>
+            <p className="text-[11px] text-neutral-500">{messages.about.subtitle}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="rounded-full px-2 py-1 text-sm text-neutral-400 hover:bg-white/10 hover:text-white"
-            aria-label="Kapat"
+            aria-label={messages.common.close}
           >
             ✕
           </button>
@@ -58,32 +60,28 @@ export function AboutGasstationPanel({ open, onClose }: AboutGasstationPanelProp
         <div className="space-y-5 overflow-y-auto px-5 py-4 text-sm leading-relaxed text-neutral-300">
           <section>
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-              GASSTATION nedir?
+              {messages.about.whatIsTitle}
             </h3>
-            <p className="mt-2">
-              GASSTATION, bir zincirde USDC veya native token ile ödeme yapıp başka bir zincirde{" "}
-              <strong className="font-semibold text-white">native gas</strong> (ETH, MON, BASE, SOL)
-              teslim almanızı sağlayan cross-chain yakıt protokolüdür. Cüzdan uygulaması, dApp,
-              NFT platformu veya backend — entegrasyon yüzeyi aynıdır: oracle fiyat, sipariş, ödeme,
-              dispense.
-            </p>
+            <p className="mt-2">{messages.about.whatIsBody}</p>
           </section>
 
           <section>
             <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
-              Misyon
+              {messages.about.mission}
             </h3>
             <p className="mt-2">{GASSTATION_MISSION}</p>
           </section>
 
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-purple-400">Vizyon</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-purple-400">
+              {messages.about.vision}
+            </h3>
             <p className="mt-2">{GASSTATION_VISION}</p>
           </section>
 
           <section>
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400/90">
-              Nasıl kullanılır?
+              {messages.about.howToUse}
             </h3>
             <ol className="mt-3 space-y-3">
               {HOW_GASSTATION_WORKS.map((step, i) => (
@@ -92,13 +90,30 @@ export function AboutGasstationPanel({ open, onClose }: AboutGasstationPanelProp
                   className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-                    Adım {i + 1}
+                    {messages.about.step} {i + 1}
                   </p>
                   <p className="mt-1 font-semibold text-white">{step.title}</p>
                   <p className="mt-1 text-[13px] text-neutral-400">{step.text}</p>
                 </li>
               ))}
             </ol>
+          </section>
+
+          <section>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-cyan-400/90">
+              {AUTO_FEE_ARCHITECTURE.title}
+            </h3>
+            <ul className="mt-3 space-y-2">
+              {AUTO_FEE_ARCHITECTURE.layers.map((layer) => (
+                <li
+                  key={layer.name}
+                  className="rounded-lg border border-emerald-500/15 bg-emerald-950/20 px-3 py-2"
+                >
+                  <p className="text-[13px] font-semibold text-emerald-300">{layer.name}</p>
+                  <p className="mt-0.5 text-[12px] text-neutral-400">{layer.detail}</p>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section>
@@ -117,10 +132,7 @@ export function AboutGasstationPanel({ open, onClose }: AboutGasstationPanelProp
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-[12px] text-neutral-500">
-              Geliştirici paketleri için üst menüdeki <strong className="text-neutral-400">Otomatik</strong>{" "}
-              düğmesine veya SDK penceresine bakın.
-            </p>
+            <p className="mt-3 text-[12px] text-neutral-500">{messages.about.sdkHint}</p>
           </section>
         </div>
       </div>

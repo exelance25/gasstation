@@ -235,6 +235,56 @@ export const messages = {
     users: "users",
     completedTx: "completed transactions",
   },
+
+  feedback: {
+    title: "Contact & feedback",
+    subtitle: "Questions, suggestions, or bug reports — your message goes directly to the team.",
+    email: "Email",
+    message: "Your message",
+    emailPlaceholder: "you@example.com",
+    messagePlaceholder: "Your feedback or suggestion…",
+    send: "Send",
+    sendFailed: "Could not send message.",
+    thanksTitle: "Thank you",
+    thanksMessage: "We received your message — thanks for your feedback.",
+    close: "Close",
+  },
+
+  about: {
+    title: "About",
+    subtitle: "GASSTATION · Cross-chain gas station",
+    whatIsTitle: "What is GASSTATION?",
+    whatIsBody:
+      "GASSTATION lets you pay with USDC or native tokens on one chain and receive native gas (ETH, MON, BASE, SOL, USDC) on another. Wallet app, dApp, NFT platform, or backend — same flow: oracle price, order, payment, dispense.",
+    mission: "Mission",
+    vision: "Vision",
+    howToUse: "How it works",
+    step: "Step",
+    sdkHint:
+      "For developer packages, open the Automatic button in the top menu or the SDK panel.",
+  },
+
+  sdk: {
+    title: "Automatic Gas · SDK Packages",
+    subtitle:
+      "Ready-made packages for B2B integration. After pushing to GitHub, links update via NEXT_PUBLIC_GITHUB_REPO.",
+    autoModeNote:
+      "Automatic mode is rolling out on the pump UI. Integrators can already ship gas delivery to dApps, launchpads, and bot platforms — REST POC in 1–2 weeks.",
+    githubIntegrators: "Integrator guide",
+    githubSource: "Source code",
+    mainRepo: "Main repo",
+  },
+
+  autoFee: {
+    title: "Automatic fee",
+    paymasterPath: "{chain} · Gas from PumpPaymaster pool → destination",
+    erc4337Path: "Gasless — ERC-4337 relayer + paymaster postOp",
+    quoting: "Calculating quote…",
+    settlementPath: "{chain} → GASSTATION treasury · Settlement gas delivery",
+    gasCost: "~${usd} gas cost",
+    quoteFailed: "Could not fetch quote — is the quote engine running?",
+    insufficientBalance: "Insufficient balance — native or USDC (paymaster network) required",
+  },
 } as const;
 
 export type Messages = typeof messages;

@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { GITHUB_LINKS, SDK_PACKAGES } from "@/config/gasstation-content";
+import {
+  AUTO_FEE_ARCHITECTURE,
+  GITHUB_LINKS,
+  SDK_PACKAGES,
+} from "@/config/gasstation-content";
 import { GasStationLogo } from "@/components/GasStationLogo";
+import { messages } from "@/i18n/messages";
 
 type SdkPackagesPanelProps = {
   open: boolean;
@@ -36,19 +41,15 @@ export function SdkPackagesPanel({ open, onClose }: SdkPackagesPanelProps) {
           <GasStationLogo className="mt-0.5 h-10 w-10 shrink-0" />
           <div className="min-w-0 flex-1">
             <h2 id="sdk-packages-title" className="text-lg font-bold text-white">
-              Otomatik Gas · SDK Paketleri
+              {messages.sdk.title}
             </h2>
-            <p className="mt-1 text-[12px] leading-snug text-neutral-400">
-              B2B entegrasyon için hazır paketler. GitHub&apos;a yükledikten sonra{" "}
-              <code className="text-emerald-400/90">NEXT_PUBLIC_GITHUB_REPO</code> ile linkler
-              güncellenir.
-            </p>
+            <p className="mt-1 text-[12px] leading-snug text-neutral-400">{messages.sdk.subtitle}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="shrink-0 rounded-full px-2 py-1 text-sm text-neutral-400 hover:bg-white/10 hover:text-white"
-            aria-label="Kapat"
+            aria-label={messages.common.close}
           >
             ✕
           </button>
@@ -56,10 +57,29 @@ export function SdkPackagesPanel({ open, onClose }: SdkPackagesPanelProps) {
 
         <div className="space-y-4 overflow-y-auto px-5 py-4">
           <p className="rounded-xl border border-emerald-500/15 bg-emerald-950/20 px-4 py-3 text-[13px] text-neutral-300">
-            <strong className="text-emerald-300">Otomatik mod</strong> son kullanıcı pompa arayüzünde
-            yakında aktif olacak. Şimdilik entegratörler aşağıdaki paketlerle dApp, launchpad ve bot
-            platformlarına gas teslimi ekleyebilir — REST ile 1–2 haftada POC mümkün.
+            {messages.sdk.autoModeNote}
           </p>
+
+          <section className="rounded-2xl border border-cyan-500/20 bg-cyan-950/10 p-4">
+            <h3 className="text-sm font-bold text-cyan-300">{AUTO_FEE_ARCHITECTURE.title}</h3>
+            <ol className="mt-3 space-y-3">
+              {AUTO_FEE_ARCHITECTURE.layers.map((layer, i) => (
+                <li key={layer.name} className="text-[12px] text-neutral-400">
+                  <span className="font-semibold text-white">
+                    {i + 1}. {layer.name}
+                  </span>
+                  <p className="mt-0.5">{layer.detail}</p>
+                </li>
+              ))}
+            </ol>
+            <pre className="mt-3 overflow-x-auto rounded-lg border border-white/[0.06] bg-black/40 p-3 text-[10px] text-emerald-300/90">
+              {`{
+  "gasNeeded": "0.00013 ETH",
+  "cost": "0.42 USDC",
+  "fee": "0.05 USDC"
+}`}
+            </pre>
+          </section>
 
           {SDK_PACKAGES.map((pkg) => (
             <article
@@ -99,14 +119,17 @@ export function SdkPackagesPanel({ open, onClose }: SdkPackagesPanelProps) {
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-indigo-300 hover:text-indigo-200"
               >
-                GitHub → {pkg.githubPath === "integrators" ? "Entegratör rehberi" : "Kaynak kod"}
+                GitHub →{" "}
+                {pkg.githubPath === "integrators"
+                  ? messages.sdk.githubIntegrators
+                  : messages.sdk.githubSource}
                 <span aria-hidden>↗</span>
               </a>
             </article>
           ))}
 
           <p className="pb-2 text-center text-[11px] text-neutral-600">
-            Ana repo:{" "}
+            {messages.sdk.mainRepo}:{" "}
             <a
               href={GITHUB_LINKS.repo}
               target="_blank"

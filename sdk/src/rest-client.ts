@@ -37,6 +37,20 @@ export type GasDispenseResponse = {
   message: string;
 };
 
+export type GasQuoteResponse = {
+  quoteId: string;
+  gasNeeded: string;
+  cost: string;
+  fee: string;
+  costUsd: number;
+  feeUsd: number;
+  deliveryAmount: number;
+  paymentToken: "USDC" | "MON" | "BASE" | "ETH" | "DAI";
+  deliveryAsset: GasDeliveryAsset;
+  liquidity: { ok: boolean; reason?: string };
+  expiresAt: string;
+};
+
 /**
  * REST-only entegrasyon — cüzdan/DEX/dApp backend.
  * Public endpoint'ler; production'da rate limit uygulanır.
@@ -72,6 +86,16 @@ export class GasStationRestClient {
     targetAddress: string;
   }): Promise<GasPrecheckResponse> {
     return this.post("/api/gas/precheck", body);
+  }
+
+  /** Layer 2 — Quoter API */
+  async quoteGas(body: {
+    deliveryAsset: GasDeliveryAsset;
+    paymentToken: "USDC" | "MON" | "BASE" | "ETH" | "DAI";
+    gasEstimateWei: string;
+    depositChainId?: number;
+  }): Promise<GasQuoteResponse> {
+    return this.post("/api/v1/quote/gas", body);
   }
 
   async createIntent(body: {

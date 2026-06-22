@@ -51,7 +51,17 @@ export type {
   GasPrecheckResponse,
   GasIntentResponse,
   GasDispenseResponse,
+  GasQuoteResponse,
 } from "./rest-client.js";
+
+export { GasStation } from "./gas-station.js";
+export type {
+  GasStationConfig,
+  GasStationPayParams,
+  GasStationPayResult,
+  GasQuote,
+  QuotePaymentToken,
+} from "./gas-station.js";
 
 export { GasStationAutoSponsor } from "./auto-sponsor.js";
 export type { GasStationAutoSponsorConfig } from "./auto-sponsor.js";

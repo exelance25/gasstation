@@ -5,6 +5,7 @@ import type { FeeQuote } from "@gasstation/fee-sdk";
 import { formatNativePaymentDisplay } from "@/lib/auto-fee/execute-automatic-fee";
 import { autoFeePathLabel, type AutoFeePath } from "@/lib/auto-fee/path-resolver";
 import type { AmountOption } from "@/lib/pricing";
+import { messages } from "@/i18n/messages";
 
 type AutoFeeQuotePanelProps = {
   quote: FeeQuote | null;
@@ -27,7 +28,7 @@ export function AutoFeeQuotePanel({
     <div className="flex flex-1 flex-col gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400/90">
-          Otomatik ücret
+          {messages.autoFee.title}
         </p>
         <span className="rounded-full border border-emerald-500/30 px-2 py-0.5 text-[9px] text-emerald-400/90">
           {pathLabel}
@@ -40,7 +41,7 @@ export function AutoFeeQuotePanel({
             {formatPackageUsd(packageUsd)} USDC
           </p>
           <p className="text-center text-[10px] text-neutral-500">
-            {depositChainName} · PumpPaymaster havuzundan gas → hedef adres
+            {messages.autoFee.paymasterPath.replace("{chain}", depositChainName)}
           </p>
         </>
       )}
@@ -50,14 +51,12 @@ export function AutoFeeQuotePanel({
           <p className="text-center text-lg font-semibold text-white">
             {formatPackageUsd(packageUsd)} USDC
           </p>
-          <p className="text-center text-[10px] text-neutral-500">
-            Gasless — ERC-4337 relayer + paymaster postOp
-          </p>
+          <p className="text-center text-[10px] text-neutral-500">{messages.autoFee.erc4337Path}</p>
         </>
       )}
 
       {path === "native_settlement" && loading && (
-        <p className="text-center text-[11px] text-neutral-500">Quote hesaplanıyor…</p>
+        <p className="text-center text-[11px] text-neutral-500">{messages.autoFee.quoting}</p>
       )}
 
       {path === "native_settlement" && !loading && quote && (
@@ -66,25 +65,23 @@ export function AutoFeeQuotePanel({
             {formatNativePaymentDisplay(quote)}
           </p>
           <p className="text-center text-[10px] text-neutral-500">
-            {depositChainName} → GASSTATION kasası · Settlement gas teslimi
+            {messages.autoFee.settlementPath.replace("{chain}", depositChainName)}
           </p>
           {quote.gasCostUsd != null && (
             <p className="text-center text-[10px] text-neutral-600">
-              ~${quote.gasCostUsd.toFixed(3)} gas maliyeti
+              {messages.autoFee.gasCost.replace("${usd}", quote.gasCostUsd.toFixed(3))}
             </p>
           )}
         </>
       )}
 
       {path === "native_settlement" && !loading && !quote && (
-        <p className="text-center text-[11px] text-amber-400/90">
-          Quote alınamadı — quote engine çalışıyor mu?
-        </p>
+        <p className="text-center text-[11px] text-amber-400/90">{messages.autoFee.quoteFailed}</p>
       )}
 
       {!path && !loading && (
         <p className="text-center text-[11px] text-amber-400/90">
-          Yetersiz bakiye — native veya USDC (paymaster ağı) gerekli
+          {messages.autoFee.insufficientBalance}
         </p>
       )}
     </div>
