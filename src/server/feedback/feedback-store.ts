@@ -70,7 +70,7 @@ async function appendToBlob(entry: FeedbackMessage): Promise<boolean> {
   try {
     const { put } = await import("@vercel/blob");
     await put(`${BLOB_PREFIX}${entry.id}.json`, JSON.stringify(entry), {
-      access: "public",
+      access: "private",
       addRandomSuffix: false,
       token,
       contentType: "application/json",
@@ -89,7 +89,10 @@ async function listFromBlob(): Promise<FeedbackMessage[] | null> {
     const { blobs } = await list({ prefix: BLOB_PREFIX, token, limit: MAX_MESSAGES });
     const messages: FeedbackMessage[] = [];
     for (const blob of blobs) {
-      const res = await fetch(blob.url, { cache: "no-store" });
+      const res = await fetch(blob.downloadUrl, {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) continue;
       const item = (await res.json()) as FeedbackMessage;
       if (item?.id) messages.push(item);
@@ -183,27 +186,38 @@ async function notifyFeedbackWebhook(entry: FeedbackMessage): Promise<boolean> {
   }
 }
 
-async function notifyViaFormSubmit(entry: FeedbackMessage): Promise<boolean> {
-  const inbox = process.env.FEEDBACK_NOTIFY_EMAIL?.trim();
-  if (!inbox) return false;
+async function notifyViaResend(entry: FeedbackMessage): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const to = process.env.FEEDBACK_NOTIFY_EMAIL?.trim();
+  if (!apiKey || !to) return false;
+
+  const from =
+    process.env.FEEDBACK_FROM_EMAIL?.trim() || "GASSTATION <onboarding@resend.dev>";
+
   try {
-    const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(inbox)}`, {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        Accept: "application/json",
       },
       body: JSON.stringify({
-        name: entry.email,
-        email: entry.email,
-        message: entry.message || "—",
-        _subject: `GASSTATION feedback ${entry.id}`,
-        _template: "table",
+        from,
+        to: [to],
+        reply_to: entry.email,
+        subject: `GASSTATION feedback ${entry.id}`,
+        text: [
+          `From: ${entry.email}`,
+          `ID: ${entry.id}`,
+          `Time: ${new Date(entry.createdAt).toISOString()}`,
+          "",
+          entry.message || "—",
+        ].join("\n"),
       }),
     });
     if (!res.ok) return false;
-    const data = (await res.json().catch(() => ({}))) as { success?: string };
-    return data.success === "true";
+    const data = (await res.json()) as { id?: string };
+    return Boolean(data.id);
   } catch {
     return false;
   }
@@ -237,12 +251,12 @@ export async function createFeedbackMessage(input: {
   }
 
   const webhookOk = await notifyFeedbackWebhook(entry);
-  const emailOk = await notifyViaFormSubmit(entry);
+  const emailOk = await notifyViaResend(entry);
 
   if (!persisted && !webhookOk && !emailOk) {
     if (isEphemeralRuntime()) {
       throw new Error(
-        "Feedback storage is not configured. In Vercel: Storage → Blob (or Upstash Redis), or set FEEDBACK_NOTIFY_EMAIL.",
+        "Feedback storage is not configured. In Vercel: Storage → Blob, or set RESEND_API_KEY + FEEDBACK_NOTIFY_EMAIL.",
       );
     }
     throw new Error("Could not save feedback. Please try again later.");
