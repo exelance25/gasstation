@@ -27,8 +27,12 @@ function loadDisk(path: string): Record<string, RateLimitEntry> {
 }
 
 function saveDisk(path: string, data: Record<string, RateLimitEntry>): void {
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, JSON.stringify(data), "utf8");
+  try {
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, JSON.stringify(data), "utf8");
+  } catch {
+    /* Vercel serverless — disk not writable; memory-only is enough */
+  }
 }
 
 export function checkRateLimit(

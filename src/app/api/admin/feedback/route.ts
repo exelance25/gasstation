@@ -8,7 +8,7 @@ export async function GET() {
   const { session, error } = await requireAdminSession();
   if (!session) return error!;
 
-  const messages = listFeedbackMessages();
+  const messages = await listFeedbackMessages();
   return NextResponse.json({ messages });
 }
 
@@ -21,7 +21,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Mesaj id gerekli" }, { status: 400 });
   }
 
-  const ok = deleteFeedbackMessage(id);
+  const ok = await deleteFeedbackMessage(id);
   if (!ok) {
     return NextResponse.json({ error: "Mesaj bulunamadı" }, { status: 404 });
   }

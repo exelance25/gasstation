@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { messages } from "@/i18n/messages";
 import { useToast } from "@/providers/ToastProvider";
 
@@ -19,40 +19,46 @@ export function FeedbackNotepadPanel({ open, onClose }: FeedbackNotepadPanelProp
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !sending) onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, onClose, sending]);
 
-  const handleSubmit = useCallback(async () => {
-    setError(null);
-    setSending(true);
-    try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, message }),
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(typeof body.error === "string" ? body.error : messages.feedback.sendFailed);
+  const handleSubmit = useCallback(
+    async (e?: FormEvent) => {
+      e?.preventDefault();
+      if (sending || !email.trim()) return;
+
+      setError(null);
+      setSending(true);
+      try {
+        const res = await fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim(), message: message.trim() }),
+        });
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        if (!res.ok) {
+          throw new Error(typeof body.error === "string" ? body.error : messages.feedback.sendFailed);
+        }
+        showToast({
+          variant: "success",
+          title: messages.feedback.thanksTitle,
+          message: messages.feedback.thanksMessage,
+          persist: true,
+        });
+        setEmail("");
+        setMessage("");
+        onClose();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : messages.feedback.sendFailed);
+      } finally {
+        setSending(false);
       }
-      showToast({
-        variant: "success",
-        title: messages.feedback.thanksTitle,
-        message: messages.feedback.thanksMessage,
-        persist: true,
-      });
-      setEmail("");
-      setMessage("");
-      onClose();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : messages.feedback.sendFailed);
-    } finally {
-      setSending(false);
-    }
-  }, [email, message, onClose, showToast]);
+    },
+    [email, message, onClose, sending, showToast],
+  );
 
   if (!open) return null;
 
@@ -62,7 +68,9 @@ export function FeedbackNotepadPanel({ open, onClose }: FeedbackNotepadPanelProp
       role="dialog"
       aria-modal="true"
       aria-labelledby="feedback-notepad-title"
-      onClick={onClose}
+      onClick={() => {
+        if (!sending) onClose();
+      }}
     >
       <div
         className="feedback-notepad-hanging relative w-full max-w-[min(94vw,520px)]"
@@ -80,11 +88,15 @@ export function FeedbackNotepadPanel({ open, onClose }: FeedbackNotepadPanelProp
           aria-hidden
         />
 
-        <div className="feedback-notepad-sheet relative overflow-hidden px-7 pb-8 pt-7 sm:px-9 sm:pb-10 sm:pt-8">
+        <form
+          className="feedback-notepad-sheet relative overflow-hidden px-7 pb-8 pt-7 sm:px-9 sm:pb-10 sm:pt-8"
+          onSubmit={(e) => void handleSubmit(e)}
+        >
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 rounded-full px-2 py-0.5 text-xl leading-none text-[#8a7350]/75 transition hover:bg-[#c4a574]/20 hover:text-[#5c4a32]"
+            disabled={sending}
+            className="absolute right-4 top-4 z-10 rounded-full px-2 py-0.5 text-xl leading-none text-[#8a7350]/75 transition hover:bg-[#c4a574]/20 hover:text-[#5c4a32] disabled:opacity-40"
             aria-label={messages.feedback.close}
           >
             ×
@@ -111,6 +123,7 @@ export function FeedbackNotepadPanel({ open, onClose }: FeedbackNotepadPanelProp
             placeholder={messages.feedback.emailPlaceholder}
             className="mb-4 w-full border-b-2 border-[#c4a574]/50 bg-transparent px-0 py-2 text-base text-[#3d3225] placeholder:text-[#a8926a]/70 focus:border-[#8a7350] focus:outline-none"
             autoComplete="email"
+            disabled={sending}
           />
 
           <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-[#8a7350]">
@@ -121,30 +134,32 @@ export function FeedbackNotepadPanel({ open, onClose }: FeedbackNotepadPanelProp
             onChange={(e) => setMessage(e.target.value)}
             placeholder={messages.feedback.messagePlaceholder}
             rows={9}
-            className="min-h-[180px] w-full resize-none border-0 bg-transparent text-[15px] leading-[1.65] text-[#3d3225] placeholder:text-[#a8926a]/70 focus:outline-none focus:ring-0 sm:min-h-[220px] sm:text-base"
+            disabled={sending}
+            className="min-h-[180px] w-full resize-none border-0 bg-transparent text-[15px] leading-[1.65] text-[#3d3225] placeholder:text-[#a8926a]/70 focus:outline-none focus:ring-0 disabled:opacity-60 sm:min-h-[220px] sm:text-base"
           />
 
           {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
 
           <div className="mt-5 flex justify-end border-t border-[#c4a574]/25 pt-4">
             <button
-              type="button"
+              type="submit"
               disabled={sending || !email.trim()}
-              onClick={() => void handleSubmit()}
               className="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#2563eb] transition hover:bg-[#2563eb]/10 disabled:opacity-40"
               aria-label={messages.feedback.send}
             >
-              <span>{messages.feedback.send}</span>
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5 fill-[#2563eb] transition group-hover:translate-x-0.5"
-                aria-hidden
-              >
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-              </svg>
+              <span>{sending ? messages.feedback.sending : messages.feedback.send}</span>
+              {!sending ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 fill-[#2563eb] transition group-hover:translate-x-0.5"
+                  aria-hidden
+                >
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+              ) : null}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

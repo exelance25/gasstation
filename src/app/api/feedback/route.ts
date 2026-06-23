@@ -24,6 +24,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Message must be at most 4000 characters." }, { status: 400 });
   }
 
-  createFeedbackMessage({ email, message: message || "—" });
-  return NextResponse.json({ ok: true });
+  try {
+    await createFeedbackMessage({ email, message: message || "—" });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Could not send message";
+    return NextResponse.json({ error: msg }, { status: 503 });
+  }
 }

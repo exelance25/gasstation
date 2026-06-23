@@ -50,9 +50,9 @@
     "test:modes": "node scripts/test-ui-modes.mjs"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.10.0",
     "@gasstation/gas-engine": "file:packages/gas-engine-stub",
     "@gasstation/sdk": "file:sdk",
+    "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "^2.1.4",
@@ -66,6 +66,7 @@
     "@solana/wallet-adapter-solflare": "^0.6.28",
     "@solana/web3.js": "^1.98.0",
     "@tanstack/react-query": "^5.62.8",
+    "@vercel/blob": "^0.27.3",
     "bs58": "^6.0.0",
     "clsx": "^2.1.1",
     "ethers": "^6.13.4",

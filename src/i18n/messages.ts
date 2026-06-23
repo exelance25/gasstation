@@ -245,6 +245,7 @@ export const messages = {
     messagePlaceholder: "Your feedback or suggestion…",
     send: "Send",
     sendFailed: "Could not send message.",
+    sending: "Sending…",
     thanksTitle: "Thank you",
     thanksMessage: "We received your message — thanks for your feedback.",
     close: "Close",
